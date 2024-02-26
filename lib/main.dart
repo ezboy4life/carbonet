@@ -58,30 +58,29 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         title: Text(widget.title, style: const TextStyle(color: Colors.white)),
       ),
-      body: Center(
+      body: const Center(
         // "Center" é um widget de layout. Ele recebe um único filho e posiciona
         // no meio de seu widget pai.
-        child: Column(
-          // "Column" também é um widget de layout. Ele pega uma lista de
-          // widgets filhos e posiciona eles verticalmente. Por padrão, ele muda
-          // seu tamanho para o tamanho de seus filhos horizontalmente, e tenta
-          // atingir a mesma altura que seu widget pai
-
-          // "Column" tem várias propriedades que controlam seu tamanho e
-          // como ele posiciona seus filhos. Aqui nós usamos a propriedade
-          // mainAxisAlignment para centralizar as crianças verticalmente; o
-          // eixo principal aqui é o vertical pois widgets do tipo "Column"
-          // são verticais.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            CardButton(),
-          ],
+        child: Padding(
+          padding: EdgeInsets.all(10.0),
+          child: Column(
+            // "Column" também é um widget de layout. Ele pega uma lista de
+            // widgets filhos e posiciona eles verticalmente. Por padrão, ele muda
+            // seu tamanho para o tamanho de seus filhos horizontalmente, e tenta
+            // atingir a mesma altura que seu widget pai
+          
+            // "Column" tem várias propriedades que controlam seu tamanho e
+            // como ele posiciona seus filhos. Aqui nós usamos a propriedade
+            // mainAxisAlignment para centralizar as crianças verticalmente; o
+            // eixo principal aqui é o vertical pois widgets do tipo "Column"
+            // são verticais. 
+            mainAxisAlignment: MainAxisAlignment.center,
+            
+            children: <Widget>[
+              CardButton(),
+            ],
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => print("lmao!"),
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }
