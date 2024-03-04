@@ -3,11 +3,12 @@ import 'package:flutter/services.dart';
 import 'package:carbonet/widgets/card.dart';
 import 'package:carbonet/widgets/bottom_icon.dart';
 import 'package:carbonet/assets/app_colors.dart';
+import 'package:carbonet/utils/logger.dart';
 
 void main() {
   // Trava a orientação do app para sempre ficar na vertical
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);  
 
   runApp(const CarboNet());
 }
@@ -67,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
             borderRadius: BorderRadius.circular(100.0),
             child: Image.network("https://t2.tudocdn.net/125246?w=1920"),
           ),
-          onPressed: () => print("hey"),
+          onPressed: () => {infoLog("Botão que irá abrir o perfil do usuário")},
         ),
         title: Text(widget.title, style: const TextStyle(color: Colors.white)),
       ),

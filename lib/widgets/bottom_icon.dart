@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:carbonet/utils/logger.dart';
 
 class BottomIconButton extends StatelessWidget {
   const BottomIconButton({
@@ -20,7 +21,7 @@ class BottomIconButton extends StatelessWidget {
           color: Colors.white,
         ),
         onPressed: () => {
-          print("IconButton test.")
+          infoLog("IconButton test.")
         },
       )
     );
