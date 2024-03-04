@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:carbonet/widgets/widget_card.dart';
-// import 'dart:ui';
+import 'dart:ui';
 
 void main() {
   runApp(const CarboNet());
@@ -34,15 +34,27 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final List<String> titles = <String>['Refeição', 'Favoritos', 'Relatórios'];
-  final List<String> subtitles = <String>['Cadastrar refeição', 'Alimentos favoritos', 'Histórico de refeições'];
-  final List<IconData> icons = <IconData>[Icons.dining_rounded, Icons.favorite, Icons.history_rounded];
+  final List<String> subtitles = <String>[
+    'Cadastrar refeição',
+    'Alimentos favoritos',
+    'Histórico de refeições'
+  ];
+  final List<IconData> icons = <IconData>[
+    Icons.dining_rounded,
+    Icons.favorite,
+    Icons.history_rounded
+  ];
+
+  final Color defaultBlue = const Color(0xFF0B6FF4);
 
   @override
   Widget build(BuildContext context) {
     // Esse método é re-executado toda vez que a função setState é chamada.
     return Scaffold(
+      extendBody: true,
+      // backgroundColor: Colors.transparent,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0B6FF4),
+        backgroundColor: defaultBlue,
         leading: IconButton(
           // icon: Icon(Icons.headphones),
           icon: ClipRRect(
@@ -70,6 +82,13 @@ class _MyHomePageState extends State<MyHomePage> {
             subtitle: subtitles[index],
           ),
         ),
+      ),
+      bottomNavigationBar: Container(
+        height: 56.0,
+        color: Colors.transparent,
+        child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+            child: const Placeholder()),
       ),
     );
   }
