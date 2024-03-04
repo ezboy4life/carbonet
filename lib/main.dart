@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:carbonet/widgets/card.dart';
-import 'dart:ui';
+import 'package:flutter/services.dart';
 
 void main() {
+  // Trava a orientação do app para sempre ficar na vertical
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
   runApp(const CarboNet());
 }
+
+const Color defaultBlue = Color(0xFF0B6FF4);
 
 class CarboNet extends StatelessWidget {
   const CarboNet({super.key});
@@ -15,7 +21,7 @@ class CarboNet extends StatelessWidget {
     return MaterialApp(
       title: 'CarboNet',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0B6FF4)),
+        colorScheme: ColorScheme.fromSeed(seedColor: defaultBlue),
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Home'),
@@ -45,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Icons.history_rounded
   ];
 
-  final Color defaultBlue = const Color(0xFF0B6FF4);
+  // final Color defaultBlue = const Color(0xFF0B6FF4);
 
   @override
   Widget build(BuildContext context) {
@@ -83,13 +89,67 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        height: 56.0,
-        color: Colors.transparent,
-        child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-            child: const Placeholder()),
-      ),
+      bottomNavigationBar: BottomAppBar(
+          color: defaultBlue,
+          child: Row(
+            children: [
+              Expanded(
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(
+                    Icons.dining,
+                    color: Colors.white,
+                  ),
+                  iconSize: 48.0,
+                  onPressed: () => {print("teste")},
+                ),
+              ),
+              Expanded(
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(
+                    Icons.dining,
+                    color: Colors.white,
+                  ),
+                  iconSize: 48.0,
+                  onPressed: () => {print("teste")},
+                ),
+              ),
+              Expanded(
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(
+                    Icons.dining,
+                    color: Colors.white,
+                  ),
+                  iconSize: 48.0,
+                  onPressed: () => {print("teste")},
+                ),
+              ),
+              Expanded(
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(
+                    Icons.dining,
+                    color: Colors.white,
+                  ),
+                  iconSize: 48.0,
+                  onPressed: () => {print("teste")},
+                ),
+              ),
+              Expanded(
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(
+                    Icons.dining,
+                    color: Colors.white,
+                  ),
+                  iconSize: 48.0,
+                  onPressed: () => {print("teste")},
+                ),
+              ),
+            ],
+          )),
     );
   }
 }
