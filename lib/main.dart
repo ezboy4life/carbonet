@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:carbonet/widgets/card.dart';
 import 'package:carbonet/widgets/bottom_icon.dart';
-import 'package:flutter/services.dart';
+import 'package:carbonet/assets/app_colors.dart';
 
 void main() {
   // Trava a orientação do app para sempre ficar na vertical
@@ -10,8 +11,6 @@ void main() {
 
   runApp(const CarboNet());
 }
-
-const Color defaultBlue = Color(0xFF0B6FF4);
 
 class CarboNet extends StatelessWidget {
   const CarboNet({super.key});
@@ -22,7 +21,7 @@ class CarboNet extends StatelessWidget {
     return MaterialApp(
       title: 'CarboNet',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: defaultBlue),
+        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.defaultBlue),
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Home'),
@@ -61,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
       extendBody: true,
       // backgroundColor: Colors.transparent,
       appBar: AppBar(
-        backgroundColor: defaultBlue,
+        backgroundColor: AppColors.defaultBlue,
         leading: IconButton(
           // icon: Icon(Icons.headphones),
           icon: ClipRRect(
@@ -91,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       bottomNavigationBar: const BottomAppBar(
-        color: defaultBlue,
+        color: AppColors.defaultBlue,
         child: Row(
           children: [
             BottomIconButton(icon: Icons.home_outlined),
