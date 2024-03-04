@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:carbonet/widgets/card.dart';
+import 'package:carbonet/widgets/bottom_icon.dart';
 import 'package:flutter/services.dart';
 
 void main() {
@@ -89,67 +90,16 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomAppBar(
-          color: defaultBlue,
-          child: Row(
-            children: [
-              Expanded(
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  icon: const Icon(
-                    Icons.dining,
-                    color: Colors.white,
-                  ),
-                  iconSize: 48.0,
-                  onPressed: () => {print("teste")},
-                ),
-              ),
-              Expanded(
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  icon: const Icon(
-                    Icons.dining,
-                    color: Colors.white,
-                  ),
-                  iconSize: 48.0,
-                  onPressed: () => {print("teste")},
-                ),
-              ),
-              Expanded(
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  icon: const Icon(
-                    Icons.dining,
-                    color: Colors.white,
-                  ),
-                  iconSize: 48.0,
-                  onPressed: () => {print("teste")},
-                ),
-              ),
-              Expanded(
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  icon: const Icon(
-                    Icons.dining,
-                    color: Colors.white,
-                  ),
-                  iconSize: 48.0,
-                  onPressed: () => {print("teste")},
-                ),
-              ),
-              Expanded(
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  icon: const Icon(
-                    Icons.dining,
-                    color: Colors.white,
-                  ),
-                  iconSize: 48.0,
-                  onPressed: () => {print("teste")},
-                ),
-              ),
-            ],
-          )),
+      bottomNavigationBar: const BottomAppBar(
+        color: defaultBlue,
+        child: Row(
+          children: [
+            BottomIconButton(icon: Icons.home_outlined),
+            BottomIconButton(icon: Icons.add_box_outlined),
+            BottomIconButton(icon: Icons.settings_outlined),
+          ],
+        ),
+      ),
     );
   }
 }
