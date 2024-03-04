@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:carbonet/widgets/widget_card.dart';
+import 'package:carbonet/widgets/card.dart';
 import 'dart:ui';
 
 void main() {
