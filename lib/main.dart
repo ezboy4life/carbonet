@@ -1,14 +1,16 @@
+import 'package:carbonet/widgets/card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:carbonet/widgets/card.dart';
+// import 'package:carbonet/widgets/card.dart';
 import 'package:carbonet/widgets/bottom_icon.dart';
+import 'package:carbonet/pages/home.dart';
 import 'package:carbonet/assets/app_colors.dart';
 import 'package:carbonet/utils/logger.dart';
 
 void main() {
   // Trava a orientação do app para sempre ficar na vertical
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);  
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   runApp(const CarboNet());
 }
@@ -40,22 +42,40 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<String> titles = <String>['Refeição', 'Favoritos', 'Relatórios'];
-  final List<String> subtitles = <String>[
-    'Cadastrar refeição',
-    'Alimentos favoritos',
-    'Histórico de refeições'
-  ];
-  final List<IconData> icons = <IconData>[
-    Icons.dining_rounded,
-    Icons.favorite,
-    Icons.history_rounded
-  ];
+  int selectedPage = 0;
 
   // final Color defaultBlue = const Color(0xFF0B6FF4);
 
   @override
   Widget build(BuildContext context) {
+    Widget page = const Placeholder();
+    infoLog(selectedPage.toString());
+    switch (selectedPage) {
+      case 0:
+        page = HomePage(
+          cards: [
+            CardButton(
+              icon: const Icon(Icons.dining, size: 44, color: Colors.white),
+              title: 'title',
+              subtitle: 'subtitle',
+              onTap: () => {
+                setState(() => selectedPage = 2),
+              },
+            ),
+          ],
+        );
+        break;
+      case 1:
+        page = const Placeholder();
+        break;
+      case 2:
+        page = const Placeholder();
+        break;
+      default:
+        page = const Placeholder();
+        errorLog("No widget for $selectedPage");
+    }
+
     // Esse método é re-executado toda vez que a função setState é chamada.
     return Scaffold(
       extendBody: true,
@@ -72,31 +92,35 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         title: Text(widget.title, style: const TextStyle(color: Colors.white)),
       ),
-      body: Center(
-        child: ListView.separated(
-          padding: const EdgeInsets.all(10.0),
-          separatorBuilder: (context, index) => const SizedBox(height: 10),
-          physics: const BouncingScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: 3,
-          itemBuilder: (context, index) => CardButton(
-            icon: Icon(
-              icons[index],
-              size: 44,
-              color: Colors.white,
-            ),
-            title: titles[index],
-            subtitle: subtitles[index],
-          ),
-        ),
-      ),
-      bottomNavigationBar: const BottomAppBar(
+      body: page,
+      bottomNavigationBar: BottomAppBar(
         color: AppColors.defaultBlue,
         child: Row(
           children: [
-            BottomIconButton(icon: Icons.home_outlined),
-            BottomIconButton(icon: Icons.add_box_outlined),
-            BottomIconButton(icon: Icons.settings_outlined),
+            BottomIconButton(
+              icon: Icons.home_outlined,
+              onTap: () => setState(
+                () {
+                  selectedPage = 0;
+                },
+              ),
+            ),
+            BottomIconButton(
+              icon: Icons.add_box_outlined,
+              onTap: () => setState(
+                () {
+                  selectedPage = 1;
+                },
+              ),
+            ),
+            BottomIconButton(
+              icon: Icons.settings_outlined,
+              onTap: () => setState(
+                () {
+                  selectedPage = 2;
+                },
+              ),
+            ),
           ],
         ),
       ),
