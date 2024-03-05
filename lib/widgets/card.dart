@@ -12,7 +12,7 @@ class CardButton extends StatelessWidget {
     // this.trailing,
   });
   // Um Widget que é mostrado antes do
-  final Widget icon;
+  final IconData icon;
   final String title;
   final String subtitle;
   final void Function()? onTap;
@@ -53,7 +53,11 @@ class CardButton extends StatelessWidget {
                       children: [
                         Expanded(
                           flex: 2,
-                          child: icon,
+                          child: Icon(
+                            icon,
+                            size: 44,
+                            color: Colors.white
+                          ),
                         ),
                       ],
                     ),

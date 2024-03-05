@@ -27,59 +27,61 @@ class CarboNet extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.defaultBlue),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Home'),
+      home: const MainPage(title: 'Home'),
+      
+
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class MainPage extends StatefulWidget {
+  const MainPage({super.key, required this.title});
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MainPage> createState() => _MainPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MainPageState extends State<MainPage> {
   int selectedPage = 0;
 
+  void changePage(int index) {
+    setState(() {
+      selectedPage = index;
+    });
+  }
   // final Color defaultBlue = const Color(0xFF0B6FF4);
 
   @override
   Widget build(BuildContext context) {
-    Widget page = const Placeholder();
-    infoLog(selectedPage.toString());
+    Widget currentPage;
     switch (selectedPage) {
       case 0:
-        page = HomePage(
+        currentPage = HomePage(
           cards: [
             CardButton(
-              icon: const Icon(Icons.dining, size: 44, color: Colors.white),
+              icon: Icons.dining,
               title: 'title',
               subtitle: 'subtitle',
-              onTap: () => {
-                setState(() => selectedPage = 2),
-              },
+              onTap: () => changePage(2),
             ),
           ],
         );
         break;
       case 1:
-        page = const Placeholder();
+        currentPage = const Placeholder();
         break;
       case 2:
-        page = const Placeholder();
+        currentPage = const Placeholder();
         break;
       default:
-        page = const Placeholder();
+        currentPage = const Placeholder();
         errorLog("No widget for $selectedPage");
     }
 
     // Esse método é re-executado toda vez que a função setState é chamada.
     return Scaffold(
-      extendBody: true,
-      // backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: AppColors.defaultBlue,
         leading: IconButton(
@@ -92,34 +94,22 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         title: Text(widget.title, style: const TextStyle(color: Colors.white)),
       ),
-      body: page,
+      body: currentPage,
       bottomNavigationBar: BottomAppBar(
         color: AppColors.defaultBlue,
         child: Row(
           children: [
             BottomIconButton(
-              icon: Icons.home_outlined,
-              onTap: () => setState(
-                () {
-                  selectedPage = 0;
-                },
-              ),
+              icon: selectedPage == 0 ? Icons.home_sharp : Icons.home_outlined,
+              onTap: () => changePage(0),
             ),
             BottomIconButton(
               icon: Icons.add_box_outlined,
-              onTap: () => setState(
-                () {
-                  selectedPage = 1;
-                },
-              ),
+              onTap: () => changePage(1),
             ),
             BottomIconButton(
               icon: Icons.settings_outlined,
-              onTap: () => setState(
-                () {
-                  selectedPage = 2;
-                },
-              ),
+              onTap: () => changePage(2),
             ),
           ],
         ),
