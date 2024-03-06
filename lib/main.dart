@@ -28,8 +28,6 @@ class CarboNet extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const MainPage(title: 'Home'),
-      
-
     );
   }
 }
@@ -51,7 +49,6 @@ class _MainPageState extends State<MainPage> {
       selectedPage = index;
     });
   }
-  // final Color defaultBlue = const Color(0xFF0B6FF4);
 
   @override
   Widget build(BuildContext context) {
@@ -62,9 +59,9 @@ class _MainPageState extends State<MainPage> {
           cards: [
             CardButton(
               icon: Icons.dining,
-              title: 'title',
-              subtitle: 'subtitle',
-              onTap: () => changePage(2),
+              title: 'Refeição',
+              subtitle: 'Cadastrar Refeição',
+              onTap: () => changePage(1),
             ),
           ],
         );
