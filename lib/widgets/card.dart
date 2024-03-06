@@ -53,10 +53,7 @@ class CardButton extends StatelessWidget {
                           bottomLeft: Radius.circular(8.0),
                         ),
                       ),
-                      child: Expanded(
-                        flex: 2,
-                        child: Icon(icon, size: 44, color: Colors.white),
-                      ),
+                      child: Icon(icon, size: 44, color: Colors.white),
                     ),
                     Expanded(
                       child: SizedBox(
