@@ -14,11 +14,11 @@ class HomePage extends StatelessWidget {
     return Center(
       child: ListView.separated(
         padding: const EdgeInsets.all(10.0),
-        separatorBuilder: (context, index) => const SizedBox(height: 10),
         physics: const BouncingScrollPhysics(),
         shrinkWrap: true,
         itemCount: cards.length,
-        itemBuilder: (context, index) => cards[index]
+        separatorBuilder: (context, index) => const SizedBox(height: 10),
+        itemBuilder: (context, index) => cards[index],
       ),
     );
   }

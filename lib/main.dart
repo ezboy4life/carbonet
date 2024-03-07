@@ -1,9 +1,13 @@
-import 'package:carbonet/widgets/card.dart';
+// Padrões do Flutter
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:carbonet/widgets/card.dart';
+// Widgets
+import 'package:carbonet/widgets/card.dart';
 import 'package:carbonet/widgets/bottom_icon.dart';
+// Páginas
 import 'package:carbonet/pages/home.dart';
+import 'package:carbonet/pages/settings.dart';
+// Etc
 import 'package:carbonet/assets/app_colors.dart';
 import 'package:carbonet/utils/logger.dart';
 
@@ -63,6 +67,12 @@ class _MainPageState extends State<MainPage> {
               subtitle: 'Cadastrar Refeição',
               onTap: () => changePage(1),
             ),
+            CardButton(
+              icon: Icons.settings,
+              title: 'Configurações',
+              subtitle: 'Defina preferências',
+              onTap: () => changePage(2),
+            ),
           ],
         );
         break;
@@ -70,7 +80,7 @@ class _MainPageState extends State<MainPage> {
         currentPage = const Placeholder();
         break;
       case 2:
-        currentPage = const Placeholder();
+        currentPage = SettingsPage(onTap: () => {infoLog("Página de configurações")},);
         break;
       default:
         currentPage = const Placeholder();
