@@ -80,7 +80,7 @@ class _MainPageState extends State<MainPage> {
         currentPage = const Placeholder();
         break;
       case 2:
-        currentPage = SettingsPage(onTap: () => {infoLog("Página de configurações")},);
+        currentPage = SettingsPage();
         break;
       default:
         currentPage = const Placeholder();
