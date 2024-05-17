@@ -7,6 +7,7 @@ import 'package:carbonet/widgets/bottom_icon.dart';
 // Páginas
 import 'package:carbonet/pages/home.dart';
 import 'package:carbonet/pages/settings.dart';
+import 'package:carbonet/pages/login.dart';
 // Etc
 import 'package:carbonet/assets/app_colors.dart';
 import 'package:carbonet/utils/logger.dart';
@@ -31,7 +32,7 @@ class CarboNet extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.defaultBlue),
         useMaterial3: true,
       ),
-      home: const MainPage(title: 'Home'),
+      home: const LoginPage(),
     );
   }
 }
@@ -54,6 +55,7 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
+  // Esse método é re-executado toda vez que a função setState é chamada.
   @override
   Widget build(BuildContext context) {
     Widget currentPage;
@@ -87,7 +89,6 @@ class _MainPageState extends State<MainPage> {
         errorLog("No widget for $selectedPage");
     }
 
-    // Esse método é re-executado toda vez que a função setState é chamada.
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.defaultBlue,
