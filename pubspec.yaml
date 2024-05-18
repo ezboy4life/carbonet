@@ -58,6 +58,9 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  assets:
+    - assets/imgs/facebook_logo.png
+    - assets/imgs/google_logo.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

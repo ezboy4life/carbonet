@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:carbonet/assets/app_colors.dart';
+import "package:carbonet/utils/app_colors.dart";
 
 class CardButton extends StatelessWidget {
   const CardButton({
@@ -47,7 +47,7 @@ class CardButton extends StatelessWidget {
                       width: 85,
                       height: 85,
                       decoration: const BoxDecoration(
-                        color: AppColors.defaultBlue,
+                        color: AppColors.defaultAppColor,
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(8.0),
                           bottomLeft: Radius.circular(8.0),
@@ -99,7 +99,7 @@ class CardButton extends StatelessWidget {
                   flipX: true,
                   child: const Icon(
                     Icons.arrow_back_ios_new_rounded,
-                    color: AppColors.defaultBlue,
+                    color: AppColors.defaultAppColor,
                     size: 35.0,
                   ),
                 ),

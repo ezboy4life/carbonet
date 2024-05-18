@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:carbonet/assets/app_colors.dart';
+import "package:carbonet/utils/app_colors.dart";
 
 class InputField extends StatelessWidget {
   const InputField({
@@ -13,21 +13,19 @@ class InputField extends StatelessWidget {
   final String labelText;
   final bool obscureText;
 
-  //TODO: Fazer o padding ficar igual no Figma
-
   @override
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
       obscureText: obscureText,
       style: const TextStyle(
-        color: AppColors.brightGrey,
+        color: AppColors.fontBright,
         fontSize: 16,
       ),
       decoration: InputDecoration(
         labelText: labelText,
         labelStyle: const TextStyle(
-          color: AppColors.brightGrey,
+          color: AppColors.fontBright,
         ),
         contentPadding: const EdgeInsets.all(10),
         enabledBorder: const OutlineInputBorder(
@@ -35,7 +33,7 @@ class InputField extends StatelessWidget {
             Radius.circular(50.0),
           ),
           borderSide: BorderSide(
-            color: AppColors.dimmedGray,
+            color: AppColors.fontDimmed,
           ),
         ),
         focusedBorder: const OutlineInputBorder(
@@ -43,7 +41,7 @@ class InputField extends StatelessWidget {
             Radius.circular(50.0),
           ),
           borderSide: BorderSide(
-            color: AppColors.brightGrey,
+            color: AppColors.fontBright,
             width: 2,
           ),
         ),

@@ -9,7 +9,7 @@ import 'package:carbonet/pages/home.dart';
 import 'package:carbonet/pages/settings.dart';
 import 'package:carbonet/pages/login.dart';
 // Etc
-import 'package:carbonet/assets/app_colors.dart';
+import "package:carbonet/utils/app_colors.dart";
 import 'package:carbonet/utils/logger.dart';
 
 void main() {
@@ -28,8 +28,9 @@ class CarboNet extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'CarboNet',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.defaultBlue),
+        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.defaultAppColor),
         useMaterial3: true,
       ),
       home: const LoginPage(),
@@ -91,7 +92,7 @@ class _MainPageState extends State<MainPage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.defaultBlue,
+        backgroundColor: AppColors.defaultAppColor,
         leading: IconButton(
           // icon: Icon(Icons.headphones),
           icon: ClipRRect(
@@ -104,7 +105,7 @@ class _MainPageState extends State<MainPage> {
       ),
       body: currentPage,
       bottomNavigationBar: BottomAppBar(
-        color: AppColors.defaultBlue,
+        color: AppColors.defaultAppColor,
         child: Row(
           children: [
             BottomIconButton(
