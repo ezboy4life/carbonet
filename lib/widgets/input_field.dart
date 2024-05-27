@@ -30,7 +30,7 @@ class InputField extends StatelessWidget {
         contentPadding: const EdgeInsets.all(10),
         enabledBorder: const OutlineInputBorder(
           borderRadius: BorderRadius.all(
-            Radius.circular(50.0),
+            Radius.circular(10.0),
           ),
           borderSide: BorderSide(
             color: AppColors.fontDimmed,
@@ -38,7 +38,7 @@ class InputField extends StatelessWidget {
         ),
         focusedBorder: const OutlineInputBorder(
           borderRadius: BorderRadius.all(
-            Radius.circular(50.0),
+            Radius.circular(10.0),
           ),
           borderSide: BorderSide(
             color: AppColors.fontBright,
