@@ -73,15 +73,22 @@ class RegisterPageState extends State<RegisterPage> {
       resizeToAvoidBottomInset: false,
       body: Center(
         child: SizedBox(
-          height: 325,
           width: 325,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const Icon(
+                Icons.apple,
+                color: Colors.white,
+                size: 40,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
               LinearProgressIndicator(
                 value: _currentProgress,
                 minHeight: 5,
-                borderRadius: BorderRadius.all(Radius.circular(100)),
+                borderRadius: const BorderRadius.all(Radius.circular(100)),
               ),
               const SizedBox(
                 height: 10,
@@ -134,10 +141,9 @@ class RegisterPageState extends State<RegisterPage> {
   }
 }
 
-class _EmailAndPassword extends StatelessWidget {
+class _EmailAndPassword extends StatefulWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final VoidCallback nextPage;
 
   _EmailAndPassword({
@@ -147,6 +153,15 @@ class _EmailAndPassword extends StatelessWidget {
   });
 
   @override
+  State<_EmailAndPassword> createState() => _EmailAndPasswordState();
+}
+
+class _EmailAndPasswordState extends State<_EmailAndPassword> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  bool isLengthValid = false, hasNumberOrSymbol = false;
+
+  @override
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
@@ -154,7 +169,7 @@ class _EmailAndPassword extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           InputField(
-            controller: emailController,
+            controller: widget.emailController,
             labelText: "E-mail",
             obscureText: false,
           ),
@@ -162,9 +177,59 @@ class _EmailAndPassword extends StatelessWidget {
             height: 30,
           ),
           InputField(
-            controller: passwordController,
+            controller: widget.passwordController,
             labelText: "Senha",
             obscureText: true,
+          ),
+          const SizedBox(
+            height: 30,
+          ),
+          const Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "A senha deve ter",
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Icon(
+                Icons.circle_outlined,
+                color: Colors.white,
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Text(
+                "Um caractere especial (# ? ! &)",
+                style: TextStyle(color: AppColors.fontBright),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Icon(
+                Icons.circle_outlined,
+                color: Colors.white,
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Text(
+                "10 caracteres",
+                style: TextStyle(color: AppColors.fontBright),
+              )
+            ],
           ),
           const SizedBox(
             height: 30,
@@ -175,7 +240,7 @@ class _EmailAndPassword extends StatelessWidget {
               AppColors.defaultDarkAppColor,
               AppColors.defaultAppColor,
             ],
-            onPressed: nextPage,
+            onPressed: widget.nextPage,
           ),
         ],
       ),
