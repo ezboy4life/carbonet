@@ -177,7 +177,7 @@ class LoginPageState extends State<LoginPage> {
                               builder: (context) => const RegisterPage()
                             )
                           );
-                          infoLog("Botão 'Cadastre-se'");
+                          passwordController.text = emailController.text = "";
                         },
                         style: const ButtonStyle(
                           splashFactory: NoSplash.splashFactory,

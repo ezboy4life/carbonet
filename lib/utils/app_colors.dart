@@ -13,4 +13,6 @@ class AppColors {
   static const Color defaultGreen = Color(0xFF00A623);
   static const Color brightGreen = Color.fromARGB(255, 50, 207, 84);
   static const Color dimmedGreen = Color.fromARGB(255, 0, 80, 17);
+
+  static const Color dialogBackground = Color.fromARGB(255, 15, 15, 15);
 }
