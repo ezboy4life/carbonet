@@ -37,6 +37,10 @@ class RegisterPageState extends State<RegisterPage> {
       const Text(
         "Página 2",
         style: TextStyle(color: Colors.white),
+      ),
+      const Text(
+        "Página 3",
+        style: TextStyle(color: Colors.white),
       )
     ];
   }
@@ -73,15 +77,31 @@ class RegisterPageState extends State<RegisterPage> {
       resizeToAvoidBottomInset: false,
       body: Center(
         child: SizedBox(
-          height: 325,
+          height: 520,
           width: 325,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const Icon(
+                Icons.disabled_by_default_outlined,
+                color: AppColors.defaultAppColor,
+                size: 130,
+                weight: 800,
+              ),
+              const Text(
+                "CarboNet",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 28,
+                ),
+              ),
+              const SizedBox(
+                height: 30,
+              ),
               LinearProgressIndicator(
                 value: _currentProgress,
                 minHeight: 5,
-                borderRadius: BorderRadius.all(Radius.circular(100)),
+                borderRadius: const BorderRadius.all(Radius.circular(100)),
               ),
               const SizedBox(
                 height: 10,
@@ -92,6 +112,7 @@ class RegisterPageState extends State<RegisterPage> {
                   IconButton(
                     onPressed: () {
                       infoLog("Botão de voltar");
+                      _previousPage();
                     },
                     icon: const Icon(
                       Icons.arrow_back_ios_new_rounded,
@@ -126,6 +147,16 @@ class RegisterPageState extends State<RegisterPage> {
                   children: _pageList,
                 ),
               ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const Text("Já possuí uma conta?"),
+                  TextButton(onPressed: () => {
+                    Navigator.pop(context)
+                  },
+                  child: const Text("Faça o Login"))
+                ],
+              )
             ],
           ),
         ),
