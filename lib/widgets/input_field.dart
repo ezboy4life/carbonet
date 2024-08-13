@@ -7,14 +7,16 @@ class InputField extends StatelessWidget {
     super.key,
     required this.controller,
     required this.labelText,
-    required this.obscureText,
-    this.inputFormatters
+    this.obscureText = false,
+    this.inputFormatters,
+    this.maxLength,
   });
 
   final TextEditingController controller;
   final String labelText;
   final bool obscureText;
   final List<FilteringTextInputFormatter>? inputFormatters;
+  final int? maxLength;
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +24,10 @@ class InputField extends StatelessWidget {
       controller: controller,
       obscureText: obscureText,
       inputFormatters: inputFormatters,
+      maxLength: maxLength,
+      buildCounter:
+          (_, {int? currentLength, int? maxLength, bool? isFocused}) => null,
+      // esconde a contagem de caracteres quando se tem o maxlenght
       style: const TextStyle(
         color: AppColors.fontBright,
         fontSize: 16,

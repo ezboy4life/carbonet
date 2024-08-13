@@ -39,12 +39,17 @@ class RegisterPageState extends State<RegisterPage> {
         showInvalidDialog: _showInvalidDialog,
       ),
       _NameAndSurname(
-        nextPage: _nextPage, 
-        nameController: _nameController, 
-        surnameController: _surnameController, 
-        showInvalidDialog: _showInvalidDialog
+        nextPage: _nextPage,
+        nameController: _nameController,
+        surnameController: _surnameController,
+        showInvalidDialog: _showInvalidDialog,
       ),
-      _HealthInfo()
+      _HealthInfo(
+        nextPage: _nextPage,
+        dateController: ,
+        weightController: ,
+        showInvalidDialog: _showInvalidDialog),
+      ),
     ];
   }
 
@@ -81,18 +86,18 @@ class RegisterPageState extends State<RegisterPage> {
             ],
           ),
           backgroundColor: AppColors.dialogBackground,
-          content: Text(message, style: const TextStyle(color: AppColors.fontBright)),
+          content: Text(message,
+              style: const TextStyle(color: AppColors.fontBright)),
           actions: <Widget>[
             GradientButton(
-              label: "OK", 
-              buttonColors: const [
-                AppColors.defaultDarkAppColor,
-                AppColors.defaultAppColor,
-              ], 
-              onPressed: () {
-                Navigator.pop(context);
-              }
-            )
+                label: "OK",
+                buttonColors: const [
+                  AppColors.defaultDarkAppColor,
+                  AppColors.defaultAppColor,
+                ],
+                onPressed: () {
+                  Navigator.pop(context);
+                })
           ],
         );
       },
@@ -190,12 +195,12 @@ class RegisterPageState extends State<RegisterPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                        
-                  const Text("Já possuí uma conta?", style: TextStyle(color: AppColors.fontBright),),
+                  const Text(
+                    "Já possuí uma conta?",
+                    style: TextStyle(color: AppColors.fontBright),
+                  ),
                   TextButton(
-                    onPressed: () => {
-                      Navigator.pop(context)
-                    },
+                    onPressed: () => {Navigator.pop(context)},
                     style: const ButtonStyle(
                       splashFactory: NoSplash.splashFactory,
                     ),
@@ -220,18 +225,19 @@ class _EmailAndPassword extends StatelessWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final VoidCallback nextPage;
-  final Function showInvalidDialog; 
+  final Function showInvalidDialog;
 
   const _EmailAndPassword({
     required this.nextPage,
     required this.emailController,
     required this.passwordController,
-    required this.showInvalidDialog
+    required this.showInvalidDialog,
   });
 
   bool isValidEmail(String email) {
     // Não sei se esse regex é decente mas pelos testes que fiz tá pegando
-    final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    final emailRegex =
+        RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
     return emailRegex.hasMatch(email);
   }
 
@@ -247,10 +253,10 @@ class _EmailAndPassword extends StatelessWidget {
         InputField(
           controller: emailController,
           labelText: "E-mail",
-          obscureText: false,
           inputFormatters: [
             FilteringTextInputFormatter.deny(RegExp(r'\s')),
           ],
+          maxLength: 320,
         ),
         const SizedBox(
           height: 30,
@@ -262,6 +268,7 @@ class _EmailAndPassword extends StatelessWidget {
           inputFormatters: [
             FilteringTextInputFormatter.deny(RegExp(r'\s')),
           ],
+          maxLength: 255,
         ),
         const SizedBox(
           height: 30,
@@ -275,47 +282,39 @@ class _EmailAndPassword extends StatelessWidget {
           onPressed: () {
             emailController.text = emailController.text.trim();
             if (!isValidEmail(emailController.text)) {
-              showInvalidDialog(
-                context,
-                "E-mail inválido!",
-                "Por favor, insira um endereço de e-mail válido."
-              );
+              showInvalidDialog(context, "E-mail inválido!",
+                  "Por gentileza, insira um endereço de e-mail válido.");
               return;
             }
 
             passwordController.text = passwordController.text.trim();
             if (!isValidPassword(passwordController.text)) {
-              showInvalidDialog(
-                context,
-                "Senha inválida!",
-                "Por favor, insira uma senha com mais de 10 caracteres."
-              );
+              showInvalidDialog(context, "Senha inválida!",
+                  "Por gentileza, insira uma senha com 10 ou mais caracteres.");
               return;
             }
-    
+
             nextPage();
           },
         ),
       ],
     );
   }
-
 }
 
 class _NameAndSurname extends StatelessWidget {
   final TextEditingController nameController;
   final TextEditingController surnameController;
   final VoidCallback nextPage;
-  final Function showInvalidDialog; 
-
+  final Function showInvalidDialog;
 
   const _NameAndSurname({
     required this.nextPage,
     required this.nameController,
     required this.surnameController,
-    required this.showInvalidDialog
+    required this.showInvalidDialog,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -324,7 +323,7 @@ class _NameAndSurname extends StatelessWidget {
         InputField(
           controller: nameController,
           labelText: "Nome",
-          obscureText: false,
+          maxLength: 255,
         ),
         const SizedBox(
           height: 30,
@@ -332,7 +331,7 @@ class _NameAndSurname extends StatelessWidget {
         InputField(
           controller: surnameController,
           labelText: "Sobrenome",
-          obscureText: false,
+          maxLength: 255,
         ),
         const SizedBox(
           height: 30,
@@ -346,36 +345,71 @@ class _NameAndSurname extends StatelessWidget {
           onPressed: () {
             nameController.text = nameController.text.trim();
             if (nameController.text.isEmpty) {
-              showInvalidDialog(
-                context,
-                "Nome inválido!",
-                "Por favor, insira um nome válido."
-              );
+              showInvalidDialog(context, "Nome inválido!",
+                  "Por favor, insira um nome válido.");
               return;
             }
 
             surnameController.text = surnameController.text.trim();
             if (surnameController.text.isEmpty) {
-              showInvalidDialog(
-                context,
-                "Sobrenome inválido!",
-                "Por favor, insira um sobrenome válido."
-              );
+              showInvalidDialog(context, "Sobrenome inválido!",
+                  "Por favor, insira um sobrenome válido.");
               return;
             }
-    
+
             nextPage();
           },
         ),
       ],
     );
   }
-
 }
 
 class _HealthInfo extends StatelessWidget {
+  final TextEditingController dateController;
+  final TextEditingController weightController;
+  final VoidCallback nextPage;
+  final Function showInvalidDialog;
+
+  const _HealthInfo({
+    required this.nextPage,
+    required this.dateController,
+    required this.weightController,
+    required this.showInvalidDialog,
+  });
+
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text("implementar + coisas aqui ;3"));
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        InputField(
+          controller: nameController,
+          labelText: "Nome",
+          maxLength: 255,
+        ),
+        const SizedBox(
+          height: 30,
+        ),
+        InputField(
+          controller: surnameController,
+          labelText: "Sobrenome",
+          maxLength: 255,
+        ),
+        const SizedBox(
+          height: 30,
+        ),
+        GradientButton(
+          label: "Avançar",
+          buttonColors: const [
+            AppColors.defaultDarkAppColor,
+            AppColors.defaultAppColor,
+          ],
+          onPressed: () {
+            nextPage();
+          },
+        ),
+      ],
+    );
   }
 }
