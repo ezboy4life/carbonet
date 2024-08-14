@@ -170,13 +170,11 @@ class LoginPageState extends State<LoginPage> {
                         style: TextStyle(color: AppColors.fontBright),
                       ),
                       TextButton(
-                        onPressed: () {
+                        onPressed: () async {
                           Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const RegisterPage()
-                            )
-                          );
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const RegisterPage()));
                           passwordController.text = emailController.text = "";
                         },
                         style: const ButtonStyle(

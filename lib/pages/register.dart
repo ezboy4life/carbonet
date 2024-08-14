@@ -1,4 +1,5 @@
 import 'package:carbonet/utils/logger.dart';
+import 'package:carbonet/widgets/date_input_field.dart';
 import 'package:carbonet/widgets/gradient_button.dart';
 import 'package:carbonet/widgets/input_field.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,9 @@ class RegisterPageState extends State<RegisterPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _surnameController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
+  DateTime? selectedBirthDate;
+  final TextEditingController _weightController = TextEditingController();
   final List<String> _hintTexts = [
     "Digite seu e-mail e defina um senha",
     "Digite seu nome e sobrenome",
@@ -46,11 +50,20 @@ class RegisterPageState extends State<RegisterPage> {
       ),
       _HealthInfo(
         nextPage: _nextPage,
-        dateController: ,
-        weightController: ,
-        showInvalidDialog: _showInvalidDialog),
+        dateController: _dateController,
+        // birthDate: selectedBirthDate,
+        weightController: _weightController,
+        showInvalidDialog: _showInvalidDialog,
+        onDateSelected: _handleDateSelected,
       ),
     ];
+
+    // TODO: Só pra facilitar os testes no cadastro. REMOVAM DEPOIS :V
+
+    _emailController.text = "teste@gmail.com";
+    _passwordController.text = "1111111111";
+    _nameController.text = "Nome";
+    _surnameController.text = "Sobrenome";
   }
 
   double _normalize(int min, int max, int value) {
@@ -71,6 +84,7 @@ class RegisterPageState extends State<RegisterPage> {
     );
   }
 
+  //TODO: Isolar esse popup em um widget/classe separada (?)
   void _showInvalidDialog(BuildContext context, String title, String message) {
     showDialog(
       context: context,
@@ -109,6 +123,13 @@ class RegisterPageState extends State<RegisterPage> {
     setState(() {
       _currentPageIndex = currentPageIndex;
     });
+  }
+
+  void _handleDateSelected(DateTime date) {
+    setState(() {
+      selectedBirthDate = date;
+    });
+    infoLog("Data selecionada: ${selectedBirthDate.toString()}");
   }
 
   @override
@@ -370,31 +391,66 @@ class _HealthInfo extends StatelessWidget {
   final TextEditingController weightController;
   final VoidCallback nextPage;
   final Function showInvalidDialog;
+  final Function(DateTime) onDateSelected;
+  // final DateTime? birthDate;
 
   const _HealthInfo({
     required this.nextPage,
     required this.dateController,
     required this.weightController,
     required this.showInvalidDialog,
+    required this.onDateSelected,
+    // required this.birthDate,
   });
+
+  bool isDateValid(DateTime? birthDate) {
+    if (birthDate == null) {
+      infoLog("Data não selecionada!");
+      return false;
+    }
+
+    final currentDate = DateTime.now();
+    var age = currentDate.year - birthDate.year;
+    if (currentDate.month < birthDate.month ||
+        (currentDate.month == birthDate.month &&
+            currentDate.day < birthDate.day)) {
+      age--;
+    }
+
+    return age >= 18 && age < 122; // 122 = pessoa mais velha do mundo
+  }
+
+  bool isWeightValid(String weightString) {
+    if (weightString.isEmpty) {
+      return false;
+    }
+
+    double weight = double.parse(weightString);
+    return weight > 0 && weight < 595; // pessoa mais pesada do mundo
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        InputField(
-          controller: nameController,
-          labelText: "Nome",
-          maxLength: 255,
+        DateInputField(
+          labelText: "Data de Nascimento",
+          dateController: dateController,
+          onDateSelected: onDateSelected,
         ),
         const SizedBox(
           height: 30,
         ),
         InputField(
-          controller: surnameController,
-          labelText: "Sobrenome",
-          maxLength: 255,
+          controller: weightController,
+          labelText: "Peso",
+          maxLength: 5,
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d*[.,]?\d*$')),
+            CommaToDotFormatter(),
+          ],
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
         ),
         const SizedBox(
           height: 30,
@@ -406,10 +462,35 @@ class _HealthInfo extends StatelessWidget {
             AppColors.defaultAppColor,
           ],
           onPressed: () {
-            nextPage();
+            // if (!isDateValid(birthDate)) {
+            //   errorLog("Data inválida!");
+            //   return;
+            // }
+
+            if (!isWeightValid(weightController.text)) {
+              errorLog("Peso inválido!");
+              return;
+            }
+
+            // TODO: Implementar cadastro de verdade
+            // TODO: AH, e ver se precisa da altura (acho que precisa)
+            infoLog("Implementar cadastro de verdade :v");
           },
         ),
       ],
+    );
+  }
+}
+
+//TODO: Coloquei isso aqui pq não sei onde mais colocar honestamente
+// Talvez numa classe Utils (?)
+class CommaToDotFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    return newValue.copyWith(
+      text: newValue.text.replaceAll(',', '.'),
+      selection: newValue.selection,
     );
   }
 }
