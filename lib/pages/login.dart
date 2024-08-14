@@ -79,7 +79,6 @@ class LoginPageState extends State<LoginPage> {
                     decoration: const ShapeDecoration(
                       shape: StadiumBorder(),
                       // color: AppColors.defaultAppColor,
-                      // TODO: Com gradiente ou sem (?)
                       gradient: LinearGradient(
                         colors: [
                           AppColors.defaultDarkAppColor,
