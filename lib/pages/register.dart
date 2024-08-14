@@ -1,8 +1,10 @@
 import 'package:carbonet/utils/logger.dart';
+import 'package:carbonet/widgets/date_input_field.dart';
 import 'package:carbonet/widgets/gradient_button.dart';
 import 'package:carbonet/widgets/input_field.dart';
 import 'package:flutter/material.dart';
 import "package:carbonet/utils/app_colors.dart";
+import 'package:flutter/services.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -16,10 +18,15 @@ class RegisterPageState extends State<RegisterPage> {
   late List<Widget> _pageList;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _surnameController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
+  DateTime? selectedBirthDate;
+  final TextEditingController _weightController = TextEditingController();
   final List<String> _hintTexts = [
-    "Texto 1",
-    "Texto 2",
-    "Texto 3",
+    "Digite seu e-mail e defina um senha",
+    "Digite seu nome e sobrenome",
+    "Digite sua data de nascimento e seu peso",
   ];
   int _currentPageIndex = 0;
   double _currentProgress = 0.0;
@@ -33,12 +40,30 @@ class RegisterPageState extends State<RegisterPage> {
         nextPage: _nextPage,
         emailController: _emailController,
         passwordController: _passwordController,
+        showInvalidDialog: _showInvalidDialog,
       ),
-      const Text(
-        "Página 2",
-        style: TextStyle(color: Colors.white),
-      )
+      _NameAndSurname(
+        nextPage: _nextPage,
+        nameController: _nameController,
+        surnameController: _surnameController,
+        showInvalidDialog: _showInvalidDialog,
+      ),
+      _HealthInfo(
+        nextPage: _nextPage,
+        dateController: _dateController,
+        // birthDate: selectedBirthDate,
+        weightController: _weightController,
+        showInvalidDialog: _showInvalidDialog,
+        onDateSelected: _handleDateSelected,
+      ),
     ];
+
+    // TODO: Só pra facilitar os testes no cadastro. REMOVAM DEPOIS :V
+
+    _emailController.text = "teste@gmail.com";
+    _passwordController.text = "1111111111";
+    _nameController.text = "Nome";
+    _surnameController.text = "Sobrenome";
   }
 
   double _normalize(int min, int max, int value) {
@@ -59,6 +84,40 @@ class RegisterPageState extends State<RegisterPage> {
     );
   }
 
+  //TODO: Isolar esse popup em um widget/classe separada (?)
+  void _showInvalidDialog(BuildContext context, String title, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Row(
+            children: [
+              const Icon(Icons.error, color: Colors.white),
+              const SizedBox(
+                width: 10,
+              ),
+              Text(title, style: const TextStyle(color: Colors.white))
+            ],
+          ),
+          backgroundColor: AppColors.dialogBackground,
+          content: Text(message,
+              style: const TextStyle(color: AppColors.fontBright)),
+          actions: <Widget>[
+            GradientButton(
+                label: "OK",
+                buttonColors: const [
+                  AppColors.defaultDarkAppColor,
+                  AppColors.defaultAppColor,
+                ],
+                onPressed: () {
+                  Navigator.pop(context);
+                })
+          ],
+        );
+      },
+    );
+  }
+
   void _handlePageChanged(int currentPageIndex) {
     _currentProgress = _normalize(0, _pageList.length - 1, currentPageIndex);
     setState(() {
@@ -66,24 +125,44 @@ class RegisterPageState extends State<RegisterPage> {
     });
   }
 
+  void _handleDateSelected(DateTime date) {
+    setState(() {
+      selectedBirthDate = date;
+    });
+    infoLog("Data selecionada: ${selectedBirthDate.toString()}");
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Oh well, play the cards that i'm given ¯\_(ツ)_/¯
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: Colors.black,
       resizeToAvoidBottomInset: false,
       body: Center(
         child: SizedBox(
-          width: 325,
+          height: screenHeight * 0.6,
+          width: screenWidth * 0.9,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(
-                Icons.apple,
-                color: Colors.white,
-                size: 40,
+                Icons.disabled_by_default_outlined,
+                color: AppColors.defaultAppColor,
+                size: 130,
+                weight: 800,
+              ),
+              const Text(
+                "CarboNet",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 28,
+                ),
               ),
               const SizedBox(
-                height: 10,
+                height: 30,
               ),
               LinearProgressIndicator(
                 value: _currentProgress,
@@ -99,6 +178,7 @@ class RegisterPageState extends State<RegisterPage> {
                   IconButton(
                     onPressed: () {
                       infoLog("Botão de voltar");
+                      _previousPage();
                     },
                     icon: const Icon(
                       Icons.arrow_back_ios_new_rounded,
@@ -128,10 +208,31 @@ class RegisterPageState extends State<RegisterPage> {
               Expanded(
                 child: PageView(
                   controller: _pageViewController,
-                  // physics: const NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   onPageChanged: _handlePageChanged,
                   children: _pageList,
                 ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const Text(
+                    "Já possuí uma conta?",
+                    style: TextStyle(color: AppColors.fontBright),
+                  ),
+                  TextButton(
+                    onPressed: () => {Navigator.pop(context)},
+                    style: const ButtonStyle(
+                      splashFactory: NoSplash.splashFactory,
+                    ),
+                    child: const Text(
+                      "Faça o Login",
+                      style: TextStyle(
+                        color: AppColors.defaultBrightAppColor,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -141,109 +242,255 @@ class RegisterPageState extends State<RegisterPage> {
   }
 }
 
-class _EmailAndPassword extends StatefulWidget {
+class _EmailAndPassword extends StatelessWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final VoidCallback nextPage;
+  final Function showInvalidDialog;
 
-  _EmailAndPassword({
+  const _EmailAndPassword({
     required this.nextPage,
     required this.emailController,
     required this.passwordController,
+    required this.showInvalidDialog,
   });
 
-  @override
-  State<_EmailAndPassword> createState() => _EmailAndPasswordState();
-}
+  bool isValidEmail(String email) {
+    // Não sei se esse regex é decente mas pelos testes que fiz tá pegando
+    final emailRegex =
+        RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    return emailRegex.hasMatch(email);
+  }
 
-class _EmailAndPasswordState extends State<_EmailAndPassword> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  bool isLengthValid = false, hasNumberOrSymbol = false;
+  bool isValidPassword(String password) {
+    return password.length >= 10;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          InputField(
-            controller: widget.emailController,
-            labelText: "E-mail",
-            obscureText: false,
-          ),
-          const SizedBox(
-            height: 30,
-          ),
-          InputField(
-            controller: widget.passwordController,
-            labelText: "Senha",
-            obscureText: true,
-          ),
-          const SizedBox(
-            height: 30,
-          ),
-          const Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              "A senha deve ter",
-              style: TextStyle(
-                color: Colors.white,
-              ),
-            ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Icon(
-                Icons.circle_outlined,
-                color: Colors.white,
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              Text(
-                "Um caractere especial (# ? ! &)",
-                style: TextStyle(color: AppColors.fontBright),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Icon(
-                Icons.circle_outlined,
-                color: Colors.white,
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              Text(
-                "10 caracteres",
-                style: TextStyle(color: AppColors.fontBright),
-              )
-            ],
-          ),
-          const SizedBox(
-            height: 30,
-          ),
-          GradientButton(
-            label: "Avançar",
-            buttonColors: const [
-              AppColors.defaultDarkAppColor,
-              AppColors.defaultAppColor,
-            ],
-            onPressed: widget.nextPage,
-          ),
-        ],
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        InputField(
+          controller: emailController,
+          labelText: "E-mail",
+          inputFormatters: [
+            FilteringTextInputFormatter.deny(RegExp(r'\s')),
+          ],
+          maxLength: 320,
+        ),
+        const SizedBox(
+          height: 30,
+        ),
+        InputField(
+          controller: passwordController,
+          labelText: "Senha",
+          obscureText: true,
+          inputFormatters: [
+            FilteringTextInputFormatter.deny(RegExp(r'\s')),
+          ],
+          maxLength: 255,
+        ),
+        const SizedBox(
+          height: 30,
+        ),
+        GradientButton(
+          label: "Avançar",
+          buttonColors: const [
+            AppColors.defaultDarkAppColor,
+            AppColors.defaultAppColor,
+          ],
+          onPressed: () {
+            emailController.text = emailController.text.trim();
+            if (!isValidEmail(emailController.text)) {
+              showInvalidDialog(context, "E-mail inválido!",
+                  "Por gentileza, insira um endereço de e-mail válido.");
+              return;
+            }
+
+            passwordController.text = passwordController.text.trim();
+            if (!isValidPassword(passwordController.text)) {
+              showInvalidDialog(context, "Senha inválida!",
+                  "Por gentileza, insira uma senha com 10 ou mais caracteres.");
+              return;
+            }
+
+            nextPage();
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class _NameAndSurname extends StatelessWidget {
+  final TextEditingController nameController;
+  final TextEditingController surnameController;
+  final VoidCallback nextPage;
+  final Function showInvalidDialog;
+
+  const _NameAndSurname({
+    required this.nextPage,
+    required this.nameController,
+    required this.surnameController,
+    required this.showInvalidDialog,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        InputField(
+          controller: nameController,
+          labelText: "Nome",
+          maxLength: 255,
+        ),
+        const SizedBox(
+          height: 30,
+        ),
+        InputField(
+          controller: surnameController,
+          labelText: "Sobrenome",
+          maxLength: 255,
+        ),
+        const SizedBox(
+          height: 30,
+        ),
+        GradientButton(
+          label: "Avançar",
+          buttonColors: const [
+            AppColors.defaultDarkAppColor,
+            AppColors.defaultAppColor,
+          ],
+          onPressed: () {
+            nameController.text = nameController.text.trim();
+            if (nameController.text.isEmpty) {
+              showInvalidDialog(context, "Nome inválido!",
+                  "Por favor, insira um nome válido.");
+              return;
+            }
+
+            surnameController.text = surnameController.text.trim();
+            if (surnameController.text.isEmpty) {
+              showInvalidDialog(context, "Sobrenome inválido!",
+                  "Por favor, insira um sobrenome válido.");
+              return;
+            }
+
+            nextPage();
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class _HealthInfo extends StatelessWidget {
+  final TextEditingController dateController;
+  final TextEditingController weightController;
+  final VoidCallback nextPage;
+  final Function showInvalidDialog;
+  final Function(DateTime) onDateSelected;
+  // final DateTime? birthDate;
+
+  const _HealthInfo({
+    required this.nextPage,
+    required this.dateController,
+    required this.weightController,
+    required this.showInvalidDialog,
+    required this.onDateSelected,
+    // required this.birthDate,
+  });
+
+  bool isDateValid(DateTime? birthDate) {
+    if (birthDate == null) {
+      infoLog("Data não selecionada!");
+      return false;
+    }
+
+    final currentDate = DateTime.now();
+    var age = currentDate.year - birthDate.year;
+    if (currentDate.month < birthDate.month ||
+        (currentDate.month == birthDate.month &&
+            currentDate.day < birthDate.day)) {
+      age--;
+    }
+
+    return age >= 18 && age < 122; // 122 = pessoa mais velha do mundo
+  }
+
+  bool isWeightValid(String weightString) {
+    if (weightString.isEmpty) {
+      return false;
+    }
+
+    double weight = double.parse(weightString);
+    return weight > 0 && weight < 595; // pessoa mais pesada do mundo
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        DateInputField(
+          labelText: "Data de Nascimento",
+          dateController: dateController,
+          onDateSelected: onDateSelected,
+        ),
+        const SizedBox(
+          height: 30,
+        ),
+        InputField(
+          controller: weightController,
+          labelText: "Peso",
+          maxLength: 5,
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d*[.,]?\d*$')),
+            CommaToDotFormatter(),
+          ],
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        ),
+        const SizedBox(
+          height: 30,
+        ),
+        GradientButton(
+          label: "Avançar",
+          buttonColors: const [
+            AppColors.defaultDarkAppColor,
+            AppColors.defaultAppColor,
+          ],
+          onPressed: () {
+            // if (!isDateValid(birthDate)) {
+            //   errorLog("Data inválida!");
+            //   return;
+            // }
+
+            if (!isWeightValid(weightController.text)) {
+              errorLog("Peso inválido!");
+              return;
+            }
+
+            // TODO: Implementar cadastro de verdade
+            // TODO: AH, e ver se precisa da altura (acho que precisa)
+            infoLog("Implementar cadastro de verdade :v");
+          },
+        ),
+      ],
+    );
+  }
+}
+
+//TODO: Coloquei isso aqui pq não sei onde mais colocar honestamente
+// Talvez numa classe Utils (?)
+class CommaToDotFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    return newValue.copyWith(
+      text: newValue.text.replaceAll(',', '.'),
+      selection: newValue.selection,
     );
   }
 }

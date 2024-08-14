@@ -1,3 +1,4 @@
+import 'package:carbonet/pages/register.dart';
 import "package:carbonet/utils/app_colors.dart";
 import 'package:carbonet/utils/logger.dart';
 import 'package:carbonet/widgets/input_field.dart';
@@ -107,7 +108,7 @@ class LoginPageState extends State<LoginPage> {
                     height: 30,
                   ),
                   const Text(
-                    "ou cadastre-se com",
+                    "ou entre com",
                     style: TextStyle(color: AppColors.defaultBrightAppColor),
                   ),
                   const SizedBox(
@@ -169,9 +170,12 @@ class LoginPageState extends State<LoginPage> {
                         style: TextStyle(color: AppColors.fontBright),
                       ),
                       TextButton(
-                        onPressed: () {
-                          //TODO: Implementar botão 'Cadastre-se'
-                          infoLog("Botão 'Cadastre-se'");
+                        onPressed: () async {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const RegisterPage()));
+                          passwordController.text = emailController.text = "";
                         },
                         style: const ButtonStyle(
                           splashFactory: NoSplash.splashFactory,
