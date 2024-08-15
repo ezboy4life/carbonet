@@ -1,3 +1,5 @@
+import 'package:carbonet/data/models/user.dart';
+import 'package:carbonet/data/repository/user_repository.dart';
 import 'package:carbonet/utils/logger.dart';
 import 'package:carbonet/widgets/date_input_field.dart';
 import 'package:carbonet/widgets/gradient_button.dart';
@@ -16,17 +18,21 @@ class RegisterPage extends StatefulWidget {
 class RegisterPageState extends State<RegisterPage> {
   late PageController _pageViewController;
   late List<Widget> _pageList;
+  final UserRepository userRepository = UserRepository();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _surnameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _heightController = TextEditingController();
+  final TextEditingController _insulinController = TextEditingController();
   DateTime? selectedBirthDate;
   final TextEditingController _weightController = TextEditingController();
   final List<String> _hintTexts = [
     "Digite seu e-mail e defina um senha",
     "Digite seu nome e sobrenome",
     "Digite sua data de nascimento e seu peso",
+    "Digite sua altura e sua constante insulinica",
   ];
   int _currentPageIndex = 0;
   double _currentProgress = 0.0;
@@ -48,13 +54,19 @@ class RegisterPageState extends State<RegisterPage> {
         surnameController: _surnameController,
         showInvalidDialog: _showInvalidDialog,
       ),
-      _HealthInfo(
+      _BirthAndWeight(
         nextPage: _nextPage,
         dateController: _dateController,
-        // birthDate: selectedBirthDate,
         weightController: _weightController,
         showInvalidDialog: _showInvalidDialog,
         onDateSelected: _handleDateSelected,
+      ),
+      _HeightAndInsulin(
+        // nextPage: _nextPage,
+        heightController: _heightController,
+        insulinController: _insulinController,
+        showInvalidDialog: _showInvalidDialog,
+        registerUser: _registerUser,
       ),
     ];
 
@@ -100,8 +112,11 @@ class RegisterPageState extends State<RegisterPage> {
             ],
           ),
           backgroundColor: AppColors.dialogBackground,
-          content: Text(message,
-              style: const TextStyle(color: AppColors.fontBright)),
+          content: SizedBox(
+            width: MediaQuery.of(context).size.width * 1,
+            child: Text(message,
+                style: const TextStyle(color: AppColors.fontBright)),
+          ),
           actions: <Widget>[
             GradientButton(
                 label: "OK",
@@ -130,6 +145,21 @@ class RegisterPageState extends State<RegisterPage> {
       selectedBirthDate = date;
     });
     infoLog("Data selecionada: ${selectedBirthDate.toString()}");
+  }
+
+  void _registerUser() async {
+    User user = User(
+      email: _emailController.text,
+      senha: _passwordController.text,
+      peso: double.parse(_weightController.text),
+      altura: double.parse(_heightController.text),
+      dataNascimento: selectedBirthDate!,
+      constanteInsulinica: double.parse(_insulinController.text),
+      nome: _nameController.text,
+      sobrenome: _surnameController.text,
+    );
+    int id = await userRepository.addUser(user);
+    infoLog("Usuário inserido. ID: $id");
   }
 
   @override
@@ -386,7 +416,7 @@ class _NameAndSurname extends StatelessWidget {
   }
 }
 
-class _HealthInfo extends StatelessWidget {
+class _BirthAndWeight extends StatelessWidget {
   final TextEditingController dateController;
   final TextEditingController weightController;
   final VoidCallback nextPage;
@@ -394,7 +424,7 @@ class _HealthInfo extends StatelessWidget {
   final Function(DateTime) onDateSelected;
   // final DateTime? birthDate;
 
-  const _HealthInfo({
+  const _BirthAndWeight({
     required this.nextPage,
     required this.dateController,
     required this.weightController,
@@ -444,7 +474,7 @@ class _HealthInfo extends StatelessWidget {
         ),
         InputField(
           controller: weightController,
-          labelText: "Peso",
+          labelText: "Peso (em KG)",
           maxLength: 5,
           inputFormatters: [
             FilteringTextInputFormatter.allow(RegExp(r'^\d*[.,]?\d*$')),
@@ -462,19 +492,94 @@ class _HealthInfo extends StatelessWidget {
             AppColors.defaultAppColor,
           ],
           onPressed: () {
-            // if (!isDateValid(birthDate)) {
-            //   errorLog("Data inválida!");
-            //   return;
-            // }
-
             if (!isWeightValid(weightController.text)) {
-              errorLog("Peso inválido!");
+              showInvalidDialog(context, "Peso inválido!",
+                  "Por gentileza, defina um peso válido.\nExemplo: 75.2 KG.");
+              return;
+            }
+            // TODO: Implementar verificação da data selecionada
+            nextPage();
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class _HeightAndInsulin extends StatelessWidget {
+  final TextEditingController heightController;
+  final TextEditingController insulinController;
+  final Function showInvalidDialog;
+  final Function registerUser;
+
+  const _HeightAndInsulin({
+    required this.heightController,
+    required this.insulinController,
+    required this.showInvalidDialog,
+    required this.registerUser,
+  });
+
+  bool isValidHeight(double height) {
+    return height < 3;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        InputField(
+          controller: heightController,
+          labelText: "Altura (em metros)",
+          maxLength: 4,
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d*[.,]?\d*$')),
+            CommaToDotFormatter(),
+          ],
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        ),
+        const SizedBox(
+          height: 30,
+        ),
+        InputField(
+          controller: insulinController,
+          labelText: "Constante Insulinica",
+          maxLength: 5,
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d*[.,]?\d*$')),
+            CommaToDotFormatter(),
+          ],
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        ),
+        const SizedBox(
+          height: 30,
+        ),
+        GradientButton(
+          label: "Finalizar Cadastro",
+          buttonColors: const [
+            AppColors.defaultDarkAppColor,
+            AppColors.defaultAppColor,
+          ],
+          onPressed: () {
+            if (heightController.text.isEmpty ||
+                !isValidHeight(double.parse(heightController.text))) {
+              showInvalidDialog(
+                context,
+                "Altura inválida!",
+                "Por gentileza, defina uma altura válida.",
+              );
               return;
             }
 
-            // TODO: Implementar cadastro de verdade
-            // TODO: AH, e ver se precisa da altura (acho que precisa)
-            infoLog("Implementar cadastro de verdade :v");
+            if (insulinController.text.isEmpty) {
+              showInvalidDialog(
+                context,
+                "Constante inválida!",
+                "Por gentileza, defina uma constante insulínica válida.",
+              );
+              return;
+            }
+            registerUser();
           },
         ),
       ],
