@@ -37,6 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.6
   logger: ^2.1.0
   sqflite: ^2.3.3+1
+  path: ^1.9.0
 
 dev_dependencies:
   flutter_test:
@@ -62,6 +63,7 @@ flutter:
   assets:
     - assets/imgs/facebook_logo.png
     - assets/imgs/google_logo.png
+    - assets/schema.sql
 
   # To add assets to your application, add an assets section, like this:
   # assets:
