@@ -45,5 +45,10 @@ app.*.map.json
 /android/app/release
 
 # SQLite
-
 carbonet.db
+
+# Plataformas não suportadas
+macos/
+web/
+linux/
+windows/

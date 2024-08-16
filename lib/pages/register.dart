@@ -47,6 +47,7 @@ class RegisterPageState extends State<RegisterPage> {
         emailController: _emailController,
         passwordController: _passwordController,
         showInvalidDialog: _showInvalidDialog,
+        userRepository: userRepository,
       ),
       _NameAndSurname(
         nextPage: _nextPage,
@@ -72,10 +73,16 @@ class RegisterPageState extends State<RegisterPage> {
 
     // TODO: Só pra facilitar os testes no cadastro. REMOVAM DEPOIS :V
 
-    _emailController.text = "teste@gmail.com";
+    _emailController.text = "@gmail.com";
     _passwordController.text = "1111111111";
     _nameController.text = "Nome";
     _surnameController.text = "Sobrenome";
+    _heightController.text = "1.79"; // minha altura :D
+    _weightController.text = "71.2"; // e meu peso   :D
+    // Alguém precisa pelo amor de Deus me explicar o que diabos é essa
+    // constante, eu juro que não acho isso em absolutamente lugar nenhum
+    // na internet pra ter um ponto de referência.
+    _insulinController.text = "1.0";
   }
 
   double _normalize(int min, int max, int value) {
@@ -277,12 +284,14 @@ class _EmailAndPassword extends StatelessWidget {
   final TextEditingController passwordController;
   final VoidCallback nextPage;
   final Function showInvalidDialog;
+  final UserRepository userRepository;
 
   const _EmailAndPassword({
     required this.nextPage,
     required this.emailController,
     required this.passwordController,
     required this.showInvalidDialog,
+    required this.userRepository,
   });
 
   bool isValidEmail(String email) {
@@ -294,6 +303,14 @@ class _EmailAndPassword extends StatelessWidget {
 
   bool isValidPassword(String password) {
     return password.length >= 10;
+  }
+
+  Future<bool> checkEmailAlreadyRegistered(String email) async {
+    User? user = await userRepository.fetchUserFromEmail(email);
+    if (user != null) {
+      return true;
+    }
+    return false;
   }
 
   @override
@@ -338,14 +355,36 @@ class _EmailAndPassword extends StatelessWidget {
               return;
             }
 
-            passwordController.text = passwordController.text.trim();
-            if (!isValidPassword(passwordController.text)) {
-              showInvalidDialog(context, "Senha inválida!",
-                  "Por gentileza, insira uma senha com 10 ou mais caracteres.");
-              return;
-            }
-
-            nextPage();
+            checkEmailAlreadyRegistered(emailController.text)
+                .then((isEmailRegistered) {
+              if (isEmailRegistered) {
+                Navigator.pop(context);
+                showInvalidDialog(
+                  context,
+                  "E-mail já registrado!",
+                  "Faça o Login ou clique em \"Esqueceu sua senha?\".",
+                );
+                return;
+              }
+              infoLog("Email não registrado!");
+              passwordController.text = passwordController.text.trim();
+              if (!isValidPassword(passwordController.text)) {
+                showInvalidDialog(
+                  context,
+                  "Senha inválida!",
+                  "Por gentileza, insira uma senha com 10 ou mais caracteres.",
+                );
+                return;
+              }
+              nextPage();
+            }).catchError((error) {
+              showInvalidDialog(
+                context,
+                "Erro ao checar email!",
+                "Ocorreu um erro ao checar se o seu e-mail já está registrado.",
+              );
+              errorLog("Erro ao checar se e-mail já está cadastrado.\n");
+            });
           },
         ),
       ],
@@ -580,22 +619,22 @@ class _HeightAndInsulin extends StatelessWidget {
               return;
             }
 
-            try {
-              registerUser();
+            // TODO: Resolver esse pepino asincrono :3
+            registerUser().then((_) {
               Navigator.pop(context); // Redireciona pro Login
               showInvalidDialog(
                 context,
                 "Cadastro concluído!",
                 "Por gentileza, faça login com os dados que você inseriu.",
               );
-            } catch (e) {
-              errorLog("Erro ao inserir usuário no BD.\nErro: $e");
+            }).catchError((error) {
+              errorLog("Erro ao inserir usuário no BD.\nErro: $error");
               showInvalidDialog(
                 context,
                 "Erro ao realizar cadastro!",
                 "Por gentileza, revise se os dados inseridos estão corretos.",
               );
-            }
+            });
           },
         ),
       ],
