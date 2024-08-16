@@ -1,7 +1,11 @@
+import "dart:convert";
+import "dart:typed_data";
+import "package:crypto/crypto.dart";
+
 class User {
   final int? id;
   final String email;
-  final String senha;
+  final String senhaHash;
   final double peso;
   final double altura;
   final DateTime dataNascimento;
@@ -12,21 +16,21 @@ class User {
   User({
     this.id,
     required this.email,
-    required this.senha,
+    required senha,
     required this.peso,
     required this.altura,
     required this.dataNascimento,
     required this.constanteInsulinica,
     required this.nome,
     required this.sobrenome,
-  });
+  }) : senhaHash = _hashPassword(senha);
 
   Map<String, dynamic> toMap() {
     // toJSON (?)
     return {
       'id': id,
       'email': email,
-      'senha': senha,
+      'senha': senhaHash,
       'peso': peso,
       'altura': altura,
       'data_nascimento': dataNascimento.toIso8601String(),
@@ -49,5 +53,11 @@ class User {
       nome: map["nome"],
       sobrenome: map["sobrenome"],
     );
+  }
+
+  static String _hashPassword(String password) {
+    final Uint8List bytes = utf8.encode(password);
+    final Digest hashedPassword = sha256.convert(bytes);
+    return hashedPassword.toString();
   }
 }
