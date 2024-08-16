@@ -158,8 +158,23 @@ class RegisterPageState extends State<RegisterPage> {
       nome: _nameController.text,
       sobrenome: _surnameController.text,
     );
-    int id = await userRepository.addUser(user);
-    infoLog("Usuário inserido. ID: $id");
+    try {
+      int id = await userRepository.addUser(user);
+      Navigator.pop(context);
+      infoLog("Usuário inserido. ID: $id");
+      _showInvalidDialog(
+        context,
+        "Cadastro realizado!",
+        "Por gentileza, faça login com os dados que você acabou de preencher.",
+      );
+    } catch (e) {
+      errorLog("Erro ao inserir usuário no BD.\nErro: $e");
+      _showInvalidDialog(
+        context,
+        "Erro ao realizar cadastro!",
+        "Por gentileza, verifique se os dados inseridos estão corretos.\nDesrição do erro: $e",
+      );
+    }
   }
 
   @override
