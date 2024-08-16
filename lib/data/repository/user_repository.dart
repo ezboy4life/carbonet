@@ -8,6 +8,14 @@ class UserRepository {
     return _userDAO.insertUser(user);
   }
 
+  Future<User?> fetchUserFromId(int id) async {
+    return _userDAO.getUserFromId(id);
+  }
+
+  Future<User?> fetchUserFromEmail(String email) async {
+    return _userDAO.getUserFromEmail(email);
+  }
+
   Future<List<User>> fetchAllUsers() {
     return _userDAO.getAllUsers();
   }

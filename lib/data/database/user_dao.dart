@@ -18,12 +18,26 @@ class UserDAO {
     });
   }
 
-  Future<User?> getUser(int id) async {
+  Future<User?> getUserFromId(int id) async {
     final db = await _databaseHelper.database;
     final List<Map<String, dynamic>> maps = await db.query(
       "users",
       where: "id = ?",
       whereArgs: [id],
+    );
+
+    if (maps.isNotEmpty) {
+      return User.fromMap(maps.first);
+    }
+    return null;
+  }
+
+  Future<User?> getUserFromEmail(String email) async {
+    final db = await _databaseHelper.database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      "users",
+      where: "email = ?",
+      whereArgs: [email],
     );
 
     if (maps.isNotEmpty) {
