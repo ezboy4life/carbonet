@@ -4,6 +4,7 @@ import 'package:carbonet/utils/logger.dart';
 import 'package:carbonet/widgets/date_input_field.dart';
 import 'package:carbonet/widgets/gradient_button.dart';
 import 'package:carbonet/widgets/input_field.dart';
+import 'package:carbonet/widgets/popup_dialog.dart';
 import 'package:flutter/material.dart';
 import "package:carbonet/utils/app_colors.dart";
 import 'package:flutter/services.dart';
@@ -46,43 +47,38 @@ class RegisterPageState extends State<RegisterPage> {
         nextPage: _nextPage,
         emailController: _emailController,
         passwordController: _passwordController,
-        showInvalidDialog: _showInvalidDialog,
         userRepository: userRepository,
       ),
       _NameAndSurname(
         nextPage: _nextPage,
         nameController: _nameController,
         surnameController: _surnameController,
-        showInvalidDialog: _showInvalidDialog,
       ),
       _BirthAndWeight(
         nextPage: _nextPage,
         dateController: _dateController,
         weightController: _weightController,
-        showInvalidDialog: _showInvalidDialog,
         onDateSelected: _handleDateSelected,
       ),
       _HeightAndInsulin(
-        // nextPage: _nextPage,
         heightController: _heightController,
         insulinController: _insulinController,
-        showInvalidDialog: _showInvalidDialog,
         registerUser: _registerUser,
       ),
     ];
 
     // TODO: Só pra facilitar os testes no cadastro. REMOVAM DEPOIS :V
 
-    _emailController.text = "@gmail.com";
-    _passwordController.text = "1111111111";
-    _nameController.text = "Nome";
-    _surnameController.text = "Sobrenome";
-    _heightController.text = "1.79"; // minha altura :D
-    _weightController.text = "71.2"; // e meu peso   :D
+    // _emailController.text = "@gmail.com";
+    // _passwordController.text = "1111111111";
+    // _nameController.text = "Nome";
+    // _surnameController.text = "Sobrenome";
+    // _heightController.text = "1.79"; // minha altura :D
+    // _weightController.text = "71.2"; // e meu peso   :D
     // Alguém precisa pelo amor de Deus me explicar o que diabos é essa
     // constante, eu juro que não acho isso em absolutamente lugar nenhum
     // na internet pra ter um ponto de referência.
-    _insulinController.text = "1.0";
+    // _insulinController.text = "1.0";
   }
 
   double _normalize(int min, int max, int value) {
@@ -100,43 +96,6 @@ class RegisterPageState extends State<RegisterPage> {
     _pageViewController.previousPage(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeIn,
-    );
-  }
-
-  //TODO: Isolar esse popup em um widget/classe separada (?)
-  void _showInvalidDialog(BuildContext context, String title, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Row(
-            children: [
-              const Icon(Icons.error, color: Colors.white),
-              const SizedBox(
-                width: 10,
-              ),
-              Text(title, style: const TextStyle(color: Colors.white))
-            ],
-          ),
-          backgroundColor: AppColors.dialogBackground,
-          content: SizedBox(
-            width: MediaQuery.of(context).size.width * 1,
-            child: Text(message,
-                style: const TextStyle(color: AppColors.fontBright)),
-          ),
-          actions: <Widget>[
-            GradientButton(
-                label: "OK",
-                buttonColors: const [
-                  AppColors.defaultDarkAppColor,
-                  AppColors.defaultAppColor,
-                ],
-                onPressed: () {
-                  Navigator.pop(context);
-                })
-          ],
-        );
-      },
     );
   }
 
@@ -283,14 +242,12 @@ class _EmailAndPassword extends StatelessWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final VoidCallback nextPage;
-  final Function showInvalidDialog;
   final UserRepository userRepository;
 
   const _EmailAndPassword({
     required this.nextPage,
     required this.emailController,
     required this.passwordController,
-    required this.showInvalidDialog,
     required this.userRepository,
   });
 
@@ -350,8 +307,16 @@ class _EmailAndPassword extends StatelessWidget {
           onPressed: () {
             emailController.text = emailController.text.trim();
             if (!isValidEmail(emailController.text)) {
-              showInvalidDialog(context, "E-mail inválido!",
-                  "Por gentileza, insira um endereço de e-mail válido.");
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return const PopupDialog(
+                    title: "E-mail inválido!",
+                    message:
+                        "Por gentileza, insira um endereço de e-mail válido.",
+                  );
+                },
+              );
               return;
             }
 
@@ -359,29 +324,44 @@ class _EmailAndPassword extends StatelessWidget {
                 .then((isEmailRegistered) {
               if (isEmailRegistered) {
                 Navigator.pop(context);
-                showInvalidDialog(
-                  context,
-                  "E-mail já registrado!",
-                  "Faça o Login ou clique em \"Esqueceu sua senha?\".",
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const PopupDialog(
+                      title: "E-mail já registrado!",
+                      message:
+                          "Faça o Login ou clique em \"Esqueceu sua senha?\".",
+                    );
+                  },
                 );
                 return;
               }
               infoLog("Email não registrado!");
               passwordController.text = passwordController.text.trim();
               if (!isValidPassword(passwordController.text)) {
-                showInvalidDialog(
-                  context,
-                  "Senha inválida!",
-                  "Por gentileza, insira uma senha com 10 ou mais caracteres.",
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const PopupDialog(
+                      title: "Senha inválida!",
+                      message:
+                          "Por gentileza, insira uma senha com 10 ou mais caracteres.",
+                    );
+                  },
                 );
                 return;
               }
               nextPage();
             }).catchError((error) {
-              showInvalidDialog(
-                context,
-                "Erro ao checar email!",
-                "Ocorreu um erro ao checar se o seu e-mail já está registrado.",
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return const PopupDialog(
+                    title: "Erro ao checar email!",
+                    message:
+                        "Ocorreu um erro ao checar se o seu e-mail já está registrado.",
+                  );
+                },
               );
               errorLog("Erro ao checar se e-mail já está cadastrado.\n");
             });
@@ -396,13 +376,11 @@ class _NameAndSurname extends StatelessWidget {
   final TextEditingController nameController;
   final TextEditingController surnameController;
   final VoidCallback nextPage;
-  final Function showInvalidDialog;
 
   const _NameAndSurname({
     required this.nextPage,
     required this.nameController,
     required this.surnameController,
-    required this.showInvalidDialog,
   });
 
   @override
@@ -435,15 +413,29 @@ class _NameAndSurname extends StatelessWidget {
           onPressed: () {
             nameController.text = nameController.text.trim();
             if (nameController.text.isEmpty) {
-              showInvalidDialog(context, "Nome inválido!",
-                  "Por favor, insira um nome válido.");
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return const PopupDialog(
+                    title: "Nome inválido!",
+                    message: "Por favor, insira um nome válido.",
+                  );
+                },
+              );
               return;
             }
 
             surnameController.text = surnameController.text.trim();
             if (surnameController.text.isEmpty) {
-              showInvalidDialog(context, "Sobrenome inválido!",
-                  "Por favor, insira um sobrenome válido.");
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return const PopupDialog(
+                    title: "Sobrenome inválido!",
+                    message: "Por favor, insira um sobrenome válido.",
+                  );
+                },
+              );
               return;
             }
 
@@ -459,7 +451,6 @@ class _BirthAndWeight extends StatelessWidget {
   final TextEditingController dateController;
   final TextEditingController weightController;
   final VoidCallback nextPage;
-  final Function showInvalidDialog;
   final Function(DateTime) onDateSelected;
   // final DateTime? birthDate;
 
@@ -467,9 +458,7 @@ class _BirthAndWeight extends StatelessWidget {
     required this.nextPage,
     required this.dateController,
     required this.weightController,
-    required this.showInvalidDialog,
     required this.onDateSelected,
-    // required this.birthDate,
   });
 
   bool isDateValid(DateTime? birthDate) {
@@ -532,8 +521,16 @@ class _BirthAndWeight extends StatelessWidget {
           ],
           onPressed: () {
             if (!isWeightValid(weightController.text)) {
-              showInvalidDialog(context, "Peso inválido!",
-                  "Por gentileza, defina um peso válido.\nExemplo: 75.2 KG.");
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return const PopupDialog(
+                    title: "Peso inválido!",
+                    message:
+                        "Por gentileza, defina um peso válido.\nExemplo: 75.2 KG.",
+                  );
+                },
+              );
               return;
             }
             // TODO: Implementar verificação da data selecionada
@@ -548,13 +545,11 @@ class _BirthAndWeight extends StatelessWidget {
 class _HeightAndInsulin extends StatelessWidget {
   final TextEditingController heightController;
   final TextEditingController insulinController;
-  final Function showInvalidDialog;
   final Function registerUser;
 
   const _HeightAndInsulin({
     required this.heightController,
     required this.insulinController,
-    required this.showInvalidDialog,
     required this.registerUser,
   });
 
@@ -602,37 +597,56 @@ class _HeightAndInsulin extends StatelessWidget {
           onPressed: () {
             if (heightController.text.isEmpty ||
                 !isValidHeight(double.parse(heightController.text))) {
-              showInvalidDialog(
-                context,
-                "Altura inválida!",
-                "Por gentileza, defina uma altura válida.",
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return const PopupDialog(
+                    title: "Altura inválida!",
+                    message: "Por gentileza, defina uma altura válida.",
+                  );
+                },
               );
               return;
             }
 
             if (insulinController.text.isEmpty) {
-              showInvalidDialog(
-                context,
-                "Constante inválida!",
-                "Por gentileza, defina uma constante insulínica válida.",
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return const PopupDialog(
+                    title: "Constante inválida!",
+                    message:
+                        "Por gentileza, defina uma constante insulínica válida.",
+                  );
+                },
               );
               return;
             }
 
-            // TODO: Resolver esse pepino asincrono :3
             registerUser().then((_) {
               Navigator.pop(context); // Redireciona pro Login
-              showInvalidDialog(
-                context,
-                "Cadastro concluído!",
-                "Por gentileza, faça login com os dados que você inseriu.",
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return const PopupDialog(
+                    icon: Icons.check_circle_rounded,
+                    title: "Cadastro concluído!",
+                    message:
+                        "Por gentileza, faça login com os dados que você inseriu.",
+                  );
+                },
               );
             }).catchError((error) {
               errorLog("Erro ao inserir usuário no BD.\nErro: $error");
-              showInvalidDialog(
-                context,
-                "Erro ao realizar cadastro!",
-                "Por gentileza, revise se os dados inseridos estão corretos.",
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return const PopupDialog(
+                    title: "Erro ao realizar cadastro!",
+                    message:
+                        "Por gentileza, revise se os dados inseridos estão corretos.",
+                  );
+                },
               );
             });
           },
