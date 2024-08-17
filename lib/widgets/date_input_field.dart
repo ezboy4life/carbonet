@@ -20,7 +20,7 @@ class DateInputField extends StatelessWidget {
           "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
       onDateSelected(selectedDate);
     } else {
-      errorLog("Nenhuma data selecionada");
+      infoLog("Seleção de data cancelada.");
     }
   }
 

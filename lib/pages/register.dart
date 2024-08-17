@@ -59,6 +59,8 @@ class RegisterPageState extends State<RegisterPage> {
         dateController: _dateController,
         weightController: _weightController,
         onDateSelected: _handleDateSelected,
+        getSelectedBirthDate: _getSelectedBirthDate,
+        isDateValid: _isDateValid,
       ),
       _HeightAndInsulin(
         heightController: _heightController,
@@ -107,10 +109,43 @@ class RegisterPageState extends State<RegisterPage> {
   }
 
   void _handleDateSelected(DateTime date) {
+    // if (!_isDateValid(date)) {
+    //   showDialog(
+    //     context: context,
+    //     builder: (BuildContext context) {
+    //       return const PopupDialog(
+    //         title: "Data de nascimento inválida!",
+    //         message: "Você precisa ter ao menos 18 anos para se registrar.",
+    //       );
+    //     },
+    //   );
+    //   return;
+    // }
+
     setState(() {
       selectedBirthDate = date;
     });
     infoLog("Data selecionada: ${selectedBirthDate.toString()}");
+  }
+
+  bool _isDateValid(DateTime? birthDate) {
+    if (birthDate == null) {
+      infoLog("Data não selecionada!");
+      return false;
+    }
+
+    final currentDate = DateTime.now();
+    var age = currentDate.year - birthDate.year;
+    if (currentDate.month < birthDate.month ||
+        (currentDate.month == birthDate.month &&
+            currentDate.day < birthDate.day)) {
+      age--;
+    }
+    return age >= 18 && age < 122; // 122 = pessoa mais velha do mundo
+  }
+
+  DateTime? _getSelectedBirthDate() {
+    return selectedBirthDate;
   }
 
   void _registerUser() async {
@@ -452,6 +487,8 @@ class _BirthAndWeight extends StatelessWidget {
   final TextEditingController weightController;
   final VoidCallback nextPage;
   final Function(DateTime) onDateSelected;
+  final Function getSelectedBirthDate;
+  final Function isDateValid;
   // final DateTime? birthDate;
 
   const _BirthAndWeight({
@@ -459,24 +496,9 @@ class _BirthAndWeight extends StatelessWidget {
     required this.dateController,
     required this.weightController,
     required this.onDateSelected,
+    required this.getSelectedBirthDate,
+    required this.isDateValid,
   });
-
-  bool isDateValid(DateTime? birthDate) {
-    if (birthDate == null) {
-      infoLog("Data não selecionada!");
-      return false;
-    }
-
-    final currentDate = DateTime.now();
-    var age = currentDate.year - birthDate.year;
-    if (currentDate.month < birthDate.month ||
-        (currentDate.month == birthDate.month &&
-            currentDate.day < birthDate.day)) {
-      age--;
-    }
-
-    return age >= 18 && age < 122; // 122 = pessoa mais velha do mundo
-  }
 
   bool isWeightValid(String weightString) {
     if (weightString.isEmpty) {
@@ -528,6 +550,26 @@ class _BirthAndWeight extends StatelessWidget {
                     title: "Peso inválido!",
                     message:
                         "Por gentileza, defina um peso válido.\nExemplo: 75.2 KG.",
+                  );
+                },
+              );
+              return;
+            }
+
+            DateTime? selectedBirthDate = getSelectedBirthDate();
+
+            if (!isDateValid(selectedBirthDate)) {
+              infoLog(
+                "Data selecionada não é valida: ${getSelectedBirthDate().toString()}",
+              );
+
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return const PopupDialog(
+                    title: "Data de nascimento inválida!",
+                    message:
+                        "Verifique se a data inserida está correta.\nVocê precisa ter ao menos 18 anos para se registrar.",
                   );
                 },
               );
