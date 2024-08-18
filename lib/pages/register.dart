@@ -1,6 +1,7 @@
 import 'package:carbonet/data/models/user.dart';
 import 'package:carbonet/data/repository/user_repository.dart';
 import 'package:carbonet/utils/logger.dart';
+import 'package:carbonet/utils/validators.dart';
 import 'package:carbonet/widgets/date_input_field.dart';
 import 'package:carbonet/widgets/gradient_button.dart';
 import 'package:carbonet/widgets/input_field.dart';
@@ -60,7 +61,6 @@ class RegisterPageState extends State<RegisterPage> {
         weightController: _weightController,
         onDateSelected: _handleDateSelected,
         getSelectedBirthDate: _getSelectedBirthDate,
-        isDateValid: _isDateValid,
       ),
       _HeightAndInsulin(
         heightController: _heightController,
@@ -109,39 +109,10 @@ class RegisterPageState extends State<RegisterPage> {
   }
 
   void _handleDateSelected(DateTime date) {
-    // if (!_isDateValid(date)) {
-    //   showDialog(
-    //     context: context,
-    //     builder: (BuildContext context) {
-    //       return const PopupDialog(
-    //         title: "Data de nascimento inválida!",
-    //         message: "Você precisa ter ao menos 18 anos para se registrar.",
-    //       );
-    //     },
-    //   );
-    //   return;
-    // }
-
     setState(() {
       selectedBirthDate = date;
     });
     infoLog("Data selecionada: ${selectedBirthDate.toString()}");
-  }
-
-  bool _isDateValid(DateTime? birthDate) {
-    if (birthDate == null) {
-      infoLog("Data não selecionada!");
-      return false;
-    }
-
-    final currentDate = DateTime.now();
-    var age = currentDate.year - birthDate.year;
-    if (currentDate.month < birthDate.month ||
-        (currentDate.month == birthDate.month &&
-            currentDate.day < birthDate.day)) {
-      age--;
-    }
-    return age >= 18 && age < 122; // 122 = pessoa mais velha do mundo
   }
 
   DateTime? _getSelectedBirthDate() {
@@ -286,25 +257,6 @@ class _EmailAndPassword extends StatelessWidget {
     required this.userRepository,
   });
 
-  bool isValidEmail(String email) {
-    // Não sei se esse regex é decente mas pelos testes que fiz tá pegando
-    final emailRegex =
-        RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
-    return emailRegex.hasMatch(email);
-  }
-
-  bool isValidPassword(String password) {
-    return password.length >= 10;
-  }
-
-  Future<bool> checkEmailAlreadyRegistered(String email) async {
-    User? user = await userRepository.fetchUserFromEmail(email);
-    if (user != null) {
-      return true;
-    }
-    return false;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -341,7 +293,7 @@ class _EmailAndPassword extends StatelessWidget {
           ],
           onPressed: () {
             emailController.text = emailController.text.trim();
-            if (!isValidEmail(emailController.text)) {
+            if (!Validators.isValidEmail(emailController.text)) {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -355,7 +307,7 @@ class _EmailAndPassword extends StatelessWidget {
               return;
             }
 
-            checkEmailAlreadyRegistered(emailController.text)
+            Validators.checkEmailAlreadyRegistered(emailController.text)
                 .then((isEmailRegistered) {
               if (isEmailRegistered) {
                 Navigator.pop(context);
@@ -373,7 +325,7 @@ class _EmailAndPassword extends StatelessWidget {
               }
               infoLog("Email não registrado!");
               passwordController.text = passwordController.text.trim();
-              if (!isValidPassword(passwordController.text)) {
+              if (!Validators.isValidPassword(passwordController.text)) {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
@@ -488,7 +440,6 @@ class _BirthAndWeight extends StatelessWidget {
   final VoidCallback nextPage;
   final Function(DateTime) onDateSelected;
   final Function getSelectedBirthDate;
-  final Function isDateValid;
   // final DateTime? birthDate;
 
   const _BirthAndWeight({
@@ -497,17 +448,7 @@ class _BirthAndWeight extends StatelessWidget {
     required this.weightController,
     required this.onDateSelected,
     required this.getSelectedBirthDate,
-    required this.isDateValid,
   });
-
-  bool isWeightValid(String weightString) {
-    if (weightString.isEmpty) {
-      return false;
-    }
-
-    double weight = double.parse(weightString);
-    return weight > 0 && weight < 595; // pessoa mais pesada do mundo
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -542,7 +483,7 @@ class _BirthAndWeight extends StatelessWidget {
             AppColors.defaultAppColor,
           ],
           onPressed: () {
-            if (!isWeightValid(weightController.text)) {
+            if (!Validators.isValidWeight(weightController.text)) {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -558,7 +499,7 @@ class _BirthAndWeight extends StatelessWidget {
 
             DateTime? selectedBirthDate = getSelectedBirthDate();
 
-            if (!isDateValid(selectedBirthDate)) {
+            if (!Validators.isDateValid(selectedBirthDate)) {
               infoLog(
                 "Data selecionada não é valida: ${getSelectedBirthDate().toString()}",
               );
@@ -594,10 +535,6 @@ class _HeightAndInsulin extends StatelessWidget {
     required this.insulinController,
     required this.registerUser,
   });
-
-  bool isValidHeight(double height) {
-    return height < 3;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -638,7 +575,9 @@ class _HeightAndInsulin extends StatelessWidget {
           ],
           onPressed: () {
             if (heightController.text.isEmpty ||
-                !isValidHeight(double.parse(heightController.text))) {
+                !Validators.isValidHeight(
+                  double.parse(heightController.text),
+                )) {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
