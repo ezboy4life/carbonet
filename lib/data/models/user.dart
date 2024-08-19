@@ -23,7 +23,7 @@ class User {
     required this.constanteInsulinica,
     required this.nome,
     required this.sobrenome,
-  }) : senhaHash = _hashPassword(senha);
+  }) : senhaHash = hashPassword(senha);
 
   Map<String, dynamic> toMap() {
     // toJSON (?)
@@ -55,7 +55,7 @@ class User {
     );
   }
 
-  static String _hashPassword(String password) {
+  static String hashPassword(String password) {
     final Uint8List bytes = utf8.encode(password);
     final Digest hashedPassword = sha256.convert(bytes);
     return hashedPassword.toString();

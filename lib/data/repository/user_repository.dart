@@ -16,6 +16,10 @@ class UserRepository {
     return _userDAO.getUserFromEmail(email);
   }
 
+  Future<User?> fetchUserFromLogin(String email, String password) {
+    return _userDAO.getUserFromLogin(email, password);
+  }
+
   Future<List<User>> fetchAllUsers() {
     return _userDAO.getAllUsers();
   }

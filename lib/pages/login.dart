@@ -1,8 +1,12 @@
+import 'package:carbonet/data/models/user.dart';
+import 'package:carbonet/data/repository/user_repository.dart';
 import 'package:carbonet/pages/register.dart';
 import "package:carbonet/utils/app_colors.dart";
 import 'package:carbonet/utils/logger.dart';
 import 'package:carbonet/widgets/input_field.dart';
+import 'package:carbonet/widgets/popup_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,6 +18,29 @@ class LoginPage extends StatefulWidget {
 class LoginPageState extends State<LoginPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  UserRepository userRepository = UserRepository();
+
+  void login(String email, String password) async {
+    User? user = await userRepository.fetchUserFromLogin(email, password);
+    if (user != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const Center(child: Text("Home page! :3")),
+        ),
+      );
+      return;
+    }
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return const PopupDialog(
+          title: "Usuário não encontrado!",
+          message: "Verifique se o e-mail e senha estão corretos.",
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +75,9 @@ class LoginPageState extends State<LoginPage> {
                   InputField(
                     controller: emailController,
                     labelText: "E-mail",
-                    obscureText: false,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.deny(" "),
+                    ],
                   ),
                   const SizedBox(
                     height: 30,
@@ -57,6 +86,9 @@ class LoginPageState extends State<LoginPage> {
                     controller: passwordController,
                     labelText: "Senha",
                     obscureText: true,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.deny(" "),
+                    ],
                   ),
                   TextButton(
                     onPressed: () {
@@ -91,15 +123,21 @@ class LoginPageState extends State<LoginPage> {
                         splashFactory: NoSplash.splashFactory,
                       ),
                       onPressed: () {
-                        //TODO: Implementar botão 'Entrar'
+                        // TODO: haha
+                        emailController.text = emailController.text.trim();
+                        passwordController.text =
+                            passwordController.text.trim();
+
+                        login(emailController.text, passwordController.text);
                         infoLog("Botão 'Entrar'");
                       },
                       child: const Text(
                         "Entrar",
                         style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20),
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
                       ),
                     ),
                   ),
@@ -171,9 +209,11 @@ class LoginPageState extends State<LoginPage> {
                       TextButton(
                         onPressed: () async {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const RegisterPage()));
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const RegisterPage(),
+                            ),
+                          );
                           passwordController.text = emailController.text = "";
                         },
                         style: const ButtonStyle(
@@ -190,7 +230,7 @@ class LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),

@@ -32,7 +32,24 @@ class UserDAO {
     return null;
   }
 
+  Future<User?> getUserFromLogin(String email, String password) async {
+    final String passwordHash = User.hashPassword(password);
+
+    final db = await _databaseHelper.database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      "users",
+      where: "email = ? and senha = ?",
+      whereArgs: [email, passwordHash],
+    );
+
+    if (maps.isNotEmpty) {
+      return User.fromMap(maps.first);
+    }
+    return null;
+  }
+
   Future<User?> getUserFromEmail(String email) async {
+    // TODO: Alterar query só pra ver se o cadastro existe, e não retornar o user
     final db = await _databaseHelper.database;
     final List<Map<String, dynamic>> maps = await db.query(
       "users",
