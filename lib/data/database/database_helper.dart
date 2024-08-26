@@ -28,7 +28,14 @@ class DatabaseHelper {
       onCreate: (db, version) async {
         final String schemaSQL =
             await rootBundle.loadString("assets/schema.sql");
-        await db.execute(schemaSQL);
+
+        final List<String> sqlStatements = schemaSQL.split(";");
+        for (String statement in sqlStatements) {
+          if (statement.trim().isNotEmpty) {
+            await db.execute(statement);
+          }
+        }
+        //await db.execute(schemaSQL); // <- executa uma instrução só
       },
     );
   }

@@ -1,7 +1,9 @@
 import 'package:carbonet/data/models/user.dart';
 import 'package:carbonet/data/repository/user_repository.dart';
+import 'package:carbonet/pages/add_refeicao.dart';
 import 'package:carbonet/pages/register.dart';
 import "package:carbonet/utils/app_colors.dart";
+import 'package:carbonet/utils/logged_user_access.dart';
 import 'package:carbonet/utils/logger.dart';
 import 'package:carbonet/widgets/input_field.dart';
 import 'package:carbonet/widgets/popup_dialog.dart';
@@ -23,10 +25,11 @@ class LoginPageState extends State<LoginPage> {
   void login(String email, String password) async {
     User? user = await userRepository.fetchUserFromLogin(email, password);
     if (user != null) {
+      LoggedUserAccess().user = user; // hmm
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => const Center(child: Text("Home page! :3")),
+          builder: (context) => AdicionarRefeicao(),//const Center(child: Text("Home page! :3")),
         ),
       );
       return;

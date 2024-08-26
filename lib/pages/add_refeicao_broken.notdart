@@ -1,0 +1,383 @@
+import 'package:carbonet/data/models/refeicao.dart';
+import 'package:carbonet/utils/app_colors.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter/widgets.dart';
+
+class AddRefeicaoWidget extends StatefulWidget {
+  const AddRefeicaoWidget({super.key});
+
+  @override
+  State<AddRefeicaoWidget> createState() => _AddRefeicaoWidgetState();
+}
+
+class _AddRefeicaoWidgetState extends State<AddRefeicaoWidget> {
+  late Refeicao _model;
+
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  final tiposRefeicao = const ['Café', 'Almoço', 'Jantar', 'Lanche'];
+  String tipoRefeicaoSelecionada = 'Café';  // hmm
+
+  @override
+  void initState() {
+    super.initState();
+    _model = createModel(context, () => AddRefeicaoModel());
+
+    // On page load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      _model.refeicao = RefeicaoStruct(
+        tipoRefeicao: _model.dropDownValue,
+        data: getCurrentTimestamp,
+        idUser: currentUserUid,
+        isActive: true,
+        localListaAlimentos: functions.getNewEmptyListaAlimentos(),
+      );
+      setState(() {});
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        key: scaffoldKey,
+        backgroundColor: AppColors.primaryBackground,
+        body: NestedScrollView(
+          floatHeaderSlivers: true,
+          headerSliverBuilder: (context, _) => [
+            const SliverAppBar(
+              pinned: false,
+              floating: false,
+              backgroundColor: AppColors.defaultAppColor,
+              automaticallyImplyLeading: false,
+              title: Text(
+                'Cadastrar Refeição',
+                style: TextStyle(
+                      fontFamily: 'Outfit',
+                      color: Colors.white,
+                      fontSize: 22,
+                      letterSpacing: 0,
+                    ),
+              ),
+              actions: [],
+              centerTitle: false,
+              elevation: 2,
+            )
+          ],
+          body: Builder(
+            builder: (context) {
+              return SafeArea(
+                top: false,
+                child: Align(
+                  alignment: const AlignmentDirectional(0, 0),
+                  child: Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(10, 10, 10, 0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        const Text(
+                          'Tipo de Refeição',
+                          style:
+                            TextStyle(
+                              fontFamily: 'Readex Pro',
+                              letterSpacing: 0,
+                            ),
+                        ),
+                        DropdownMenu<String>(
+                          controller: ,
+                          hintText: 'Selecione o tipo de refeição',
+                          dropdownMenuEntries: tiposRefeicao.map<DropdownMenuEntry<String>>(
+                            (String tipoRef) {
+                              return DropdownMenuEntry(
+                                value: tipoRef,
+                                label: tipoRef,
+                              );
+                            }
+                          ).toList(),
+                          width: 300,
+                          textStyle: const TextStyle(
+                            fontFamily: 'Readex Pro',
+                            letterSpacing: 0,
+                          ),
+                          trailingIcon: const Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            color: AppColors.fontDark,
+                            size: 24,),
+                          onSelected: (value) {
+                            tipoRefeicaoSelecionada = value!;
+                          } ,
+                          menuStyle: const MenuStyle(), // ainda não definido
+                          /*elevation: 2,
+                          borderColor: FlutterFlowTheme.of(context).alternate,
+                          borderWidth: 2,
+                          borderRadius: 8,
+                          margin: EdgeInsetsDirectional.fromSTEB(16, 4, 16, 4),*/
+                        ),
+
+                        const Text(
+                          'Alimentos',
+                          style:
+                            TextStyle(
+                              fontFamily: 'Readex Pro',
+                              letterSpacing: 0,
+                            ),
+                        ),
+                        Builder(
+                          builder: (context) => TextButton.icon(
+                            onPressed: () async {
+                              await showDialog(
+                                context: context,
+                                builder: (dialogContext) {
+                                  return Dialog(
+                                    elevation: 0,
+                                    insetPadding: EdgeInsets.zero,
+                                    backgroundColor: Colors.transparent,
+                                    alignment: const AlignmentDirectional(0, 0)
+                                        .resolve(Directionality.of(context)),
+                                    child: GestureDetector(
+                                      onTap: () => FocusScope.of(dialogContext)
+                                          .unfocus(),
+                                      child: SelecionarAlimentos(
+                                        listaAlimentosSelecionados: _model.localListaAlimentosIngeridos,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+
+                            label: const Text(
+                              'Buscar...',
+                              style: TextStyle(
+                                fontFamily: 'Readex Pro',
+                                color: Colors.white,
+                                letterSpacing: 0,
+                              ),
+                            ),
+                            icon: const Icon(
+                              Icons.search,
+                              size: 20,
+                            ),
+                            
+                            style: ButtonStyle(
+                              backgroundColor: AppColors.defaultAppColor,
+                              foregroundColor: AppColors.fontBright,
+                              /*height: 40,
+                              padding:
+                                EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
+                              iconPadding:
+                                EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
+                              elevation: 3,
+                              borderSide: BorderSide(
+                                color: Colors.transparent,
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(8),*/
+                            ),
+                          ),
+                        ),
+                        Builder(
+                          builder: (context) {
+                            final listViewListaAlimentosSelecionadosRefeicao =
+                                _model.localListaAlimentosIngeridos;
+
+                            return ListView.builder(
+                              padding: EdgeInsets.zero,
+                              shrinkWrap: true,
+                              scrollDirection: Axis.vertical,
+                              itemCount:
+                                  listViewListaAlimentosSelecionadosRefeicao
+                                      .length,
+                              itemBuilder: (context,
+                                  listViewListaAlimentosSelecionadosRefeicaoIndex) {
+                                final listViewListaAlimentosSelecionadosRefeicaoItem =
+                                    listViewListaAlimentosSelecionadosRefeicao[
+                                        listViewListaAlimentosSelecionadosRefeicaoIndex];
+                                return Padding(
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
+                                      0, 16, 0, 0),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.only(
+                                        bottomLeft: const Radius.circular(0),
+                                        bottomRight: const Radius.circular(0),
+                                        topLeft: Radius.circular(
+                                          listViewListaAlimentosSelecionadosRefeicaoIndex ==
+                                                  0
+                                              ? 8.0
+                                              : 0.0,
+                                        ),
+                                        topRight: Radius.circular(
+                                          listViewListaAlimentosSelecionadosRefeicaoIndex ==
+                                                  0
+                                              ? 8.0
+                                              : 0.0,
+                                        ),
+                                      ),
+                                      shape: BoxShape.rectangle,
+                                    ),
+                                    child: Align(
+                                      alignment: const AlignmentDirectional(0, 0),
+                                      child: Padding(
+                                        padding: const  EdgeInsetsDirectional.fromSTEB(
+                                            24, 8, 32, 8),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.max,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Expanded(
+                                              flex: 3,
+                                              child: Padding(
+                                                padding: const EdgeInsetsDirectional
+                                                    .fromSTEB(32, 0, 0, 0),
+                                                child: Text( 
+                                                  listViewListaAlimentosSelecionadosRefeicaoItem
+                                                    .alimentoReferencia.nome,
+                                                  style: const TextStyle(
+                                                    fontFamily: 'Readex Pro',
+                                                    letterSpacing: 0,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            Text(
+                                              '${listViewListaAlimentosSelecionadosRefeicaoItem.qtdIngerida}g',
+                                              style: const TextStyle(
+                                                fontFamily: 'Readex Pro',
+                                                letterSpacing: 0,
+                                              ),
+                                            ),
+                                            Builder(
+                                              builder: (context) => Padding(
+                                                padding: const EdgeInsetsDirectional
+                                                    .fromSTEB(12, 0, 0, 0),
+                                                child: InkWell(
+                                                  splashColor:
+                                                      Colors.transparent,
+                                                  focusColor:
+                                                      Colors.transparent,
+                                                  hoverColor:
+                                                      Colors.transparent,
+                                                  highlightColor:
+                                                      Colors.transparent,
+                                                  onTap: () async {
+                                                    await showDialog(
+                                                      context: context,
+                                                      builder: (dialogContext) {
+                                                        return Dialog(
+                                                          elevation: 0,
+                                                          insetPadding:
+                                                              EdgeInsets.zero,
+                                                          backgroundColor:
+                                                              Colors
+                                                                  .transparent,
+                                                          alignment: const AlignmentDirectional(0, 0)
+                                                            .resolve(
+                                                              Directionality.of(context)
+                                                            ),
+                                                          child:
+                                                              GestureDetector(
+                                                            onTap: () =>
+                                                                FocusScope.of(
+                                                                        dialogContext)
+                                                                    .unfocus(),
+                                                            child:
+                                                                ModalSelecaoQtdAlimentoWidget(
+                                                              instanciaAlimento:
+                                                                  listviewListaAlimentosReferenciaItem,
+                                                              sourceListaAlimentosSelecionados:
+                                                                  widget!
+                                                                      .listaAlimentosSelecionados!,
+                                                            ),
+                                                          ),
+                                                        );
+                                                      },
+                                                    );
+                                                  },
+                                                  child: Container(
+                                                    width: 36,
+                                                    height: 36,
+                                                    decoration: BoxDecoration(
+                                                      color:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .error,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20),
+                                                    ),
+                                                    alignment:
+                                                        AlignmentDirectional(
+                                                            0, 0),
+                                                    child: Icon(
+                                                      Icons.cancel,
+                                                      color: Color(0xFFFEFFFF),
+                                                      size: 24,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
+                        Spacer(),
+                        FFButtonWidget(
+                          onPressed: () async {
+                            await RefeicaoTable().insert({
+                              'id': 0,
+                              'id_user': 0,
+                              'tipoRefeicao': '',
+                              'data': supaSerialize<DateTime>(
+                                  DateTime.fromMicrosecondsSinceEpoch(0)),
+                            });
+                          },
+                          text: 'Concluir',
+                          icon: Icon(
+                            Icons.done,
+                            size: 15,
+                          ),
+                          options: FFButtonOptions(
+                            height: 40,
+                            padding:
+                                EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
+                            iconPadding:
+                                EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
+                            color: FlutterFlowTheme.of(context).tertiary,
+                            textStyle: FlutterFlowTheme.of(context)
+                                .titleSmall
+                                .override(
+                                  fontFamily: 'Readex Pro',
+                                  color: Colors.white,
+                                  letterSpacing: 0,
+                                ),
+                            elevation: 3,
+                            borderSide: BorderSide(
+                              color: Colors.transparent,
+                              width: 1,
+                            ),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ].divide(SizedBox(height: 12)),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
