@@ -2,7 +2,11 @@
 // Isso é intencional, por enquanto a prioridade é fazer funcionar.
 
 import 'package:carbonet/data/models/alimento_ingerido.dart';
+import 'package:carbonet/data/models/refeicao.dart';
 import 'package:carbonet/pages/selecionar_alimentos.dart';
+import 'package:carbonet/utils/app_colors.dart';
+import 'package:carbonet/utils/dao_procedure_coupler.dart';
+import 'package:carbonet/utils/logged_user_access.dart';
 import 'package:flutter/material.dart';
 
 class AdicionarRefeicao extends StatefulWidget {
@@ -10,6 +14,8 @@ class AdicionarRefeicao extends StatefulWidget {
 
   final List<AlimentoIngerido> alimentosSelecionados = [];
   final TextEditingController tipoRefeicaoController = TextEditingController();
+  double glicemia = 0;
+  double totalCHO = 0;
 
   @override
   State<AdicionarRefeicao> createState() => _AdicionarRefeicaoState();
@@ -17,26 +23,58 @@ class AdicionarRefeicao extends StatefulWidget {
 
 class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
   @override
+  void setState(VoidCallback fn) {
+    widget.totalCHO = 0;
+    for (var alimentoIngerido in widget.alimentosSelecionados) {
+      widget.totalCHO += alimentoIngerido.alimentoReferencia.carbos_por_grama * alimentoIngerido.qtdIngerida;
+    }
+    super.setState(fn);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
       body: Column(
         children: [
           Text("Tipo de Refeição"),
+          const SizedBox(height: 12),
           DropdownMenu_TiposRefeicao(
-            tipoRefeicaoController: widget.tipoRefeicaoController,),
+            tipoRefeicaoController: widget.tipoRefeicaoController,
+          ),
+            const SizedBox(height: 12),
           Text("Alimentos"),
+          const SizedBox(height: 12),
           TextButton_BuscarAlimentos(
             alimentosSelecionados: widget.alimentosSelecionados,
             setPageState: setState,
           ),
-          Expanded(
-            child: ListView_AlimentosSelecionados(
-              alimentosSelecionados: widget.alimentosSelecionados,
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Expanded(
+              child: ListView_AlimentosSelecionados(
+                alimentosSelecionados: widget.alimentosSelecionados,
+              ),
             ),
           ),
           Spacer(),
-          TextButton_CadastrarRefeicao()
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("Glicemia: ${widget.glicemia} mg/dL"),
+              const SizedBox(width: 12),
+              Text("Carboidratos: ${widget.totalCHO} gramas"),
+            ],
+          ),
+          const SizedBox(height: 12),
+          TextButton_CadastrarRefeicao(
+            alimentosSelecionados: widget.alimentosSelecionados,
+            glicemia: widget.glicemia,
+            totalCHO: widget.totalCHO,
+            tipoRefeicao: widget.tipoRefeicaoController.text,
+          ),
+          const SizedBox(height: 12),
         ],
       ),
     );
@@ -50,16 +88,54 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
 class TextButton_CadastrarRefeicao extends StatelessWidget {
   const TextButton_CadastrarRefeicao({
     super.key,
+    required this.alimentosSelecionados,
+    required this.glicemia,
+    required this.totalCHO,
+    required this.tipoRefeicao,
   });
+
+  final List<AlimentoIngerido> alimentosSelecionados;
+  final double glicemia;
+  final double totalCHO;
+  final String tipoRefeicao;
 
   @override
   Widget build(BuildContext context) {
     return TextButton.icon(
       label: const Text("Concluir"),
-      icon: const Icon(Icons.check),
+      icon: const Icon(Icons.check, color: Colors.white),
       onPressed: () {
-        //TODO: cadastro da refeição; aqui eu dependo do DAO que eu ainda não fiz 😇
+        if (tipoRefeicao.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Selecione o tipo de refeição."),
+            ),
+          );
+          return;
+        } else {
+          Refeicao refeicao = Refeicao(
+            idUser: LoggedUserAccess().user!.id!,
+            data: DateTime.now(), // TODO mudar
+            tipoRefeicao: tipoRefeicao,
+            isActive: true,
+          );
+
+          DaoProcedureCoupler.inserirRefeicaoProcedimento(
+            refeicao, 
+            alimentosSelecionados
+          ).then((value) {
+            //TODO
+            //se sucesso, devolver o valor pra tela home e mostrar uma snackbar de sucesso;
+            //se falha, mostrar uma snackbar de erro e ficar nessa página, para o usuário poder tentar de novo.
+          },);
+        }
+        
+
       },
+      style: TextButton.styleFrom(
+        backgroundColor: AppColors.defaultGreen,
+        foregroundColor: Colors.white,
+      ),
     );
   }
 }
@@ -84,7 +160,7 @@ class ListView_AlimentosSelecionados extends StatelessWidget {
         final alimento = alimentosSelecionados[index];
         return ListTile(
           title: Text(alimento.alimentoReferencia.nome),
-          trailing: Text("${alimento.qtdIngerida}"),
+          trailing: Text("${alimento.qtdIngerida}g"),
         );
       },
     );
@@ -106,7 +182,7 @@ class TextButton_BuscarAlimentos extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextButton.icon(
-      icon: const Icon(Icons.search),
+      icon: const Icon(Icons.search, color: Colors.white,),
       label: const Text('Buscar...'),
       onPressed: () {
         // Navigator.push(
@@ -127,6 +203,10 @@ class TextButton_BuscarAlimentos extends StatelessWidget {
           setPageState(() {});  
         },);
       },
+      style: TextButton.styleFrom(
+        backgroundColor: AppColors.defaultAppColor,
+        foregroundColor: Colors.white,
+      )
     );
   }
 }
@@ -141,7 +221,6 @@ class DropdownMenu_TiposRefeicao extends StatefulWidget {
   });
   final TextEditingController tipoRefeicaoController;
   final List<String> dropdownMenuEntries = const ['Café', 'Almoço', 'Janta', 'Lanche'];
-  String tipoSelecionado = "";
 
   @override
   State<DropdownMenu_TiposRefeicao> createState() => _DropdownMenu_TiposRefeicaoState();
@@ -151,13 +230,13 @@ class _DropdownMenu_TiposRefeicaoState extends State<DropdownMenu_TiposRefeicao>
   @override
   Widget build(BuildContext context) {
     return DropdownMenu<String>(
+      width: 250,
+      initialSelection: widget.dropdownMenuEntries[0],
       controller: widget.tipoRefeicaoController,
-      requestFocusOnTap: true,
+      requestFocusOnTap: false,
       label: const Text('Tipo de Refeição'),
       onSelected: (String? tipoSelecionado) {
-        setState(() {
-          tipoSelecionado = tipoSelecionado ?? "";
-        });
+        setState(() {});
       },
       dropdownMenuEntries: widget.dropdownMenuEntries.map<DropdownMenuEntry<String>>(
         (String tipoRefeicao) {

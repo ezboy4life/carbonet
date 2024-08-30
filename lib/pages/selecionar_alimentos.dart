@@ -145,8 +145,20 @@ class _DialogSelecionarAlimentoState extends State<DialogSelecionarAlimento> {
                                 final alimento = widget.alimentosSelecionados[index];
                                 return ListTile(
                                   title: Text(alimento.alimentoReferencia.nome),
-                                  trailing: Text("${alimento.qtdIngerida}"),
-                                  //TODO: adicionar botão de eliminar alimento 😀
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text("${alimento.qtdIngerida}g"),
+                                      IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            widget.alimentosSelecionados.remove(alimento);
+                                          });
+                                        }, 
+                                        icon: const Icon(Icons.delete),
+                                      ),
+                                    ],
+                                  ),
                                 );
                               },
                             ),
@@ -166,7 +178,7 @@ class _DialogSelecionarAlimentoState extends State<DialogSelecionarAlimento> {
                 onPressed: () {
                   Navigator.of(context).pop();
                 }, 
-                label: Text("Concluir"),
+                label: Text("Ok"),
                 icon: Icon(Icons.check, color: Colors.white,),
               ),
             ],
@@ -197,39 +209,42 @@ class _DialogSelecionarQtdState extends State<DialogSelecionarQtd> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Center(
+    return Center(
+      child: SingleChildScrollView(
         child: Dialog(
-          child: Column(
-            children: [
-              Text("Insira a quantidade de ${widget.alimentoSelecionado.nome} em gramas"),
-              const SizedBox(height: 12),
-              TextFormField(
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                controller: qtdController,
-              ),
-              const SizedBox(height: 12),
-              TextButton.icon(
-                style: ButtonStyle(
-                  backgroundColor: WidgetStateColor.resolveWith((states) => Colors.blueAccent),
-                  foregroundColor: WidgetStateColor.resolveWith((states) => Colors.white),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                Text("Insira a quantidade de ${widget.alimentoSelecionado.nome} em gramas"),
+                const SizedBox(height: 12),
+                TextFormField(
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  controller: qtdController,
                 ),
-                onPressed: () {
-                  if (qtdController.text.isNotEmpty && qtdController.text != '0') {
-                    AlimentoIngerido alimentoIngerido = AlimentoIngerido(
-                      alimentoReferencia: widget.alimentoSelecionado,
-                      qtdIngerida: double.parse(qtdController.text),
-                      idAlimentoReferencia: widget.alimentoSelecionado.id
-                    );
-                    widget.listaAlimentosSelecionados.add(alimentoIngerido);
-                  }
-                  Navigator.of(context).pop();
-                }, 
-                label: Text("Salvar"),
-                icon: Icon(Icons.check, color: Colors.white,),
-              ),
-            ],
+                const SizedBox(height: 12),
+                TextButton.icon(
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStateColor.resolveWith((states) => Colors.blueAccent),
+                    foregroundColor: WidgetStateColor.resolveWith((states) => Colors.white),
+                  ),
+                  onPressed: () {
+                    if (qtdController.text.isNotEmpty && qtdController.text != '0') {
+                      AlimentoIngerido alimentoIngerido = AlimentoIngerido(
+                        alimentoReferencia: widget.alimentoSelecionado,
+                        qtdIngerida: double.parse(qtdController.text),
+                        idAlimentoReferencia: widget.alimentoSelecionado.id
+                      );
+                      widget.listaAlimentosSelecionados.add(alimentoIngerido);
+                    }
+                    Navigator.of(context).pop();
+                  }, 
+                  label: Text("Salvar"),
+                  icon: Icon(Icons.check, color: Colors.white,),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -4,7 +4,7 @@ import 'package:carbonet/data/models/alimento_ingerido.dart';
 import 'package:carbonet/data/models/refeicao.dart';
 
 class DaoProcedureCoupler {
-  static void inserirRefeicaoProcedimento(Refeicao refeicao, List<AlimentoIngerido> listaAlimentosSelecionados) async {
+  static Future<int> inserirRefeicaoProcedimento(Refeicao refeicao, List<AlimentoIngerido> listaAlimentosSelecionados) async {
     int idRefeicao = await RefeicaoDAO().insertRefeicao(refeicao);
 
     AlimentoIngeridoDAO alimentoIngeridoDAO = AlimentoIngeridoDAO();
@@ -12,5 +12,7 @@ class DaoProcedureCoupler {
       item.idRefeicao = idRefeicao;
       await alimentoIngeridoDAO.insertAlimentoIngerido(item);
     }
+
+    return idRefeicao;
   }
 }
