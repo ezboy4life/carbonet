@@ -8,6 +8,17 @@ class AlimentoRefDAO {
     final db = await _databaseHelper.database;
     return await db.insert('alimento_referencia', alimentoRef.toMap());
   }
+
+  Future<AlimentoRef?> getAlimentoById(int id) async {
+    final db = await _databaseHelper.database;
+    final List<Map<String, dynamic>> maps =
+        await db.query('alimento_referencia', where: 'id = ?', whereArgs: [id]);
+    if (maps.isNotEmpty) {
+      return AlimentoRef.fromMap(maps.first);
+    } else {
+      return null;
+    }
+  }
   
   Future<List<AlimentoRef>> getAllAlimentoRef() async {
     final db = await _databaseHelper.database;

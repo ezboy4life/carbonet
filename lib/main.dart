@@ -64,20 +64,22 @@ class _MainPageState extends State<MainPage> {
     switch (selectedPage) {
       case 0:
         currentPage = HomePage(
-          cards: [
-            CardButton(
-              icon: Icons.dining,
-              title: 'Refeição',
-              subtitle: 'Cadastrar Refeição',
-              onTap: () => changePage(1),
-            ),
-            CardButton(
-              icon: Icons.settings,
-              title: 'Configurações',
-              subtitle: 'Defina preferências',
-              onTap: () => changePage(2),
-            ),
-          ],
+          // TODO
+          // sorry luigi, espero que a mudança maluca que eu fiz (defini os cards dentro da homepage por causa dos contexts) não atrapalhe muito sua visão 😅
+          // cards: [
+          //   CardButton(
+          //     icon: Icons.dining,
+          //     title: 'Refeição',
+          //     subtitle: 'Cadastrar Refeição',
+          //     onTap: () => changePage(1),
+          //   ),
+          //   CardButton(
+          //     icon: Icons.settings,
+          //     title: 'Configurações',
+          //     subtitle: 'Defina preferências',
+          //     onTap: () => changePage(2),
+          //   ),
+          // ],
         );
         break;
       case 1:

@@ -12,19 +12,27 @@ class Glicemia {
   });
 
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'idUser': idUser,
-      'glicemia': glicemia,
-      'data': data.toIso8601String(),
-    };
+    if (id == -1) {
+      return {
+        'idUser': idUser,
+        'glicemia': glicemia,
+        'data': data.toIso8601String(),
+      };
+    } else {
+      return {
+        'id': id,
+        'idUser': idUser,
+        'glicemia': glicemia,
+        'data': data.toIso8601String(),
+      };
+    }
   }
 
   factory Glicemia.fromMap(Map<String, dynamic> map) {
     return Glicemia(
       id: map['id'],
       idUser: map['idUser'],
-      glicemia: double.parse(map['glicemia']),
+      glicemia: (map['glicemia']),
       data: DateTime.parse(map['data']),
     );
   }

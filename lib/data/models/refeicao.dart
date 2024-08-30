@@ -19,13 +19,23 @@ class Refeicao {
   });
 
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'idUser': idUser,
-      'data': data.toIso8601String(),
-      'tipoRefeicao': tipoRefeicao,
-      'isActive': isActive,
-    };
+    if (id == -1) {
+      return {
+        'idUser': idUser,
+        'data': data.toIso8601String(),
+        'tipoRefeicao': tipoRefeicao,
+      };
+    } else {
+      return {
+        'id': id,
+        'idUser': idUser,
+        'data': data.toIso8601String(),
+        'tipoRefeicao': tipoRefeicao,
+        'isActive': isActive,
+      };
+    }
+
+    
   }
 
   factory Refeicao.fromMap(Map<String, dynamic> map) {

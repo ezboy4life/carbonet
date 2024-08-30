@@ -37,13 +37,13 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
       appBar: AppBar(),
       body: Column(
         children: [
-          Text("Tipo de Refeição"),
+          const Text("Tipo de Refeição"),
           const SizedBox(height: 12),
           DropdownMenu_TiposRefeicao(
             tipoRefeicaoController: widget.tipoRefeicaoController,
           ),
             const SizedBox(height: 12),
-          Text("Alimentos"),
+          const Text("Alimentos"),
           const SizedBox(height: 12),
           TextButton_BuscarAlimentos(
             alimentosSelecionados: widget.alimentosSelecionados,
@@ -57,7 +57,7 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
               ),
             ),
           ),
-          Spacer(),
+          const Spacer(),
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -115,7 +115,7 @@ class TextButton_CadastrarRefeicao extends StatelessWidget {
         } else {
           Refeicao refeicao = Refeicao(
             idUser: LoggedUserAccess().user!.id!,
-            data: DateTime.now(), // TODO mudar
+            data: DateTime.now(), // TODO mudar <- tem que ter um campo pra selecionar data aqui tipo o que tem na tela de cadastro :)
             tipoRefeicao: tipoRefeicao,
             isActive: true,
           );
@@ -126,6 +126,7 @@ class TextButton_CadastrarRefeicao extends StatelessWidget {
           ).then((value) {
             //TODO
             //se sucesso, devolver o valor pra tela home e mostrar uma snackbar de sucesso;
+            Navigator.pop(context, true);
             //se falha, mostrar uma snackbar de erro e ficar nessa página, para o usuário poder tentar de novo.
           },);
         }
@@ -215,7 +216,7 @@ class TextButton_BuscarAlimentos extends StatelessWidget {
 ///
 /// É meio estranho configurar dropdowns em flutter, então ele foi o motivo de eu extrair todos esses widgets com comportamentos particulares.
 class DropdownMenu_TiposRefeicao extends StatefulWidget {
-  DropdownMenu_TiposRefeicao({
+  const DropdownMenu_TiposRefeicao({
     super.key,
     required this.tipoRefeicaoController,
   });

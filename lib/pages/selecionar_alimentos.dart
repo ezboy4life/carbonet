@@ -127,7 +127,6 @@ class _DialogSelecionarAlimentoState extends State<DialogSelecionarAlimento> {
                                               return DialogSelecionarQtd(alimentoSelecionado: alimentoRef, listaAlimentosSelecionados: widget.alimentosSelecionados);
                                             });
                                         }).then((value) {
-                                          //TODO
                                           setState(() {});
                                         });
                                     }, 
