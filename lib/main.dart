@@ -33,6 +33,7 @@ class CarboNet extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.defaultAppColor),
         useMaterial3: true,
+        splashFactory: NoSplash.splashFactory,
       ),
       home: const LoginPage(),
     );
@@ -63,24 +64,7 @@ class _MainPageState extends State<MainPage> {
     Widget currentPage;
     switch (selectedPage) {
       case 0:
-        currentPage = HomePage(
-          // TODO
-          // sorry luigi, espero que a mudança maluca que eu fiz (defini os cards dentro da homepage por causa dos contexts) não atrapalhe muito sua visão 😅
-          // cards: [
-          //   CardButton(
-          //     icon: Icons.dining,
-          //     title: 'Refeição',
-          //     subtitle: 'Cadastrar Refeição',
-          //     onTap: () => changePage(1),
-          //   ),
-          //   CardButton(
-          //     icon: Icons.settings,
-          //     title: 'Configurações',
-          //     subtitle: 'Defina preferências',
-          //     onTap: () => changePage(2),
-          //   ),
-          // ],
-        );
+        currentPage = HomePage();
         break;
       case 1:
         currentPage = const Placeholder();

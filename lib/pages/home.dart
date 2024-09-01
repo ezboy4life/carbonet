@@ -4,43 +4,36 @@ import 'package:flutter/material.dart';
 import 'package:carbonet/widgets/card.dart';
 
 class HomePage extends StatelessWidget {
-  HomePage({
+  const HomePage({
     super.key,
     //required this.cards,
   });
 
-  List<CardButton> cards = [];
-
   @override
   Widget build(BuildContext context) {
-
-    cards = [
+    List<CardButton> cards = [
       // btn de add refeição
       CardButton(
         icon: Icons.dining,
         title: 'Refeição',
         subtitle: 'Cadastrar Refeição',
         onTap: () {
-          Navigator.push(
-            context, 
-            MaterialPageRoute(
-              builder: (context) {
-                return AdicionarRefeicao();
-              },
-            )
-          ).then( // aqui ele recebe um retorno do adicionar refeição, e exibe uma snackbar informando o user que deu bom.
-            (value) {  
+          Navigator.push(context, MaterialPageRoute(
+            builder: (context) {
+              return AdicionarRefeicao();
+            },
+          )).then(
+            // aqui ele recebe um retorno do adicionar refeição, e exibe uma snackbar informando o user que deu bom.
+            (value) {
               if (!context.mounted) return;
 
               ScaffoldMessenger.of(context)
                 ..removeCurrentSnackBar()
-                ..showSnackBar(
-                  const SnackBar(
-                    content: Text("Refeição adicionada com sucesso!"),
-                    behavior: SnackBarBehavior.floating,
-                    showCloseIcon: true,
-                  )
-                );
+                ..showSnackBar(const SnackBar(
+                  content: Text("Refeição adicionada com sucesso!"),
+                  behavior: SnackBarBehavior.floating,
+                  showCloseIcon: true,
+                ));
             },
           );
         },
@@ -52,24 +45,28 @@ class HomePage extends StatelessWidget {
         subtitle: 'Listar Refeições Cadastradas',
         onTap: () {
           Navigator.push(
-            context, 
+            context,
             MaterialPageRoute(
               builder: (context) {
                 return ListarRefeicoes();
-              },),  
+              },
+            ),
           );
         },
       ),
     ];
 
-    return Center(
-      child: ListView.separated(
-        padding: const EdgeInsets.all(10.0),
-        physics: const BouncingScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: cards.length,
-        separatorBuilder: (context, index) => const SizedBox(height: 10),
-        itemBuilder: (context, index) => cards[index],
+    return Container(
+      color: Colors.black,
+      child: Center(
+        child: ListView.separated(
+          padding: const EdgeInsets.all(10.0),
+          physics: const BouncingScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: cards.length,
+          separatorBuilder: (context, index) => const SizedBox(height: 10),
+          itemBuilder: (context, index) => cards[index],
+        ),
       ),
     );
   }

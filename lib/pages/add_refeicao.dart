@@ -1,5 +1,6 @@
 // Nota: A página está inteirinha sem estilos.
 // Isso é intencional, por enquanto a prioridade é fazer funcionar.
+// Reposta a nota: IUPIII! :3
 
 import 'package:carbonet/data/models/alimento_ingerido.dart';
 import 'package:carbonet/data/models/refeicao.dart';
@@ -26,7 +27,8 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
   void setState(VoidCallback fn) {
     widget.totalCHO = 0;
     for (var alimentoIngerido in widget.alimentosSelecionados) {
-      widget.totalCHO += alimentoIngerido.alimentoReferencia.carbos_por_grama * alimentoIngerido.qtdIngerida;
+      widget.totalCHO += alimentoIngerido.alimentoReferencia.carbos_por_grama *
+          alimentoIngerido.qtdIngerida;
     }
     super.setState(fn);
   }
@@ -42,7 +44,7 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
           DropdownMenu_TiposRefeicao(
             tipoRefeicaoController: widget.tipoRefeicaoController,
           ),
-            const SizedBox(height: 12),
+          const SizedBox(height: 12),
           const Text("Alimentos"),
           const SizedBox(height: 12),
           TextButton_BuscarAlimentos(
@@ -81,9 +83,8 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
   }
 }
 
-
 /// O botão responsável pelos eventos de cadastrar uma refeição.
-/// 
+///
 /// Entenda-se por isso: criar o objeto refeição, colocar a lista de alimentos selecionados dentro dele, chamar o sequenciador que invoca os DAOs responsáveis por cadastrar a refeição (e, em seguida, os alimentos ingeridos) e, ao final, devolver você para a tela inicial com uma notificação snackbar de sucesso.
 class TextButton_CadastrarRefeicao extends StatelessWidget {
   const TextButton_CadastrarRefeicao({
@@ -115,23 +116,23 @@ class TextButton_CadastrarRefeicao extends StatelessWidget {
         } else {
           Refeicao refeicao = Refeicao(
             idUser: LoggedUserAccess().user!.id!,
-            data: DateTime.now(), // TODO mudar <- tem que ter um campo pra selecionar data aqui tipo o que tem na tela de cadastro :)
+            data: DateTime
+                .now(), // TODO mudar <- tem que ter um campo pra selecionar data aqui tipo o que tem na tela de cadastro :)
             tipoRefeicao: tipoRefeicao,
             isActive: true,
           );
 
           DaoProcedureCoupler.inserirRefeicaoProcedimento(
-            refeicao, 
-            alimentosSelecionados
-          ).then((value) {
-            //TODO
-            //se sucesso, devolver o valor pra tela home e mostrar uma snackbar de sucesso;
-            Navigator.pop(context, true);
-            //se falha, mostrar uma snackbar de erro e ficar nessa página, para o usuário poder tentar de novo.
-          },);
+                  refeicao, alimentosSelecionados)
+              .then(
+            (value) {
+              //TODO
+              //se sucesso, devolver o valor pra tela home e mostrar uma snackbar de sucesso;
+              Navigator.pop(context, true);
+              //se falha, mostrar uma snackbar de erro e ficar nessa página, para o usuário poder tentar de novo.
+            },
+          );
         }
-        
-
       },
       style: TextButton.styleFrom(
         backgroundColor: AppColors.defaultGreen,
@@ -141,9 +142,8 @@ class TextButton_CadastrarRefeicao extends StatelessWidget {
   }
 }
 
-
 /// A lista de alimentos selecionados.
-/// 
+///
 /// Não tem muito mais o que dizer, é só a lista dos alimentos selecionados com as quantidades (alimentoIngerido)
 class ListView_AlimentosSelecionados extends StatelessWidget {
   const ListView_AlimentosSelecionados({
@@ -183,32 +183,41 @@ class TextButton_BuscarAlimentos extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextButton.icon(
-      icon: const Icon(Icons.search, color: Colors.white,),
-      label: const Text('Buscar...'),
-      onPressed: () {
-        // Navigator.push(
-        //   context, 
-        //   MaterialPageRoute(builder: (context) => SelecionarAlimentos(alimentosSelecionados: alimentosSelecionados)));
-        showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (context) {
-            
-            return StatefulBuilder(
-              builder: (context, setState) {
-                final TextEditingController textController = TextEditingController();
-                return DialogSelecionarAlimento(textController: textController, alimentosSelecionados: alimentosSelecionados, setState: setState,);
-            },);
-          },
-        ).then((value) {
-          setPageState(() {});  
-        },);
-      },
-      style: TextButton.styleFrom(
-        backgroundColor: AppColors.defaultAppColor,
-        foregroundColor: Colors.white,
-      )
-    );
+        icon: const Icon(
+          Icons.search,
+          color: Colors.white,
+        ),
+        label: const Text('Buscar...'),
+        onPressed: () {
+          // Navigator.push(
+          //   context,
+          //   MaterialPageRoute(builder: (context) => SelecionarAlimentos(alimentosSelecionados: alimentosSelecionados)));
+          showDialog(
+            barrierDismissible: false,
+            context: context,
+            builder: (context) {
+              return StatefulBuilder(
+                builder: (context, setState) {
+                  final TextEditingController textController =
+                      TextEditingController();
+                  return DialogSelecionarAlimento(
+                    textController: textController,
+                    alimentosSelecionados: alimentosSelecionados,
+                    setState: setState,
+                  );
+                },
+              );
+            },
+          ).then(
+            (value) {
+              setPageState(() {});
+            },
+          );
+        },
+        style: TextButton.styleFrom(
+          backgroundColor: AppColors.defaultAppColor,
+          foregroundColor: Colors.white,
+        ));
   }
 }
 
@@ -221,13 +230,20 @@ class DropdownMenu_TiposRefeicao extends StatefulWidget {
     required this.tipoRefeicaoController,
   });
   final TextEditingController tipoRefeicaoController;
-  final List<String> dropdownMenuEntries = const ['Café', 'Almoço', 'Janta', 'Lanche'];
+  final List<String> dropdownMenuEntries = const [
+    'Café',
+    'Almoço',
+    'Janta',
+    'Lanche'
+  ];
 
   @override
-  State<DropdownMenu_TiposRefeicao> createState() => _DropdownMenu_TiposRefeicaoState();
+  State<DropdownMenu_TiposRefeicao> createState() =>
+      _DropdownMenu_TiposRefeicaoState();
 }
 
-class _DropdownMenu_TiposRefeicaoState extends State<DropdownMenu_TiposRefeicao> {
+class _DropdownMenu_TiposRefeicaoState
+    extends State<DropdownMenu_TiposRefeicao> {
   @override
   Widget build(BuildContext context) {
     return DropdownMenu<String>(
@@ -239,16 +255,14 @@ class _DropdownMenu_TiposRefeicaoState extends State<DropdownMenu_TiposRefeicao>
       onSelected: (String? tipoSelecionado) {
         setState(() {});
       },
-      dropdownMenuEntries: widget.dropdownMenuEntries.map<DropdownMenuEntry<String>>(
-        (String tipoRefeicao) {
-          return DropdownMenuEntry<String>(
-            value: tipoRefeicao,
-            label: tipoRefeicao,
-            style: MenuItemButton.styleFrom(),
-          );
-        }
-      ).toList(),
+      dropdownMenuEntries: widget.dropdownMenuEntries
+          .map<DropdownMenuEntry<String>>((String tipoRefeicao) {
+        return DropdownMenuEntry<String>(
+          value: tipoRefeicao,
+          label: tipoRefeicao,
+          style: MenuItemButton.styleFrom(),
+        );
+      }).toList(),
     );
   }
 }
-

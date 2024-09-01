@@ -1,6 +1,7 @@
 import 'package:carbonet/data/database/alimento_ref_dao.dart';
 import 'package:carbonet/data/models/alimento_ingerido.dart';
 import 'package:carbonet/data/models/alimento_ref.dart';
+import 'package:carbonet/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -17,7 +18,8 @@ class DialogSelecionarAlimento extends StatefulWidget {
   final List<AlimentoIngerido> alimentosSelecionados;
 
   @override
-  State<DialogSelecionarAlimento> createState() => _DialogSelecionarAlimentoState();
+  State<DialogSelecionarAlimento> createState() =>
+      _DialogSelecionarAlimentoState();
 }
 
 class _DialogSelecionarAlimentoState extends State<DialogSelecionarAlimento> {
@@ -39,11 +41,14 @@ class _DialogSelecionarAlimentoState extends State<DialogSelecionarAlimento> {
   void updateListaFiltrada(String? value) {
     if (value == null || value.isEmpty) {
       setState(() {
-      listaAlimentoRefFiltrada = listaAlimentoRef;
-    });
+        listaAlimentoRefFiltrada = listaAlimentoRef;
+      });
     } else {
       setState(() {
-        listaAlimentoRefFiltrada = listaAlimentoRef.where((element) => element.nome.toLowerCase().contains(value.toLowerCase())).toList();
+        listaAlimentoRefFiltrada = listaAlimentoRef
+            .where((element) =>
+                element.nome.toLowerCase().contains(value.toLowerCase()))
+            .toList();
       });
     }
   }
@@ -69,26 +74,25 @@ class _DialogSelecionarAlimentoState extends State<DialogSelecionarAlimento> {
                     updateListaFiltrada(value);
                   },
                   enableSuggestions: true,
-                  autofillHints: listaAlimentoRefFiltrada.map((element) => element.nome).toList(),
+                  autofillHints: listaAlimentoRefFiltrada
+                      .map((element) => element.nome)
+                      .toList(),
                   decoration: InputDecoration(
-                    hintText: "Buscar Alimentos...",
-                    suffixIcon: widget.textController.text.isNotEmpty 
-                      ? IconButton(
-                        onPressed: () { 
-                          widget.textController.clear(); 
-                          updateListaFiltrada(null);
-                        }, 
-                        icon: const Icon(Icons.close)
-                        )
-                      : null
-                  ),
+                      hintText: "Buscar Alimentos...",
+                      suffixIcon: widget.textController.text.isNotEmpty
+                          ? IconButton(
+                              onPressed: () {
+                                widget.textController.clear();
+                                updateListaFiltrada(null);
+                              },
+                              icon: const Icon(Icons.close))
+                          : null),
                 ),
               ),
-              
               Container(
                 width: double.infinity,
                 child: DefaultTabController(
-                  length: 2, 
+                  length: 2,
                   initialIndex: 0,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -96,73 +100,79 @@ class _DialogSelecionarAlimentoState extends State<DialogSelecionarAlimento> {
                       const TabBar(
                         tabs: [
                           Tab(
-                            text: "Adicionar Alimentos", 
+                            text: "Adicionar Alimentos",
                             icon: Icon(Icons.add_circle_outline),
                           ),
                           Tab(
-                            text: "Alimentos Adicionados", 
+                            text: "Alimentos Adicionados",
                             icon: Icon(Icons.restaurant),
                           ),
                         ],
                       ),
                       ConstrainedBox(
                         constraints: const BoxConstraints(maxHeight: 480),
-                        child: TabBarView(
-                          children: [
-                            // lista dos alimentos todos em geral + filtrados
-                            ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: listaAlimentoRefFiltrada.length,
-                              itemBuilder: (context, index) {
-                                final alimentoRef = listaAlimentoRefFiltrada[index];
-                                return ListTile(
-                                  title: Text(alimentoRef.nome),
-                                  trailing: TextButton.icon(
-                                    onPressed: () {
-                                      showDialog(
-                                        context: context, 
+                        child: TabBarView(children: [
+                          // lista dos alimentos todos em geral + filtrados
+                          ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: listaAlimentoRefFiltrada.length,
+                            itemBuilder: (context, index) {
+                              final alimentoRef =
+                                  listaAlimentoRefFiltrada[index];
+                              return ListTile(
+                                title: Text(alimentoRef.nome),
+                                trailing: TextButton.icon(
+                                  onPressed: () {
+                                    showDialog(
+                                        context: context,
                                         builder: (context) {
                                           return StatefulBuilder(
-                                            builder: (context, setState) {
-                                              return DialogSelecionarQtd(alimentoSelecionado: alimentoRef, listaAlimentosSelecionados: widget.alimentosSelecionados);
-                                            });
-                                        }).then((value) {
-                                          setState(() {});
-                                        });
-                                    }, 
-                                    label: const Text("Adicionar"),
-                                    icon: const Icon(Icons.add),
-                                  ),
-                                );
-                              },
-                            ),
-                            // lista dos alimentos já selecionados
-                            ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: widget.alimentosSelecionados.length,
-                              itemBuilder: (context, index) {
-                                final alimento = widget.alimentosSelecionados[index];
-                                return ListTile(
-                                  title: Text(alimento.alimentoReferencia.nome),
-                                  trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text("${alimento.qtdIngerida}g"),
-                                      IconButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            widget.alimentosSelecionados.remove(alimento);
+                                              builder: (context, setState) {
+                                            return DialogSelecionarQtd(
+                                                alimentoSelecionado:
+                                                    alimentoRef,
+                                                listaAlimentosSelecionados:
+                                                    widget
+                                                        .alimentosSelecionados);
                                           });
-                                        }, 
-                                        icon: const Icon(Icons.delete),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
-                          ]
-                        ),
+                                        }).then((value) {
+                                      setState(() {});
+                                    });
+                                  },
+                                  label: const Text("Adicionar"),
+                                  icon: const Icon(Icons.add),
+                                ),
+                              );
+                            },
+                          ),
+                          // lista dos alimentos já selecionados
+                          ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: widget.alimentosSelecionados.length,
+                            itemBuilder: (context, index) {
+                              final alimento =
+                                  widget.alimentosSelecionados[index];
+                              return ListTile(
+                                title: Text(alimento.alimentoReferencia.nome),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text("${alimento.qtdIngerida}g"),
+                                    IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          widget.alimentosSelecionados
+                                              .remove(alimento);
+                                        });
+                                      },
+                                      icon: const Icon(Icons.delete),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ]),
                       ),
                     ],
                   ),
@@ -170,20 +180,22 @@ class _DialogSelecionarAlimentoState extends State<DialogSelecionarAlimento> {
               ),
               const SizedBox(height: 12),
               TextButton.icon(
-                style: ButtonStyle(
-                  backgroundColor: WidgetStateColor.resolveWith((states) => Colors.green),
-                  foregroundColor: WidgetStateColor.resolveWith((states) => Colors.white),
+                style: TextButton.styleFrom(
+                  backgroundColor: AppColors.defaultAppColor,
+                  foregroundColor: Colors.white,
                 ),
                 onPressed: () {
                   Navigator.of(context).pop();
-                }, 
+                },
                 label: Text("Ok"),
-                icon: Icon(Icons.check, color: Colors.white,),
+                icon: Icon(
+                  Icons.check,
+                  color: Colors.white,
+                ),
               ),
             ],
           ),
-          ),
-        
+        ),
       ),
     );
   }
@@ -215,7 +227,8 @@ class _DialogSelecionarQtdState extends State<DialogSelecionarQtd> {
             padding: const EdgeInsets.all(20.0),
             child: Column(
               children: [
-                Text("Insira a quantidade de ${widget.alimentoSelecionado.nome} em gramas"),
+                Text(
+                    "Insira a quantidade de ${widget.alimentoSelecionado.nome} em gramas"),
                 const SizedBox(height: 12),
                 TextFormField(
                   keyboardType: TextInputType.number,
@@ -224,23 +237,26 @@ class _DialogSelecionarQtdState extends State<DialogSelecionarQtd> {
                 ),
                 const SizedBox(height: 12),
                 TextButton.icon(
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateColor.resolveWith((states) => Colors.blueAccent),
-                    foregroundColor: WidgetStateColor.resolveWith((states) => Colors.white),
+                  style: TextButton.styleFrom(
+                    backgroundColor: AppColors.defaultAppColor,
+                    foregroundColor: Colors.white,
                   ),
                   onPressed: () {
-                    if (qtdController.text.isNotEmpty && qtdController.text != '0') {
+                    if (qtdController.text.isNotEmpty &&
+                        qtdController.text != '0') {
                       AlimentoIngerido alimentoIngerido = AlimentoIngerido(
-                        alimentoReferencia: widget.alimentoSelecionado,
-                        qtdIngerida: double.parse(qtdController.text),
-                        idAlimentoReferencia: widget.alimentoSelecionado.id
-                      );
+                          alimentoReferencia: widget.alimentoSelecionado,
+                          qtdIngerida: double.parse(qtdController.text),
+                          idAlimentoReferencia: widget.alimentoSelecionado.id);
                       widget.listaAlimentosSelecionados.add(alimentoIngerido);
                     }
                     Navigator.of(context).pop();
-                  }, 
+                  },
                   label: Text("Salvar"),
-                  icon: Icon(Icons.check, color: Colors.white,),
+                  icon: Icon(
+                    Icons.check,
+                    color: Colors.white,
+                  ),
                 ),
               ],
             ),
