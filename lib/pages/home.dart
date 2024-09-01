@@ -26,7 +26,6 @@ class HomePage extends StatelessWidget {
             // aqui ele recebe um retorno do adicionar refeição, e exibe uma snackbar informando o user que deu bom.
             (value) {
               if (!context.mounted) return;
-
               ScaffoldMessenger.of(context)
                 ..removeCurrentSnackBar()
                 ..showSnackBar(const SnackBar(

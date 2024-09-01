@@ -8,12 +8,26 @@ class CardButton extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.onTap,
+    this.backgroundColor = AppColors.fontDark,
+    this.iconBackgroundColor = AppColors.fontDimmed,
+    this.iconColor = Colors.white,
+    this.titleColor = Colors.white,
+    this.subtitleColor = AppColors.fontBright,
+    this.leftArrowColor = Colors.white,
+    this.boxShadow,
   });
 
   final IconData icon;
   final String title;
   final String subtitle;
   final void Function()? onTap;
+  final Color backgroundColor;
+  final Color iconBackgroundColor;
+  final Color iconColor;
+  final Color titleColor;
+  final Color subtitleColor;
+  final Color leftArrowColor;
+  final List<BoxShadow>? boxShadow;
 
   @override
   Widget build(BuildContext context) {
@@ -25,15 +39,8 @@ class CardButton extends StatelessWidget {
           borderRadius: const BorderRadius.all(
             Radius.circular(8.0),
           ),
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.7),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: const Offset(0, 5),
-            )
-          ],
+          color: backgroundColor,
+          boxShadow: boxShadow,
         ),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(0, 0, 10.0, 0),
@@ -46,14 +53,18 @@ class CardButton extends StatelessWidget {
                     Container(
                       width: 85,
                       height: 85,
-                      decoration: const BoxDecoration(
-                        color: AppColors.defaultAppColor,
-                        borderRadius: BorderRadius.only(
+                      decoration: BoxDecoration(
+                        color: iconBackgroundColor,
+                        borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(8.0),
                           bottomLeft: Radius.circular(8.0),
                         ),
                       ),
-                      child: Icon(icon, size: 44, color: Colors.white),
+                      child: Icon(
+                        icon,
+                        size: 44,
+                        color: iconColor,
+                      ),
                     ),
                     Expanded(
                       child: SizedBox(
@@ -69,7 +80,8 @@ class CardButton extends StatelessWidget {
                                 title,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
+                                style: TextStyle(
+                                  color: titleColor,
                                   fontWeight: FontWeight.w500,
                                   fontSize: 24.0,
                                 ),
@@ -78,8 +90,8 @@ class CardButton extends StatelessWidget {
                                 subtitle,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  color: Color(0xFF6E6E6E),
+                                style: TextStyle(
+                                  color: subtitleColor,
                                   fontSize: 16.0,
                                 ),
                               ),
@@ -94,12 +106,12 @@ class CardButton extends StatelessWidget {
               Container(
                 height: 85,
                 width: 85,
-                color: Colors.white,
+                color: backgroundColor,
                 child: Transform.flip(
                   flipX: true,
-                  child: const Icon(
+                  child: Icon(
                     Icons.arrow_back_ios_new_rounded,
-                    color: AppColors.defaultAppColor,
+                    color: leftArrowColor,
                     size: 35.0,
                   ),
                 ),
