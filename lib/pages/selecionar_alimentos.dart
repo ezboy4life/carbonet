@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class DialogSelecionarAlimento extends StatefulWidget {
-  DialogSelecionarAlimento({
+  const DialogSelecionarAlimento({
     super.key,
     required this.textController,
     required this.alimentosSelecionados,

@@ -3,15 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 // Widgets
-import 'package:carbonet/widgets/card.dart';
-import 'package:carbonet/widgets/bottom_icon.dart';
 // Páginas
-import 'package:carbonet/pages/home.dart';
-import 'package:carbonet/pages/settings.dart';
 import 'package:carbonet/pages/login.dart';
 // Etc
 import "package:carbonet/utils/app_colors.dart";
-import 'package:carbonet/utils/logger.dart';
 
 void main() {
   // Trava a orientação do app para sempre ficar na vertical
