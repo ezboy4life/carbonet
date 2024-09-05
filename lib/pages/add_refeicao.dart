@@ -65,10 +65,8 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Expanded(
-                child: ListView_AlimentosSelecionados(
-                  alimentosSelecionados: alimentosSelecionados,
-                ),
+              child: ListView_AlimentosSelecionados(
+                alimentosSelecionados: alimentosSelecionados,
               ),
             ),
             const Spacer(),
