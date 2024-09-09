@@ -18,16 +18,29 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _pages = [
     const HomePage(),
     const Placeholder(),
-    AdicionarRefeicao(),
+    const AdicionarRefeicao(),
     ListarRefeicoes(),
     const Placeholder(),
   ];
 
   void _onItemTapped(int index) {
     setState(() {
+      // Página de adc alimentos é uma exceção e vai ser um modal
+      if (index == 2) {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          builder: (BuildContext context) {
+            return SizedBox(
+              height: MediaQuery.of(context).size.height * 0.9,
+              child: const AdicionarRefeicao(),
+            );
+          },
+        );
+        return;
+      }
       _selectedIndexNotifier.value = index;
     });
-    // infoLog(_selectedIndexNotifier.value.toString());
   }
 
   @override
@@ -68,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onTap: _onItemTapped,
               showSelectedLabels: false,
               showUnselectedLabels: false,
-              backgroundColor: Colors.black,
+              backgroundColor: Colors.white,
               type: BottomNavigationBarType.fixed,
               items: const [
                 BottomNavigationBarItem(

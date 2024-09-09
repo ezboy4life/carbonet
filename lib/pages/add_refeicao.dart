@@ -11,6 +11,7 @@ import 'package:carbonet/utils/logged_user_access.dart';
 import 'package:carbonet/widgets/dropdown_menu.dart';
 import 'package:carbonet/widgets/dropdown_menu_entry.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class AdicionarRefeicao extends StatefulWidget {
   const AdicionarRefeicao({super.key});
@@ -46,19 +47,15 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        color: Colors.black,
+        decoration: const BoxDecoration(
+          color: AppColors.dialogBackground2,
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(10),
+          ),
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CustomDropDownMenu(
-              dropdownMenuEntries: tiposDeRefeicao,
-            ),
-            const Text(
-              "Alimentos",
-              style: TextStyle(
-                color: Colors.white,
-              ),
-            ),
             TextButton_BuscarAlimentos(
               alimentosSelecionados: alimentosSelecionados,
               setPageState: setState,
@@ -70,6 +67,10 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
               ),
             ),
             const Spacer(),
+            CustomDropDownMenu(
+              labelText: "Tipo da Refeição",
+              dropdownMenuEntries: tiposDeRefeicao,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

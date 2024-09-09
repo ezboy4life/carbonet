@@ -15,6 +15,7 @@ class AppColors {
   static const Color dimmedGreen = Color.fromARGB(255, 0, 80, 17);
 
   static const Color dialogBackground = Color.fromARGB(255, 15, 15, 15);
+  static const Color dialogBackground2 = Color.fromARGB(255, 25, 25, 25);
 
   static const Color error = Color.fromARGB(255, 255, 89, 99);
   static const Color tertiary = Color.fromARGB(255, 238, 139, 96);

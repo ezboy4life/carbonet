@@ -22,15 +22,9 @@ class CarboNet extends StatelessWidget {
   // Esse widget é a raiz da aplicação.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'CarboNet',
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.defaultAppColor),
-        useMaterial3: true,
-        splashFactory: NoSplash.splashFactory,
-      ),
-      home: const LoginPage(),
+      home: LoginPage(),
     );
   }
 }

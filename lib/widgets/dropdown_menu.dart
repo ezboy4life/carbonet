@@ -1,6 +1,8 @@
+import 'package:carbonet/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class CustomDropDownMenu extends StatelessWidget {
+  final String? labelText;
   final List<DropdownMenuEntry<String>> dropdownMenuEntries;
   final Color textColor;
   final Color labelColor;
@@ -8,8 +10,9 @@ class CustomDropDownMenu extends StatelessWidget {
 
   const CustomDropDownMenu({
     super.key,
+    this.labelText,
     required this.dropdownMenuEntries,
-    this.labelColor = Colors.white,
+    this.labelColor = AppColors.fontBright,
     this.textColor = Colors.white,
     this.widthFactor = 0.9,
   });
@@ -27,13 +30,24 @@ class CustomDropDownMenu extends StatelessWidget {
       textStyle: TextStyle(
         color: textColor,
       ),
+      inputDecorationTheme: const InputDecorationTheme(
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: AppColors.fontDimmed,
+            strokeAlign: 10,
+          ),
+          borderRadius: BorderRadius.all(
+            Radius.circular(10),
+          ),
+        ),
+      ),
       menuStyle: const MenuStyle(
         backgroundColor: MaterialStatePropertyAll(
           Colors.black,
         ),
       ),
       label: Text(
-        'Tipo de Refeição',
+        labelText ?? "",
         style: TextStyle(color: labelColor),
       ),
     );
