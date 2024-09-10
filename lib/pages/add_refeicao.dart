@@ -41,7 +41,7 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
   double _currentProgress = 0.0;
   int _currentPageIndex = 0;
 
-  final List<DropdownMenuEntry<String>> tiposDeRefeicao = [
+  final List<DropdownMenuEntry<String>> _tiposDeRefeicao = [
     CustomDropdownMenuEntry(value: "Café da manhã", label: "Café da manhã"),
     CustomDropdownMenuEntry(value: "Almoço", label: "Almoço"),
     CustomDropdownMenuEntry(value: "Janta", label: "Janta"),
@@ -84,11 +84,12 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
   void initState() {
     super.initState();
     _pageList = [
-      FoodList(
+      MealInfo(
         nextPage: _nextPage,
         glicemiaController: _glicemiaController,
         onDateSelected: _handleDateSelected,
         dateController: _dateController,
+        tiposDeRefeicao: _tiposDeRefeicao,
       ),
       const Text("Página de informações"),
     ];
@@ -176,18 +177,20 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
   }
 }
 
-class FoodList extends StatelessWidget {
+class MealInfo extends StatelessWidget {
   final VoidCallback nextPage;
   final Function(DateTime) onDateSelected;
   final TextEditingController glicemiaController;
   final TextEditingController dateController;
+  final List<DropdownMenuEntry<String>> tiposDeRefeicao;
 
-  const FoodList({
+  const MealInfo({
     super.key,
     required this.nextPage,
     required this.glicemiaController,
     required this.onDateSelected,
     required this.dateController,
+    required this.tiposDeRefeicao,
   });
 
   @override
@@ -195,6 +198,14 @@ class FoodList extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        DateInputField(
+          labelText: "Data da refeição",
+          dateController: dateController,
+          onDateSelected: onDateSelected,
+        ),
+        const SizedBox(
+          height: 30,
+        ),
         InputField(
           controller: glicemiaController,
           labelText: "Glicemia",
@@ -210,11 +221,10 @@ class FoodList extends StatelessWidget {
         const SizedBox(
           height: 30,
         ),
-        DateInputField(
-          labelText: "labelText",
-          dateController: dateController,
-          onDateSelected: onDateSelected,
-        )
+        CustomDropDownMenu(
+          labelText: "Tipo da Refeição",
+          dropdownMenuEntries: tiposDeRefeicao,
+        ),
       ],
     );
   }

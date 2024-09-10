@@ -7,6 +7,7 @@ class CustomDropDownMenu extends StatelessWidget {
   final Color textColor;
   final Color labelColor;
   final double widthFactor;
+  final Widget? leadingIcon;
 
   const CustomDropDownMenu({
     super.key,
@@ -15,6 +16,7 @@ class CustomDropDownMenu extends StatelessWidget {
     this.labelColor = AppColors.fontBright,
     this.textColor = Colors.white,
     this.widthFactor = 0.9,
+    this.leadingIcon,
   });
 
   @override
@@ -24,6 +26,7 @@ class CustomDropDownMenu extends StatelessWidget {
 
     return DropdownMenu(
       width: screenWidth * widthFactor,
+      leadingIcon: leadingIcon,
       dropdownMenuEntries: dropdownMenuEntries,
       initialSelection: dropdownMenuEntries[0],
       requestFocusOnTap: false,
@@ -34,7 +37,6 @@ class CustomDropDownMenu extends StatelessWidget {
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(
             color: AppColors.fontDimmed,
-            strokeAlign: 10,
           ),
           borderRadius: BorderRadius.all(
             Radius.circular(10),
