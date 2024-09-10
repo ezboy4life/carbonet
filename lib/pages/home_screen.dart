@@ -30,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
         showModalBottomSheet(
           context: context,
           isScrollControlled: true,
+          elevation: 5,
           builder: (BuildContext context) {
             return SizedBox(
               height: MediaQuery.of(context).size.height * 0.9,
@@ -81,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onTap: _onItemTapped,
               showSelectedLabels: false,
               showUnselectedLabels: false,
-              backgroundColor: Colors.white,
+              backgroundColor: Colors.black,
               type: BottomNavigationBarType.fixed,
               items: const [
                 BottomNavigationBarItem(

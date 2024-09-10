@@ -18,7 +18,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class RegisterPageState extends State<RegisterPage> {
-  late PageController _pageViewController;
+  final PageController _pageViewController = PageController();
   late List<Widget> _pageList;
   final UserRepository userRepository = UserRepository();
   final TextEditingController _emailController = TextEditingController();
@@ -42,7 +42,6 @@ class RegisterPageState extends State<RegisterPage> {
   @override
   void initState() {
     super.initState();
-    _pageViewController = PageController();
     _pageList = [
       _EmailAndPassword(
         nextPage: _nextPage,
@@ -71,16 +70,16 @@ class RegisterPageState extends State<RegisterPage> {
 
     // TODO: Só pra facilitar os testes no cadastro. REMOVAM DEPOIS :V
 
-    // _emailController.text = "@gmail.com";
-    // _passwordController.text = "1111111111";
-    // _nameController.text = "Nome";
-    // _surnameController.text = "Sobrenome";
-    // _heightController.text = "1.79"; // minha altura :D
-    // _weightController.text = "71.2"; // e meu peso   :D
+    _emailController.text = "teste@gmail.com";
+    _passwordController.text = "1231231231";
+    _nameController.text = "Nome";
+    _surnameController.text = "Sobrenome";
+    _heightController.text = "1.79"; // minha altura :D
+    _weightController.text = "71.2"; // e meu peso   :D
     // Alguém precisa pelo amor de Deus me explicar o que diabos é essa
     // constante, eu juro que não acho isso em absolutamente lugar nenhum
     // na internet pra ter um ponto de referência.
-    // _insulinController.text = "1.0";
+    _insulinController.text = "1.0";
   }
 
   double _normalize(int min, int max, int value) {
@@ -261,7 +260,7 @@ class _EmailAndPassword extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
+      children: [
         InputField(
           controller: emailController,
           labelText: "E-mail",
@@ -440,7 +439,6 @@ class _BirthAndWeight extends StatelessWidget {
   final VoidCallback nextPage;
   final Function(DateTime) onDateSelected;
   final Function getSelectedBirthDate;
-  // final DateTime? birthDate;
 
   const _BirthAndWeight({
     required this.nextPage,

@@ -8,10 +8,13 @@ import 'package:carbonet/pages/selecionar_alimentos.dart';
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/utils/dao_procedure_coupler.dart';
 import 'package:carbonet/utils/logged_user_access.dart';
+import 'package:carbonet/utils/logger.dart';
+import 'package:carbonet/widgets/date_input_field.dart';
 import 'package:carbonet/widgets/dropdown_menu.dart';
 import 'package:carbonet/widgets/dropdown_menu_entry.dart';
+import 'package:carbonet/widgets/input_field.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/services.dart';
 
 class AdicionarRefeicao extends StatefulWidget {
   const AdicionarRefeicao({super.key});
@@ -23,8 +26,20 @@ class AdicionarRefeicao extends StatefulWidget {
 class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
   final List<AlimentoIngerido> alimentosSelecionados = [];
   final TextEditingController tipoRefeicaoController = TextEditingController();
-  double glicemia = 0;
-  double totalCHO = 0;
+  final TextEditingController _glicemiaController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
+  DateTime? selectedBirthDate;
+
+  final List<String> _hintTexts = [
+    "Selecione os alimentos",
+    "Preencha os dados",
+  ];
+  late List<Widget> _pageList;
+  final PageController _pageViewController = PageController();
+  double glicemia = 0.0;
+  double totalCHO = 0.0;
+  double _currentProgress = 0.0;
+  int _currentPageIndex = 0;
 
   final List<DropdownMenuEntry<String>> tiposDeRefeicao = [
     CustomDropdownMenuEntry(value: "Café da manhã", label: "Café da manhã"),
@@ -32,6 +47,52 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
     CustomDropdownMenuEntry(value: "Janta", label: "Janta"),
     CustomDropdownMenuEntry(value: "Lanche", label: "Lanche"),
   ];
+
+  double _normalize(int min, int max, int value) {
+    return (value - min) / (max - min);
+  }
+
+  void _handlePageChanged(int currentPageIndex) {
+    _currentProgress = _normalize(0, _pageList.length - 1, currentPageIndex);
+    setState(() {
+      _currentPageIndex = currentPageIndex;
+    });
+  }
+
+  void _nextPage() {
+    _pageViewController.nextPage(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeIn,
+    );
+  }
+
+  void _previousPage() {
+    _pageViewController.previousPage(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeIn,
+    );
+  }
+
+  void _handleDateSelected(DateTime date) {
+    setState(() {
+      selectedBirthDate = date;
+    });
+    infoLog("Data selecionada: ${selectedBirthDate.toString()}");
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _pageList = [
+      FoodList(
+        nextPage: _nextPage,
+        glicemiaController: _glicemiaController,
+        onDateSelected: _handleDateSelected,
+        dateController: _dateController,
+      ),
+      const Text("Página de informações"),
+    ];
+  }
 
   @override
   void setState(VoidCallback fn) {
@@ -45,58 +106,116 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        decoration: const BoxDecoration(
-          color: AppColors.dialogBackground2,
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(10),
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    return Scaffold(
+      backgroundColor: Colors.black,
+      resizeToAvoidBottomInset: false,
+      body: Center(
+        child: SizedBox(
+          height: screenHeight * 0.6,
+          width: screenWidth * 0.9,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              LinearProgressIndicator(
+                value: _currentProgress,
+                minHeight: 5,
+                borderRadius: const BorderRadius.all(Radius.circular(100)),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      infoLog("Botão de voltar");
+                      _previousPage();
+                    },
+                    icon: const Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Etapa ${_currentPageIndex + 1} de ${_pageList.length}",
+                        style: const TextStyle(
+                          color: AppColors.fontDimmed,
+                        ),
+                      ),
+                      Text(
+                        _hintTexts[_currentPageIndex],
+                        style: const TextStyle(
+                          color: AppColors.fontBright,
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+              Expanded(
+                child: PageView(
+                  controller: _pageViewController,
+                  physics: const NeverScrollableScrollPhysics(),
+                  onPageChanged: _handlePageChanged,
+                  children: _pageList,
+                ),
+              ),
+            ],
           ),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextButton_BuscarAlimentos(
-              alimentosSelecionados: alimentosSelecionados,
-              setPageState: setState,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ListView_AlimentosSelecionados(
-                alimentosSelecionados: alimentosSelecionados,
-              ),
-            ),
-            const Spacer(),
-            CustomDropDownMenu(
-              labelText: "Tipo da Refeição",
-              dropdownMenuEntries: tiposDeRefeicao,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Glicemia: ${glicemia} mg/dL",
-                  style: const TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-                Text(
-                  "Carboidratos: ${totalCHO} gramas",
-                  style: const TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-            TextButton_CadastrarRefeicao(
-              alimentosSelecionados: alimentosSelecionados,
-              glicemia: glicemia,
-              totalCHO: totalCHO,
-              tipoRefeicao: tipoRefeicaoController.text,
-            ),
-          ],
-        ),
       ),
+    );
+  }
+}
+
+class FoodList extends StatelessWidget {
+  final VoidCallback nextPage;
+  final Function(DateTime) onDateSelected;
+  final TextEditingController glicemiaController;
+  final TextEditingController dateController;
+
+  const FoodList({
+    super.key,
+    required this.nextPage,
+    required this.glicemiaController,
+    required this.onDateSelected,
+    required this.dateController,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        InputField(
+          controller: glicemiaController,
+          labelText: "Glicemia",
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(
+              RegExp(r'^\d*[.,]?\d*$'),
+            ),
+            CommaToDotFormatter(),
+          ],
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          maxLength: 320,
+        ),
+        const SizedBox(
+          height: 30,
+        ),
+        DateInputField(
+          labelText: "labelText",
+          dateController: dateController,
+          onDateSelected: onDateSelected,
+        )
+      ],
     );
   }
 }
@@ -285,3 +404,68 @@ class TextButton_BuscarAlimentos extends StatelessWidget {
 //     );
 //   }
 // }
+
+// Center(
+//       child: Container(
+//         decoration: const BoxDecoration(
+//           color: AppColors.dialogBackground2,
+//           borderRadius: BorderRadius.vertical(
+//             top: Radius.circular(10),
+//           ),
+//         ),
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             TextButton_BuscarAlimentos(
+//               alimentosSelecionados: alimentosSelecionados,
+//               setPageState: setState,
+//             ),
+//             Padding(
+//               padding: const EdgeInsets.all(16.0),
+//               child: ListView_AlimentosSelecionados(
+//                 alimentosSelecionados: alimentosSelecionados,
+//               ),
+//             ),
+//             const Spacer(),
+//             CustomDropDownMenu(
+//               labelText: "Tipo da Refeição",
+//               dropdownMenuEntries: tiposDeRefeicao,
+//             ),
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 Text(
+//                   "Glicemia: ${glicemia} mg/dL",
+//                   style: const TextStyle(
+//                     color: Colors.white,
+//                   ),
+//                 ),
+//                 Text(
+//                   "Carboidratos: ${totalCHO} gramas",
+//                   style: const TextStyle(
+//                     color: Colors.white,
+//                   ),
+//                 ),
+//               ],
+//             ),
+//             TextButton_CadastrarRefeicao(
+//               alimentosSelecionados: alimentosSelecionados,
+//               glicemia: glicemia,
+//               totalCHO: totalCHO,
+//               tipoRefeicao: tipoRefeicaoController.text,
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+
+class CommaToDotFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    return newValue.copyWith(
+      text: newValue.text.replaceAll(',', '.'),
+      selection: newValue.selection,
+    );
+  }
+}

@@ -28,7 +28,6 @@ class DateInputField extends StatelessWidget {
     super.key,
     required this.labelText,
     required this.dateController,
-    // required this.birthDate,
     required this.onDateSelected,
   });
 
