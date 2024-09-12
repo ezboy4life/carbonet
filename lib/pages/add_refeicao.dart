@@ -29,18 +29,21 @@ class AdicionarRefeicao extends StatefulWidget {
 
 class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
   final List<AlimentoIngerido> alimentosSelecionados = [];
+  final TextEditingController selecionarAlimentosController =
+      TextEditingController();
   final TextEditingController tipoRefeicaoController = TextEditingController();
   final TextEditingController _glicemiaController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
   final TextEditingController _selectedMealTypeController =
       TextEditingController();
+  // final List<AlimentoIngerido> _selectedFoods
   DateTime? selectedMealDate;
   TimeOfDay? selectedMealTime;
 
   final List<String> _hintTexts = [
-    "Selecione os alimentos",
     "Preencha os dados",
+    "Selecione os alimentos",
   ];
   late List<Widget> _pageList;
   final PageController _pageViewController = PageController();
@@ -130,7 +133,10 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
         selectedMealTypeController: _selectedMealTypeController,
         tiposDeRefeicao: _tiposDeRefeicao,
       ),
-      const Text("Página de informações"),
+      DialogSelecionarAlimento(
+          searchBoxController: selecionarAlimentosController,
+          alimentosSelecionados: alimentosSelecionados,
+          setState: setState)
     ];
     _handleDateSelected(DateTime.now());
     _handleTimeSelected(TimeOfDay.now());
@@ -153,24 +159,34 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
 
     return Scaffold(
       backgroundColor: Colors.black,
-      resizeToAvoidBottomInset: false,
+      // resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.black,
+        title: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(
+            Icons.close_rounded,
+            size: 35,
+            color: Colors.white,
+          ),
+        ),
+      ),
       body: Center(
-        child: SizedBox(
-          height: screenHeight * 0.6,
-          width: screenWidth * 0.9,
+        child: Padding(
+          // height: screenHeight * 1,
+          // width: screenWidth * 1,
+          padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text("Fechar"),
-              ),
               LinearProgressIndicator(
                 value: _currentProgress,
                 minHeight: 5,
                 borderRadius: const BorderRadius.all(Radius.circular(100)),
+                color: AppColors.defaultAppColor,
               ),
               const SizedBox(
                 height: 10,
@@ -262,6 +278,7 @@ class MealInfo extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        Spacer(),
         DateInputField(
           labelText: "Data da refeição",
           dateController: dateController,
@@ -302,9 +319,10 @@ class MealInfo extends StatelessWidget {
           ),
           onSelected: _handleSelectedMealType,
         ),
-        const SizedBox(
-          height: 30,
-        ),
+        // const SizedBox(
+        //   height: 30,
+        // ),
+        Spacer(),
         GradientButton(
           label: "Avançar",
           buttonColors: const [
@@ -314,6 +332,7 @@ class MealInfo extends StatelessWidget {
           onPressed: () {
             // Validação da data
             DateTime? date = getSelectedDate();
+
             if (date == null) {
               showDialog(
                 context: context,
@@ -374,6 +393,34 @@ class MealInfo extends StatelessWidget {
           },
         )
       ],
+    );
+  }
+}
+
+class MealList extends StatelessWidget {
+  final List<AlimentoIngerido> selectedFoods;
+
+  const MealList({
+    super.key,
+    required this.selectedFoods,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.white,
+      decoration: BoxDecoration(color: Colors.white),
+      child: ListView.builder(
+        shrinkWrap: true,
+        itemCount: selectedFoods.length,
+        itemBuilder: (context, index) {
+          final alimento = selectedFoods[index];
+          return ListTile(
+            title: Text(alimento.alimentoReferencia.nome),
+            trailing: Text("${alimento.qtdIngerida}g"),
+          );
+        },
+      ),
     );
   }
 }
@@ -484,9 +531,6 @@ class TextButton_BuscarAlimentos extends StatelessWidget {
         ),
         label: const Text('Buscar...'),
         onPressed: () {
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => SelecionarAlimentos(alimentosSelecionados: alimentosSelecionados)));
           showDialog(
             barrierDismissible: false,
             context: context,
@@ -496,7 +540,7 @@ class TextButton_BuscarAlimentos extends StatelessWidget {
                   final TextEditingController textController =
                       TextEditingController();
                   return DialogSelecionarAlimento(
-                    textController: textController,
+                    searchBoxController: textController,
                     alimentosSelecionados: alimentosSelecionados,
                     setState: setState,
                   );
@@ -515,107 +559,6 @@ class TextButton_BuscarAlimentos extends StatelessWidget {
         ));
   }
 }
-
-/// Dropdown contendo os tipos de refeição: 'Café', 'Almoço', 'Janta', e 'Lanche'.
-///
-/// É meio estranho configurar dropdowns em flutter, então ele foi o motivo de eu extrair todos esses widgets com comportamentos particulares.
-// class DropdownMenu_TiposRefeicao extends StatefulWidget {
-//   const DropdownMenu_TiposRefeicao({
-//     super.key,
-//     required this.tipoRefeicaoController,
-//   });
-
-//   final TextEditingController tipoRefeicaoController;
-//   final List<String> dropdownMenuEntries = const [
-//     'Café',
-//     'Almoço',
-//     'Janta',
-//     'Lanche'
-//   ];
-
-//   @override
-//   State<DropdownMenu_TiposRefeicao> createState() =>
-//       _DropdownMenu_TiposRefeicaoState();
-// }
-
-// class _DropdownMenu_TiposRefeicaoState
-//     extends State<DropdownMenu_TiposRefeicao> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return DropdownMenu<String>(
-//       width: 250,
-//       initialSelection: dropdownMenuEntries[0],
-//       controller: tipoRefeicaoController,
-//       requestFocusOnTap: false,
-//       label: const Text('Tipo de Refeição'),
-//       onSelected: (String? tipoSelecionado) {
-//         setState(() {});
-//       },
-//       dropdownMenuEntries: dropdownMenuEntries
-//           .map<DropdownMenuEntry<String>>((String tipoRefeicao) {
-//         return DropdownMenuEntry<String>(
-//           value: tipoRefeicao,
-//           label: tipoRefeicao,
-//           style: MenuItemButton.styleFrom(),
-//         );
-//       }).toList(),
-//     );
-//   }
-// }
-
-// Center(
-//       child: Container(
-//         decoration: const BoxDecoration(
-//           color: AppColors.dialogBackground2,
-//           borderRadius: BorderRadius.vertical(
-//             top: Radius.circular(10),
-//           ),
-//         ),
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: [
-//             TextButton_BuscarAlimentos(
-//               alimentosSelecionados: alimentosSelecionados,
-//               setPageState: setState,
-//             ),
-//             Padding(
-//               padding: const EdgeInsets.all(16.0),
-//               child: ListView_AlimentosSelecionados(
-//                 alimentosSelecionados: alimentosSelecionados,
-//               ),
-//             ),
-//             const Spacer(),
-//             CustomDropDownMenu(
-//               labelText: "Tipo da Refeição",
-//               dropdownMenuEntries: tiposDeRefeicao,
-//             ),
-//             Row(
-//               mainAxisAlignment: MainAxisAlignment.center,
-//               children: [
-//                 Text(
-//                   "Glicemia: ${glicemia} mg/dL",
-//                   style: const TextStyle(
-//                     color: Colors.white,
-//                   ),
-//                 ),
-//                 Text(
-//                   "Carboidratos: ${totalCHO} gramas",
-//                   style: const TextStyle(
-//                     color: Colors.white,
-//                   ),
-//                 ),
-//               ],
-//             ),
-//             TextButton_CadastrarRefeicao(
-//               alimentosSelecionados: alimentosSelecionados,
-//               glicemia: glicemia,
-//               totalCHO: totalCHO,
-//               tipoRefeicao: tipoRefeicaoController.text,
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
 
 class CommaToDotFormatter extends TextInputFormatter {
   @override

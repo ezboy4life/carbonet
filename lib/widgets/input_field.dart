@@ -12,6 +12,7 @@ class InputField extends StatelessWidget {
     this.maxLength,
     this.keyboardType,
     this.autofocus = false,
+    this.onChanged,
   });
 
   final TextEditingController controller;
@@ -21,6 +22,7 @@ class InputField extends StatelessWidget {
   final int? maxLength;
   final TextInputType? keyboardType;
   final bool autofocus;
+  final Function(String)? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +33,7 @@ class InputField extends StatelessWidget {
       maxLength: maxLength,
       keyboardType: keyboardType,
       autofocus: autofocus,
+      onChanged: onChanged,
       buildCounter:
           (_, {int? currentLength, int? maxLength, bool? isFocused}) => null,
       // esconde a contagem de caracteres quando se tem o maxlenght

@@ -30,9 +30,11 @@ class _HomeScreenState extends State<HomeScreen> {
         showModalBottomSheet(
           context: context,
           isScrollControlled: true,
-          elevation: 5,
           builder: (BuildContext context) {
-            return const AdicionarRefeicao();
+            return SizedBox(
+              height: MediaQuery.of(context).size.height * 0.9,
+              child: const AdicionarRefeicao(),
+            );
           },
         );
         return;

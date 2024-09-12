@@ -1,3 +1,4 @@
+import 'package:carbonet/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class GradientButton extends StatelessWidget {
@@ -8,7 +9,10 @@ class GradientButton extends StatelessWidget {
   const GradientButton({
     super.key,
     required this.label,
-    required this.buttonColors,
+    this.buttonColors = const [
+      AppColors.defaultDarkAppColor,
+      AppColors.defaultAppColor,
+    ],
     required this.onPressed,
   });
 
