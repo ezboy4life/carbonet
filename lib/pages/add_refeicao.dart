@@ -9,9 +9,13 @@ import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/utils/dao_procedure_coupler.dart';
 import 'package:carbonet/utils/logged_user_access.dart';
 import 'package:carbonet/utils/logger.dart';
+import 'package:carbonet/utils/validators.dart';
 import 'package:carbonet/widgets/date_input_field.dart';
 import 'package:carbonet/widgets/dropdown_menu.dart';
 import 'package:carbonet/widgets/dropdown_menu_entry.dart';
+import 'package:carbonet/widgets/gradient_button.dart';
+import 'package:carbonet/widgets/popup_dialog.dart';
+import 'package:carbonet/widgets/time_input_field.dart';
 import 'package:carbonet/widgets/input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,7 +32,11 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
   final TextEditingController tipoRefeicaoController = TextEditingController();
   final TextEditingController _glicemiaController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
-  DateTime? selectedBirthDate;
+  final TextEditingController _timeController = TextEditingController();
+  final TextEditingController _selectedMealTypeController =
+      TextEditingController();
+  DateTime? selectedMealDate;
+  TimeOfDay? selectedMealTime;
 
   final List<String> _hintTexts = [
     "Selecione os alimentos",
@@ -60,6 +68,7 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
   }
 
   void _nextPage() {
+    FocusScope.of(context).unfocus();
     _pageViewController.nextPage(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeIn,
@@ -67,6 +76,9 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
   }
 
   void _previousPage() {
+    _selectedMealTypeController.text = "";
+    _glicemiaController.text = "";
+
     _pageViewController.previousPage(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeIn,
@@ -75,9 +87,31 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
 
   void _handleDateSelected(DateTime date) {
     setState(() {
-      selectedBirthDate = date;
+      selectedMealDate = date;
+      String day = date.day.toString().padLeft(2, "0");
+      String month = date.month.toString().padLeft(2, "0");
+      _dateController.text = "$day/$month/${date.year}";
     });
-    infoLog("Data selecionada: ${selectedBirthDate.toString()}");
+    infoLog("Data selecionada: ${selectedMealDate.toString()}");
+  }
+
+  void _handleTimeSelected(TimeOfDay time) {
+    setState(() {
+      selectedMealTime = time;
+      String hour = time.hour.toString().padLeft(2, "0");
+      String minutes = time.minute.toString().padLeft(2, "0");
+
+      _timeController.text = "$hour:$minutes";
+    });
+    infoLog("Horário selecionada: ${_timeController.text}");
+  }
+
+  DateTime? _getSelectedDate() {
+    return selectedMealDate;
+  }
+
+  TimeOfDay? _getSelectedTime() {
+    return selectedMealTime;
   }
 
   @override
@@ -86,13 +120,20 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
     _pageList = [
       MealInfo(
         nextPage: _nextPage,
-        glicemiaController: _glicemiaController,
         onDateSelected: _handleDateSelected,
+        onTimeSelected: _handleTimeSelected,
+        getSelectedDate: _getSelectedDate,
+        getSelectedTime: _getSelectedTime,
+        glicemiaController: _glicemiaController,
         dateController: _dateController,
+        timeController: _timeController,
+        selectedMealTypeController: _selectedMealTypeController,
         tiposDeRefeicao: _tiposDeRefeicao,
       ),
       const Text("Página de informações"),
     ];
+    _handleDateSelected(DateTime.now());
+    _handleTimeSelected(TimeOfDay.now());
   }
 
   @override
@@ -120,6 +161,12 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("Fechar"),
+              ),
               LinearProgressIndicator(
                 value: _currentProgress,
                 minHeight: 5,
@@ -180,18 +227,35 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
 class MealInfo extends StatelessWidget {
   final VoidCallback nextPage;
   final Function(DateTime) onDateSelected;
+  final Function(TimeOfDay) onTimeSelected;
+  final Function getSelectedDate;
+  final Function getSelectedTime;
   final TextEditingController glicemiaController;
   final TextEditingController dateController;
+  final TextEditingController timeController;
+  final TextEditingController selectedMealTypeController;
   final List<DropdownMenuEntry<String>> tiposDeRefeicao;
 
   const MealInfo({
     super.key,
     required this.nextPage,
-    required this.glicemiaController,
     required this.onDateSelected,
+    required this.onTimeSelected,
+    required this.getSelectedDate,
+    required this.getSelectedTime,
+    required this.glicemiaController,
     required this.dateController,
+    required this.timeController,
+    required this.selectedMealTypeController,
     required this.tiposDeRefeicao,
   });
+
+  void _handleSelectedMealType(Object? object) {
+    if (object == null) {
+      return;
+    }
+    selectedMealTypeController.text = object.toString();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -202,6 +266,14 @@ class MealInfo extends StatelessWidget {
           labelText: "Data da refeição",
           dateController: dateController,
           onDateSelected: onDateSelected,
+        ),
+        const SizedBox(
+          height: 30,
+        ),
+        TimeInputField(
+          labelText: "Horário da refeição",
+          timeController: timeController,
+          onTimeSelected: onTimeSelected,
         ),
         const SizedBox(
           height: 30,
@@ -224,7 +296,83 @@ class MealInfo extends StatelessWidget {
         CustomDropDownMenu(
           labelText: "Tipo da Refeição",
           dropdownMenuEntries: tiposDeRefeicao,
+          selectedDropdownMenuEntry: CustomDropdownMenuEntry(
+            value: selectedMealTypeController.text,
+            label: selectedMealTypeController.text,
+          ),
+          onSelected: _handleSelectedMealType,
         ),
+        const SizedBox(
+          height: 30,
+        ),
+        GradientButton(
+          label: "Avançar",
+          buttonColors: const [
+            AppColors.defaultDarkAppColor,
+            AppColors.defaultAppColor,
+          ],
+          onPressed: () {
+            // Validação da data
+            DateTime? date = getSelectedDate();
+            if (date == null) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return const PopupDialog(
+                    title: "Data inválida!",
+                    message: "Por gentileza, defina uma data válida.",
+                  );
+                },
+              );
+              return;
+            }
+
+            // Validação do horário
+            TimeOfDay? time = getSelectedTime();
+            if (!Validators.isTimeValid(time)) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return const PopupDialog(
+                    title: "Horário inválido!",
+                    message: "Por gentileza, defina um horário válido.",
+                  );
+                },
+              );
+              return;
+            }
+
+            // Validação da Glicemia
+            if (glicemiaController.text.isEmpty) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return const PopupDialog(
+                    title: "Glicemia inválida!",
+                    message: "Por gentileza, defina um valor válido.",
+                  );
+                },
+              );
+              return;
+            }
+
+            // Validação do tipo da refeição
+            if (selectedMealTypeController.text.isEmpty) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return const PopupDialog(
+                    title: "Tipo de refeição inválido!",
+                    message: "Por gentileza, selecione valor válido.",
+                  );
+                },
+              );
+              return;
+            }
+
+            nextPage();
+          },
+        )
       ],
     );
   }

@@ -1,6 +1,7 @@
 import 'package:carbonet/data/models/user.dart';
 import 'package:carbonet/data/repository/user_repository.dart';
 import 'package:carbonet/utils/logger.dart';
+import 'package:flutter/material.dart';
 
 class Validators {
   static bool isValidEmail(String email) {
@@ -66,5 +67,9 @@ class Validators {
       age--;
     }
     return age >= 18 && age < 122; // 122 = pessoa mais velha do mundo
+  }
+
+  static bool isTimeValid(TimeOfDay? time) {
+    return time != null;
   }
 }

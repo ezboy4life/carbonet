@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 class CustomDropDownMenu extends StatelessWidget {
   final String? labelText;
   final List<DropdownMenuEntry<String>> dropdownMenuEntries;
+  final DropdownMenuEntry<String>? selectedDropdownMenuEntry;
+  final TextEditingController? controller;
+  final Function(Object?) onSelected;
   final Color textColor;
   final Color labelColor;
   final double widthFactor;
@@ -11,8 +14,11 @@ class CustomDropDownMenu extends StatelessWidget {
 
   const CustomDropDownMenu({
     super.key,
-    this.labelText,
     required this.dropdownMenuEntries,
+    required this.onSelected,
+    this.selectedDropdownMenuEntry,
+    this.labelText,
+    this.controller,
     this.labelColor = AppColors.fontBright,
     this.textColor = Colors.white,
     this.widthFactor = 0.9,
@@ -25,10 +31,12 @@ class CustomDropDownMenu extends StatelessWidget {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return DropdownMenu(
+      controller: controller,
+      onSelected: onSelected,
       width: screenWidth * widthFactor,
       leadingIcon: leadingIcon,
       dropdownMenuEntries: dropdownMenuEntries,
-      initialSelection: dropdownMenuEntries[0],
+      initialSelection: selectedDropdownMenuEntry,
       requestFocusOnTap: false,
       textStyle: TextStyle(
         color: textColor,

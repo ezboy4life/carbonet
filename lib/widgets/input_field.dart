@@ -35,7 +35,7 @@ class InputField extends StatelessWidget {
           (_, {int? currentLength, int? maxLength, bool? isFocused}) => null,
       // esconde a contagem de caracteres quando se tem o maxlenght
       style: const TextStyle(
-        color: AppColors.fontBright,
+        color: Colors.white,
         fontSize: 16,
       ),
       decoration: InputDecoration(

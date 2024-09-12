@@ -2,33 +2,36 @@ import 'package:carbonet/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:carbonet/utils/app_colors.dart';
 
-class DateInputField extends StatelessWidget {
+class TimeInputField extends StatelessWidget {
   final String labelText;
-  final TextEditingController dateController;
-  final Function(DateTime) onDateSelected;
+  final TextEditingController timeController;
+  final Function(TimeOfDay) onTimeSelected;
 
-  const DateInputField({
+  const TimeInputField({
     super.key,
     required this.labelText,
-    required this.dateController,
-    required this.onDateSelected,
+    required this.timeController,
+    required this.onTimeSelected,
   });
 
-  void _selectDate(BuildContext context) async {
-    DateTime? selectedDate = await showDatePicker(
+  void _selectTime(BuildContext context) async {
+    TimeOfDay? selectedTime = await showTimePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
+      initialTime: TimeOfDay.now(),
+      builder: (BuildContext context, Widget? child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child!,
+        );
+      },
     );
 
-    if (selectedDate != null) {
-      String day = selectedDate.day.toString().padLeft(2, "0");
-      String month = selectedDate.month.toString().padLeft(2, "0");
-      String year = selectedDate.year.toString();
+    if (selectedTime != null) {
+      String hour = selectedTime.hour.toString().padLeft(2, "0");
+      String minutes = selectedTime.minute.toString().padLeft(2, "0");
 
-      dateController.text = "$day/$month/$year";
-      onDateSelected(selectedDate);
+      timeController.text = "$hour:$minutes";
+      onTimeSelected(selectedTime);
     } else {
       infoLog("Seleção de data cancelada.");
     }
@@ -38,7 +41,7 @@ class DateInputField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextField(
       readOnly: true,
-      controller: dateController,
+      controller: timeController,
       style: const TextStyle(
         color: Colors.white,
         fontSize: 16,
@@ -68,7 +71,7 @@ class DateInputField extends StatelessWidget {
         ),
       ),
       onTap: () {
-        _selectDate(context);
+        _selectTime(context);
       },
     );
   }
