@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:carbonet/data/database/alimento_ref_dao.dart';
 import 'package:carbonet/data/models/alimento_ingerido.dart';
 import 'package:carbonet/data/models/alimento_ref.dart';
@@ -7,7 +6,6 @@ import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/utils/logger.dart';
 import 'package:carbonet/widgets/gradient_button.dart';
 import 'package:carbonet/widgets/input_field.dart';
-import 'package:carbonet/widgets/popup_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

@@ -7,8 +7,6 @@ import 'package:flutter/services.dart';
 // Widgets
 // Páginas
 import 'package:carbonet/pages/login.dart';
-// Etc
-import "package:carbonet/utils/app_colors.dart";
 
 void main() {
   // Trava a orientação do app para sempre ficar na vertical
