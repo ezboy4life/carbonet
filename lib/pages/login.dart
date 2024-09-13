@@ -1,9 +1,5 @@
 import 'package:carbonet/data/models/user.dart';
 import 'package:carbonet/data/repository/user_repository.dart';
-import 'package:carbonet/pages/add_refeicao.dart';
-import 'package:carbonet/pages/home.dart';
-import 'package:carbonet/pages/home_screen.dart';
-import 'package:carbonet/pages/register.dart';
 import "package:carbonet/utils/app_colors.dart";
 import 'package:carbonet/utils/logged_user_access.dart';
 import 'package:carbonet/utils/logger.dart';
@@ -30,10 +26,7 @@ class LoginPageState extends State<LoginPage> {
       // TODO pra ser sincero isso aqui é um hack bem meia boca mas é o que tem pra hoje 😇
       LoggedUserAccess().user = user;
       FocusManager.instance.primaryFocus?.unfocus();
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
+      Navigator.of(context).pushNamed("/home");
       return;
     }
     showDialog(
@@ -216,12 +209,7 @@ class LoginPageState extends State<LoginPage> {
                       ),
                       TextButton(
                         onPressed: () async {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const RegisterPage(),
-                            ),
-                          );
+                          Navigator.of(context).pushNamed("/register");
                           passwordController.text = emailController.text = "";
                         },
                         style: const ButtonStyle(

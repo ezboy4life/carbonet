@@ -95,7 +95,7 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
       String month = date.month.toString().padLeft(2, "0");
       _dateController.text = "$day/$month/${date.year}";
     });
-    infoLog("Data selecionada: ${selectedMealDate.toString()}");
+    // infoLog("Data selecionada: ${selectedMealDate.toString()}");
   }
 
   void _handleTimeSelected(TimeOfDay time) {
@@ -106,7 +106,7 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
 
       _timeController.text = "$hour:$minutes";
     });
-    infoLog("Horário selecionada: ${_timeController.text}");
+    // infoLog("Horário selecionado: ${_timeController.text}");
   }
 
   DateTime? _getSelectedDate() {

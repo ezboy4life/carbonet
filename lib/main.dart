@@ -1,5 +1,7 @@
 // Padrões do Flutter
 // import 'package:carbonet/pages/register.dart
+import 'package:carbonet/pages/home_screen.dart';
+import 'package:carbonet/pages/register.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 // Widgets
@@ -19,12 +21,16 @@ void main() {
 class CarboNet extends StatelessWidget {
   const CarboNet({super.key});
 
-  // Esse widget é a raiz da aplicação.
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginPage(),
+      initialRoute: "/login",
+      routes: <String, WidgetBuilder>{
+        '/login': (BuildContext context) => const LoginPage(),
+        '/register': (BuildContext context) => const RegisterPage(),
+        '/home': (BuildContext context) => const HomeScreen(),
+      },
     );
   }
 }
