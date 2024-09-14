@@ -31,6 +31,10 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
   final List<AlimentoIngerido> alimentosSelecionados = [];
   final TextEditingController selecionarAlimentosController =
       TextEditingController();
+  final TextEditingController favoritosAlimentosController =
+      TextEditingController();
+  final TextEditingController selecionadosAlimentosController =
+      TextEditingController();
   final TextEditingController tipoRefeicaoController = TextEditingController();
   final TextEditingController _glicemiaController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
@@ -134,9 +138,12 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
         tiposDeRefeicao: _tiposDeRefeicao,
       ),
       DialogSelecionarAlimento(
-          searchBoxController: selecionarAlimentosController,
-          alimentosSelecionados: alimentosSelecionados,
-          setState: setState)
+        searchBoxController: selecionarAlimentosController,
+        favoritesSearchBoxController: favoritosAlimentosController,
+        selectedFoodsSearchBoxController: selecionadosAlimentosController,
+        alimentosSelecionados: alimentosSelecionados,
+        setState: setState,
+      )
     ];
     _handleDateSelected(DateTime.now());
     _handleTimeSelected(TimeOfDay.now());
@@ -154,12 +161,8 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
 
   @override
   Widget build(BuildContext context) {
-    // double screenHeight = MediaQuery.of(context).size.height;
-    // double screenWidth = MediaQuery.of(context).size.width;
-
     return Scaffold(
       backgroundColor: Colors.black,
-      // resizeToAvoidBottomInset: false,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.black,
@@ -176,9 +179,7 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
       ),
       body: Center(
         child: Padding(
-          // height: screenHeight * 1,
-          // width: screenWidth * 1,
-          padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -278,7 +279,7 @@ class MealInfo extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Spacer(),
+        const Spacer(),
         DateInputField(
           labelText: "Data da refeição",
           dateController: dateController,
@@ -295,6 +296,18 @@ class MealInfo extends StatelessWidget {
         const SizedBox(
           height: 30,
         ),
+        CustomDropDownMenu(
+          labelText: "Tipo da Refeição",
+          dropdownMenuEntries: tiposDeRefeicao,
+          selectedDropdownMenuEntry: CustomDropdownMenuEntry(
+            value: selectedMealTypeController.text,
+            label: selectedMealTypeController.text,
+          ),
+          onSelected: _handleSelectedMealType,
+        ),
+        const SizedBox(
+          height: 30,
+        ),
         InputField(
           controller: glicemiaController,
           labelText: "Glicemia",
@@ -307,22 +320,7 @@ class MealInfo extends StatelessWidget {
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           maxLength: 320,
         ),
-        const SizedBox(
-          height: 30,
-        ),
-        CustomDropDownMenu(
-          labelText: "Tipo da Refeição",
-          dropdownMenuEntries: tiposDeRefeicao,
-          selectedDropdownMenuEntry: CustomDropdownMenuEntry(
-            value: selectedMealTypeController.text,
-            label: selectedMealTypeController.text,
-          ),
-          onSelected: _handleSelectedMealType,
-        ),
-        // const SizedBox(
-        //   height: 30,
-        // ),
-        Spacer(),
+        const Spacer(),
         GradientButton(
           label: "Avançar",
           buttonColors: const [
@@ -397,33 +395,33 @@ class MealInfo extends StatelessWidget {
   }
 }
 
-class MealList extends StatelessWidget {
-  final List<AlimentoIngerido> selectedFoods;
+// class MealList extends StatelessWidget {
+//   final List<AlimentoIngerido> selectedFoods;
 
-  const MealList({
-    super.key,
-    required this.selectedFoods,
-  });
+//   const MealList({
+//     super.key,
+//     required this.selectedFoods,
+//   });
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      decoration: BoxDecoration(color: Colors.white),
-      child: ListView.builder(
-        shrinkWrap: true,
-        itemCount: selectedFoods.length,
-        itemBuilder: (context, index) {
-          final alimento = selectedFoods[index];
-          return ListTile(
-            title: Text(alimento.alimentoReferencia.nome),
-            trailing: Text("${alimento.qtdIngerida}g"),
-          );
-        },
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       color: Colors.white,
+//       decoration: const BoxDecoration(color: Colors.white),
+//       child: ListView.builder(
+//         shrinkWrap: true,
+//         itemCount: selectedFoods.length,
+//         itemBuilder: (context, index) {
+//           final alimento = selectedFoods[index];
+//           return ListTile(
+//             title: Text(alimento.alimentoReferencia.nome),
+//             trailing: Text("${alimento.qtdIngerida}g"),
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }
 
 /// O botão responsável pelos eventos de cadastrar uma refeição.
 ///
@@ -513,52 +511,51 @@ class ListView_AlimentosSelecionados extends StatelessWidget {
 /// O botão responsável por abrir a página de busca de alimentos.
 ///
 /// Quase certeza que aqui a gente precisa passar a lista de alimentos selecionados, pra ela ser alterada por referência.
-class TextButton_BuscarAlimentos extends StatelessWidget {
-  const TextButton_BuscarAlimentos({
-    super.key,
-    required this.alimentosSelecionados,
-    required this.setPageState,
-  });
-  final List<AlimentoIngerido> alimentosSelecionados;
-  final Function setPageState;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextButton.icon(
-        icon: const Icon(
-          Icons.search,
-          color: Colors.white,
-        ),
-        label: const Text('Buscar...'),
-        onPressed: () {
-          showDialog(
-            barrierDismissible: false,
-            context: context,
-            builder: (context) {
-              return StatefulBuilder(
-                builder: (context, setState) {
-                  final TextEditingController textController =
-                      TextEditingController();
-                  return DialogSelecionarAlimento(
-                    searchBoxController: textController,
-                    alimentosSelecionados: alimentosSelecionados,
-                    setState: setState,
-                  );
-                },
-              );
-            },
-          ).then(
-            (value) {
-              setPageState(() {});
-            },
-          );
-        },
-        style: TextButton.styleFrom(
-          backgroundColor: AppColors.defaultAppColor,
-          foregroundColor: Colors.white,
-        ));
-  }
-}
+// class TextButton_BuscarAlimentos extends StatelessWidget {
+//   const TextButton_BuscarAlimentos({
+//     super.key,
+//     required this.alimentosSelecionados,
+//     required this.setPageState,
+//   });
+//   final List<AlimentoIngerido> alimentosSelecionados;
+//   final Function setPageState;
+//   @override
+//   Widget build(BuildContext context) {
+//     return TextButton.icon(
+//         icon: const Icon(
+//           Icons.search,
+//           color: Colors.white,
+//         ),
+//         label: const Text('Buscar...'),
+//         onPressed: () {
+//           showDialog(
+//             barrierDismissible: false,
+//             context: context,
+//             builder: (context) {
+//               return StatefulBuilder(
+//                 builder: (context, setState) {
+//                   final TextEditingController textController =
+//                       TextEditingController();
+//                   return DialogSelecionarAlimento(
+//                     searchBoxController: textController,
+//                     alimentosSelecionados: alimentosSelecionados,
+//                     setState: setState,
+//                   );
+//                 },
+//               );
+//             },
+//           ).then(
+//             (value) {
+//               setPageState(() {});
+//             },
+//           );
+//         },
+//         style: TextButton.styleFrom(
+//           backgroundColor: AppColors.defaultAppColor,
+//           foregroundColor: Colors.white,
+//         ));
+//   }
+// }
 
 class CommaToDotFormatter extends TextInputFormatter {
   @override
