@@ -6,7 +6,7 @@ class AlimentoIngerido {
   int id;
   final int idAlimentoReferencia;
   int idRefeicao;
-  final double qtdIngerida;
+  double qtdIngerida;
 
   AlimentoRef? _alimentoReferencia;
 
@@ -20,13 +20,7 @@ class AlimentoIngerido {
   }
 
   // é uma boa, no DAO, não continuar a operação sem ter o idRefeicao > -1 e a qtdIngerida > 0; estourar uma exception e tudo o mais (o próprio id feijoada pq ele é auto incremento)
-  AlimentoIngerido({
-    this.id = -1,
-    required this.idAlimentoReferencia,
-    this.idRefeicao = -1,
-    this.qtdIngerida = 0,
-    alimentoReferencia
-  }): _alimentoReferencia = alimentoReferencia;
+  AlimentoIngerido({this.id = -1, required this.idAlimentoReferencia, this.idRefeicao = -1, this.qtdIngerida = 0, alimentoReferencia}) : _alimentoReferencia = alimentoReferencia;
 
   Map<String, dynamic> toMap() {
     if (id == -1) {
@@ -47,10 +41,10 @@ class AlimentoIngerido {
 
   factory AlimentoIngerido.fromMap(Map<String, dynamic> map) {
     return AlimentoIngerido(
-      id: map['id'],
-      idAlimentoReferencia: map['idAlimentoReferencia'],
-      idRefeicao: map['idRefeicao'],
-      qtdIngerida: (map['qtdIngerida']) // n precisa de parse que nem no alimento referencia pq no sqlite ele tá salvo como double mesmo
-    );    
+        id: map['id'],
+        idAlimentoReferencia: map['idAlimentoReferencia'],
+        idRefeicao: map['idRefeicao'],
+        qtdIngerida: (map['qtdIngerida']) // n precisa de parse que nem no alimento referencia pq no sqlite ele tá salvo como double mesmo
+        );
   }
 }

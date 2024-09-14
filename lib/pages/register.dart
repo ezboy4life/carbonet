@@ -286,10 +286,6 @@ class _EmailAndPassword extends StatelessWidget {
         ),
         GradientButton(
           label: "Avançar",
-          buttonColors: const [
-            AppColors.defaultDarkAppColor,
-            AppColors.defaultAppColor,
-          ],
           onPressed: () {
             emailController.text = emailController.text.trim();
             if (!Validators.isValidEmail(emailController.text)) {
@@ -298,16 +294,14 @@ class _EmailAndPassword extends StatelessWidget {
                 builder: (BuildContext context) {
                   return const PopupDialog(
                     title: "E-mail inválido!",
-                    message:
-                        "Por gentileza, insira um endereço de e-mail válido.",
+                    message: "Por gentileza, insira um endereço de e-mail válido.",
                   );
                 },
               );
               return;
             }
 
-            Validators.checkEmailAlreadyRegistered(emailController.text)
-                .then((isEmailRegistered) {
+            Validators.checkEmailAlreadyRegistered(emailController.text).then((isEmailRegistered) {
               if (isEmailRegistered) {
                 Navigator.pop(context);
                 showDialog(
@@ -315,8 +309,7 @@ class _EmailAndPassword extends StatelessWidget {
                   builder: (BuildContext context) {
                     return const PopupDialog(
                       title: "E-mail já registrado!",
-                      message:
-                          "Faça o Login ou clique em \"Esqueceu sua senha?\".",
+                      message: "Faça o Login ou clique em \"Esqueceu sua senha?\".",
                     );
                   },
                 );
@@ -330,8 +323,7 @@ class _EmailAndPassword extends StatelessWidget {
                   builder: (BuildContext context) {
                     return const PopupDialog(
                       title: "Senha inválida!",
-                      message:
-                          "Por gentileza, insira uma senha com 10 ou mais caracteres.",
+                      message: "Por gentileza, insira uma senha com 10 ou mais caracteres.",
                     );
                   },
                 );
@@ -344,8 +336,7 @@ class _EmailAndPassword extends StatelessWidget {
                 builder: (BuildContext context) {
                   return const PopupDialog(
                     title: "Erro ao checar email!",
-                    message:
-                        "Ocorreu um erro ao checar se o seu e-mail já está registrado.",
+                    message: "Ocorreu um erro ao checar se o seu e-mail já está registrado.",
                   );
                 },
               );
@@ -392,10 +383,6 @@ class _NameAndSurname extends StatelessWidget {
         ),
         GradientButton(
           label: "Avançar",
-          buttonColors: const [
-            AppColors.defaultDarkAppColor,
-            AppColors.defaultAppColor,
-          ],
           onPressed: () {
             nameController.text = nameController.text.trim();
             if (nameController.text.isEmpty) {
@@ -476,10 +463,6 @@ class _BirthAndWeight extends StatelessWidget {
         ),
         GradientButton(
           label: "Avançar",
-          buttonColors: const [
-            AppColors.defaultDarkAppColor,
-            AppColors.defaultAppColor,
-          ],
           onPressed: () {
             if (!Validators.isValidWeight(weightController.text)) {
               showDialog(
@@ -487,8 +470,7 @@ class _BirthAndWeight extends StatelessWidget {
                 builder: (BuildContext context) {
                   return const PopupDialog(
                     title: "Peso inválido!",
-                    message:
-                        "Por gentileza, defina um peso válido.\nExemplo: 75.2 KG.",
+                    message: "Por gentileza, defina um peso válido.\nExemplo: 75.2 KG.",
                   );
                 },
               );
@@ -507,8 +489,7 @@ class _BirthAndWeight extends StatelessWidget {
                 builder: (BuildContext context) {
                   return const PopupDialog(
                     title: "Data de nascimento inválida!",
-                    message:
-                        "Verifique se a data inserida está correta.\nVocê precisa ter ao menos 18 anos para se registrar.",
+                    message: "Verifique se a data inserida está correta.\nVocê precisa ter ao menos 18 anos para se registrar.",
                   );
                 },
               );
@@ -567,10 +548,6 @@ class _HeightAndInsulin extends StatelessWidget {
         ),
         GradientButton(
           label: "Finalizar Cadastro",
-          buttonColors: const [
-            AppColors.defaultDarkAppColor,
-            AppColors.defaultAppColor,
-          ],
           onPressed: () {
             if (heightController.text.isEmpty ||
                 !Validators.isValidHeight(
@@ -594,8 +571,7 @@ class _HeightAndInsulin extends StatelessWidget {
                 builder: (BuildContext context) {
                   return const PopupDialog(
                     title: "Constante inválida!",
-                    message:
-                        "Por gentileza, defina uma constante insulínica válida.",
+                    message: "Por gentileza, defina uma constante insulínica válida.",
                   );
                 },
               );
@@ -610,8 +586,7 @@ class _HeightAndInsulin extends StatelessWidget {
                   return const PopupDialog(
                     icon: Icons.check_circle_rounded,
                     title: "Cadastro concluído!",
-                    message:
-                        "Por gentileza, faça login com os dados que você inseriu.",
+                    message: "Por gentileza, faça login com os dados que você inseriu.",
                   );
                 },
               );
@@ -622,8 +597,7 @@ class _HeightAndInsulin extends StatelessWidget {
                 builder: (BuildContext context) {
                   return const PopupDialog(
                     title: "Erro ao realizar cadastro!",
-                    message:
-                        "Por gentileza, revise se os dados inseridos estão corretos.",
+                    message: "Por gentileza, revise se os dados inseridos estão corretos.",
                   );
                 },
               );
@@ -639,8 +613,7 @@ class _HeightAndInsulin extends StatelessWidget {
 // Talvez numa classe Utils (?)
 class CommaToDotFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
     return newValue.copyWith(
       text: newValue.text.replaceAll(',', '.'),
       selection: newValue.selection,

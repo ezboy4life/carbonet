@@ -28,8 +28,7 @@ class DialogSelecionarAlimento extends StatefulWidget {
   final List<AlimentoIngerido> alimentosSelecionados;
 
   @override
-  State<DialogSelecionarAlimento> createState() =>
-      _DialogSelecionarAlimentoState();
+  State<DialogSelecionarAlimento> createState() => _DialogSelecionarAlimentoState();
 }
 
 class _DialogSelecionarAlimentoState extends State<DialogSelecionarAlimento> {
@@ -57,10 +56,7 @@ class _DialogSelecionarAlimentoState extends State<DialogSelecionarAlimento> {
       });
     } else {
       setState(() {
-        listaAlimentoRefFiltrada = listaAlimentoRef
-            .where((element) =>
-                element.nome.toLowerCase().contains(value.toLowerCase()))
-            .toList();
+        listaAlimentoRefFiltrada = listaAlimentoRef.where((element) => element.nome.toLowerCase().contains(value.toLowerCase())).toList();
       });
     }
   }
@@ -136,12 +132,6 @@ class _DialogSelecionarAlimentoState extends State<DialogSelecionarAlimento> {
                 style: TextStyle(color: Colors.white),
               ),
             ),
-            // const Center(
-            //   child: Text(
-            //     "Página de alimentos selecionados.",
-            //     style: TextStyle(color: Colors.white),
-            //   ),
-            // ),
             SelectedFoodsList(
               selectedFoods: widget.alimentosSelecionados,
             ),
@@ -369,48 +359,55 @@ class FavoriteFoodsList extends StatelessWidget {
   }
 }
 
-class SelectedFoodsList extends StatelessWidget {
+class SelectedFoodsList extends StatefulWidget {
   final List<AlimentoIngerido> selectedFoods;
 
   const SelectedFoodsList({super.key, required this.selectedFoods});
 
   @override
+  State<SelectedFoodsList> createState() => _SelectedFoodsListState();
+}
+
+class _SelectedFoodsListState extends State<SelectedFoodsList> {
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // const SizedBox(height: 30),
-        // InputField(
-        //   controller: searchBoxController,
-        //   onChanged: updateFilteredList,
-        //   labelText: "Pesquisar por alimentos",
-        // ),
         const SizedBox(height: 30),
         Expanded(
           child: ListView.builder(
-            itemCount: selectedFoods.length,
+            itemCount: widget.selectedFoods.length,
             itemBuilder: (context, index) {
               return ListTile(
                 title: Text(
-                  selectedFoods[index].alimentoReferencia.nome,
+                  widget.selectedFoods[index].alimentoReferencia.nome,
                   style: const TextStyle(color: AppColors.fontBright),
                 ),
                 trailing: Text(
-                  "${selectedFoods[index].qtdIngerida.toStringAsFixed(0)}g",
+                  "${widget.selectedFoods[index].qtdIngerida.toStringAsFixed(0)}g",
                   style: const TextStyle(
                     color: AppColors.fontBright,
                     fontSize: 15,
                   ),
                 ),
-                onTap: () {
-                  infoLog(selectedFoods[index].alimentoReferencia.nome);
-                  showDialog(
+                onTap: () async {
+                  infoLog(widget.selectedFoods[index].alimentoReferencia.nome);
+                  final result = await showDialog(
                     context: context,
                     builder: (BuildContext context) {
                       return DialogEditSelectedFood(
-                        selectedFood: selectedFoods[index],
+                        selectedFood: widget.selectedFoods[index],
                       );
                     },
                   );
+
+                  if (result == "delete") {
+                    setState(() {
+                      widget.selectedFoods.removeAt(index);
+                    });
+                  } else if (result != null) {
+                    setState(() {});
+                  }
                 },
               );
             },
@@ -505,7 +502,28 @@ class _DialogSelecionarQtdState extends State<DialogSelecionarQtd> {
                   const SizedBox(height: 30),
                   GradientButton(
                     label: "Adicionar",
-                    onPressed: () {},
+                    onPressed: () {
+                      if (qtdController.text.isEmpty || double.parse(qtdController.text) == 0) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return const PopupDialog(
+                              title: "Quantidade inválida!",
+                              message: "Insira uma quantidade (em gramas) válida.",
+                            );
+                          },
+                        );
+                        return;
+                      }
+                      widget.listaAlimentosSelecionados.add(
+                        AlimentoIngerido(
+                          idAlimentoReferencia: widget.alimentoSelecionado.id,
+                          alimentoReferencia: widget.alimentoSelecionado,
+                          qtdIngerida: double.parse(qtdController.text),
+                        ),
+                      );
+                      Navigator.pop(context);
+                    },
                   ),
                 ],
               ),
@@ -517,14 +535,20 @@ class _DialogSelecionarQtdState extends State<DialogSelecionarQtd> {
   }
 }
 
-class DialogEditSelectedFood extends StatelessWidget {
+class DialogEditSelectedFood extends StatefulWidget {
   AlimentoIngerido selectedFood;
-  final TextEditingController selectedFoodController = TextEditingController();
 
   DialogEditSelectedFood({
     super.key,
     required this.selectedFood,
   });
+
+  @override
+  State<DialogEditSelectedFood> createState() => _DialogEditSelectedFoodState();
+}
+
+class _DialogEditSelectedFoodState extends State<DialogEditSelectedFood> {
+  final TextEditingController selectedFoodController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -566,7 +590,7 @@ class DialogEditSelectedFood extends StatelessWidget {
                           ),
                         ),
                         TextSpan(
-                          text: selectedFood.alimentoReferencia.nome,
+                          text: widget.selectedFood.alimentoReferencia.nome,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 20,
@@ -594,24 +618,16 @@ class DialogEditSelectedFood extends StatelessWidget {
                   GradientButton(
                     label: "Alterar",
                     onPressed: () {
-                      if (selectedFoodController.text.isNotEmpty &&
-                          int.parse(selectedFoodController.text) != 0) {
-                        selectedFood = AlimentoIngerido(
-                          alimentoReferencia: selectedFood.alimentoReferencia,
-                          idAlimentoReferencia:
-                              selectedFood.alimentoReferencia.id,
-                          qtdIngerida:
-                              double.parse(selectedFoodController.text),
-                        );
-                        Navigator.of(context).pop();
+                      if (selectedFoodController.text.isNotEmpty && int.parse(selectedFoodController.text) != 0) {
+                        widget.selectedFood.qtdIngerida = double.parse(selectedFoodController.text);
+                        Navigator.of(context).pop(widget.selectedFood.qtdIngerida);
                       } else {
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
                             return const PopupDialog(
                               title: "Quantidade inválida!",
-                              message:
-                                  "Insira uma quantidade (em gramas) válida.",
+                              message: "Insira uma quantidade (em gramas) válida.",
                             );
                           },
                         );
@@ -622,7 +638,7 @@ class DialogEditSelectedFood extends StatelessWidget {
                   GradientButton(
                     label: "Remover",
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      Navigator.of(context).pop("delete");
                     },
                   )
                 ],

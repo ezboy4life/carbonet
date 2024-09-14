@@ -29,18 +29,14 @@ class AdicionarRefeicao extends StatefulWidget {
 
 class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
   final List<AlimentoIngerido> alimentosSelecionados = [];
-  final TextEditingController selecionarAlimentosController =
-      TextEditingController();
-  final TextEditingController favoritosAlimentosController =
-      TextEditingController();
-  final TextEditingController selecionadosAlimentosController =
-      TextEditingController();
+  final TextEditingController selecionarAlimentosController = TextEditingController();
+  final TextEditingController favoritosAlimentosController = TextEditingController();
+  final TextEditingController selecionadosAlimentosController = TextEditingController();
   final TextEditingController tipoRefeicaoController = TextEditingController();
   final TextEditingController _glicemiaController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
-  final TextEditingController _selectedMealTypeController =
-      TextEditingController();
+  final TextEditingController _selectedMealTypeController = TextEditingController();
   // final List<AlimentoIngerido> _selectedFoods
   DateTime? selectedMealDate;
   TimeOfDay? selectedMealTime;
@@ -153,8 +149,7 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
   void setState(VoidCallback fn) {
     totalCHO = 0;
     for (var alimentoIngerido in alimentosSelecionados) {
-      totalCHO += alimentoIngerido.alimentoReferencia.carbos_por_grama *
-          alimentoIngerido.qtdIngerida;
+      totalCHO += alimentoIngerido.alimentoReferencia.carbos_por_grama * alimentoIngerido.qtdIngerida;
     }
     super.setState(fn);
   }
@@ -311,22 +306,13 @@ class MealInfo extends StatelessWidget {
         InputField(
           controller: glicemiaController,
           labelText: "Glicemia",
-          inputFormatters: [
-            FilteringTextInputFormatter.allow(
-              RegExp(r'^\d*[.,]?\d*$'),
-            ),
-            CommaToDotFormatter(),
-          ],
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          maxLength: 320,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          keyboardType: const TextInputType.numberWithOptions(decimal: false),
+          maxLength: 20,
         ),
         const Spacer(),
         GradientButton(
           label: "Avançar",
-          buttonColors: const [
-            AppColors.defaultDarkAppColor,
-            AppColors.defaultAppColor,
-          ],
           onPressed: () {
             // Validação da data
             DateTime? date = getSelectedDate();
@@ -360,7 +346,7 @@ class MealInfo extends StatelessWidget {
             }
 
             // Validação da Glicemia
-            if (glicemiaController.text.isEmpty) {
+            if (glicemiaController.text.isEmpty || int.parse(glicemiaController.text) == 0) {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -397,12 +383,10 @@ class MealInfo extends StatelessWidget {
 
 // class MealList extends StatelessWidget {
 //   final List<AlimentoIngerido> selectedFoods;
-
 //   const MealList({
 //     super.key,
 //     required this.selectedFoods,
 //   });
-
 //   @override
 //   Widget build(BuildContext context) {
 //     return Container(
@@ -456,15 +440,12 @@ class TextButton_CadastrarRefeicao extends StatelessWidget {
         } else {
           Refeicao refeicao = Refeicao(
             idUser: LoggedUserAccess().user!.id!,
-            data: DateTime
-                .now(), // TODO mudar <- tem que ter um campo pra selecionar data aqui tipo o que tem na tela de cadastro :)
+            data: DateTime.now(), // TODO mudar <- tem que ter um campo pra selecionar data aqui tipo o que tem na tela de cadastro :)
             tipoRefeicao: tipoRefeicao,
             isActive: true,
           );
 
-          DaoProcedureCoupler.inserirRefeicaoProcedimento(
-                  refeicao, alimentosSelecionados)
-              .then(
+          DaoProcedureCoupler.inserirRefeicaoProcedimento(refeicao, alimentosSelecionados).then(
             (value) {
               //TODO
               //se sucesso, devolver o valor pra tela home e mostrar uma snackbar de sucesso;
@@ -559,8 +540,7 @@ class ListView_AlimentosSelecionados extends StatelessWidget {
 
 class CommaToDotFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
     return newValue.copyWith(
       text: newValue.text.replaceAll(',', '.'),
       selection: newValue.selection,
