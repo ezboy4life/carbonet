@@ -2,36 +2,47 @@ import 'dart:async';
 import 'package:carbonet/data/database/alimento_ref_dao.dart';
 import 'package:carbonet/data/models/alimento_ingerido.dart';
 import 'package:carbonet/data/models/alimento_ref.dart';
+import 'package:carbonet/data/models/refeicao.dart';
 import 'package:carbonet/utils/app_colors.dart';
+import 'package:carbonet/utils/dao_procedure_coupler.dart';
+import 'package:carbonet/utils/logged_user_access.dart';
 import 'package:carbonet/utils/logger.dart';
 import 'package:carbonet/widgets/gradient_button.dart';
 import 'package:carbonet/widgets/input_field.dart';
 import 'package:carbonet/widgets/popup_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 
-class DialogSelecionarAlimento extends StatefulWidget {
-  const DialogSelecionarAlimento({
-    super.key,
-    required this.searchBoxController,
-    required this.favoritesSearchBoxController,
-    required this.selectedFoodsSearchBoxController,
-    required this.alimentosSelecionados,
-    required this.setState,
-  });
-
+class SelectFoods extends StatefulWidget {
   final Function setState;
   final TextEditingController searchBoxController;
   final TextEditingController favoritesSearchBoxController;
   final TextEditingController selectedFoodsSearchBoxController;
+  final TextEditingController selectedMealTypeController;
+  final TextEditingController glicemiaController;
+
   final List<AlimentoIngerido> alimentosSelecionados;
+  final DateTime? mealDate;
+  final TimeOfDay? mealTime;
+
+  const SelectFoods({
+    super.key,
+    required this.searchBoxController,
+    required this.favoritesSearchBoxController,
+    required this.selectedFoodsSearchBoxController,
+    required this.selectedMealTypeController,
+    required this.glicemiaController,
+    required this.alimentosSelecionados,
+    required this.setState,
+    required this.mealDate,
+    required this.mealTime,
+  });
 
   @override
-  State<DialogSelecionarAlimento> createState() => _DialogSelecionarAlimentoState();
+  State<SelectFoods> createState() => _SelectFoodsState();
 }
 
-class _DialogSelecionarAlimentoState extends State<DialogSelecionarAlimento> {
+class _SelectFoodsState extends State<SelectFoods> {
   @override
   void initState() {
     super.initState();
@@ -140,7 +151,51 @@ class _DialogSelecionarAlimentoState extends State<DialogSelecionarAlimento> {
         bottomNavigationBar: GradientButton(
           label: "Registrar Refeição",
           onPressed: () {
-            infoLog("Botão de registrar refeição");
+            // debugLog("Data selecionada: ${widget.mealDate?.day}/${widget.mealDate?.month}/${widget.mealDate?.year}");
+            // debugLog("Horário selecionado: ${widget.mealTime?.hour}:${widget.mealTime?.minute}");
+            // debugLog("Glicemia: ${widget.glicemiaController.text}");
+            // debugLog("Tipo da refeição: ${widget.selectedMealTypeController.text}");
+            // if (widget.alimentosSelecionados.isEmpty) {
+            //   errorLog("Nenhum alimento selecionado!");
+            //   return;
+            // }
+            // for (final alimento in widget.alimentosSelecionados) {
+            //   infoLog("${alimento.alimentoReferencia.nome} - ${alimento.qtdIngerida}");
+            // }
+
+            if (widget.alimentosSelecionados.isEmpty) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return const PopupDialog(
+                    title: "Refeição sem alimentos!",
+                    message: "Insira pelo menos um alimento para que a refeição possa ser registrada.",
+                  );
+                },
+              );
+              return;
+            }
+
+            final DateTime dataRefeicao = DateTime(
+              widget.mealDate!.year,
+              widget.mealDate!.month,
+              widget.mealDate!.day,
+              widget.mealTime!.hour,
+              widget.mealTime!.minute,
+            );
+
+            Refeicao refeicao = Refeicao(
+              idUser: LoggedUserAccess().user!.id!,
+              data: dataRefeicao,
+              tipoRefeicao: widget.selectedMealTypeController.text,
+              isActive: true,
+            );
+
+            DaoProcedureCoupler.inserirRefeicaoProcedimento(refeicao, widget.alimentosSelecionados).then(
+              (value) {
+                Navigator.pop(context, true);
+              },
+            );
           },
         ),
       ),
@@ -219,7 +274,7 @@ class _DialogSelecionarAlimentoState extends State<DialogSelecionarAlimento> {
   //                                       builder: (context) {
   //                                         return StatefulBuilder(
   //                                             builder: (context, setState) {
-  //                                           return DialogSelecionarQtd(
+  //                                           return DialogAdicionarAlimento(
   //                                               alimentoSelecionado:
   //                                                   alimentoRef,
   //                                               listaAlimentosSelecionados:
@@ -332,7 +387,7 @@ class AllFoodsList extends StatelessWidget {
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
-                      return DialogSelecionarQtd(
+                      return DialogAdicionarAlimento(
                         alimentoSelecionado: filteredFoodReferenceList[index],
                         listaAlimentosSelecionados: selectedFoodList,
                       );
@@ -418,8 +473,8 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
   }
 }
 
-class DialogSelecionarQtd extends StatefulWidget {
-  const DialogSelecionarQtd({
+class DialogAdicionarAlimento extends StatefulWidget {
+  const DialogAdicionarAlimento({
     super.key,
     required this.alimentoSelecionado,
     required this.listaAlimentosSelecionados,
@@ -429,10 +484,10 @@ class DialogSelecionarQtd extends StatefulWidget {
   final List<AlimentoIngerido> listaAlimentosSelecionados;
 
   @override
-  State<DialogSelecionarQtd> createState() => _DialogSelecionarQtdState();
+  State<DialogAdicionarAlimento> createState() => _DialogAdicionarAlimentoState();
 }
 
-class _DialogSelecionarQtdState extends State<DialogSelecionarQtd> {
+class _DialogAdicionarAlimentoState extends State<DialogAdicionarAlimento> {
   final TextEditingController qtdController = TextEditingController();
 
   @override
@@ -515,6 +570,15 @@ class _DialogSelecionarQtdState extends State<DialogSelecionarQtd> {
                         );
                         return;
                       }
+
+                      for (final alimento in widget.listaAlimentosSelecionados) {
+                        if (alimento.idAlimentoReferencia == widget.alimentoSelecionado.id) {
+                          alimento.qtdIngerida += double.parse(qtdController.text);
+                          Navigator.pop(context);
+                          return;
+                        }
+                      }
+
                       widget.listaAlimentosSelecionados.add(
                         AlimentoIngerido(
                           idAlimentoReferencia: widget.alimentoSelecionado.id,
@@ -637,6 +701,10 @@ class _DialogEditSelectedFoodState extends State<DialogEditSelectedFood> {
                   const SizedBox(height: 30),
                   GradientButton(
                     label: "Remover",
+                    buttonColors: const [
+                      Colors.red,
+                      Colors.redAccent,
+                    ],
                     onPressed: () {
                       Navigator.of(context).pop("delete");
                     },

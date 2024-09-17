@@ -37,15 +37,13 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
   final TextEditingController _selectedMealTypeController = TextEditingController();
-  // final List<AlimentoIngerido> _selectedFoods
-  DateTime? selectedMealDate;
-  TimeOfDay? selectedMealTime;
+  DateTime selectedMealDate = DateTime.now();
+  TimeOfDay selectedMealTime = TimeOfDay.now();
 
   final List<String> _hintTexts = [
     "Preencha os dados",
     "Selecione os alimentos",
   ];
-  late List<Widget> _pageList;
   final PageController _pageViewController = PageController();
   double glicemia = 0.0;
   double totalCHO = 0.0;
@@ -64,7 +62,7 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
   }
 
   void _handlePageChanged(int currentPageIndex) {
-    _currentProgress = _normalize(0, _pageList.length - 1, currentPageIndex);
+    _currentProgress = _normalize(0, 1, currentPageIndex);
     setState(() {
       _currentPageIndex = currentPageIndex;
     });
@@ -80,7 +78,7 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
 
   void _previousPage() {
     _selectedMealTypeController.text = "";
-    _glicemiaController.text = "";
+    // _glicemiaController.text = "";
 
     _pageViewController.previousPage(
       duration: const Duration(milliseconds: 300),
@@ -95,7 +93,6 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
       String month = date.month.toString().padLeft(2, "0");
       _dateController.text = "$day/$month/${date.year}";
     });
-    // infoLog("Data selecionada: ${selectedMealDate.toString()}");
   }
 
   void _handleTimeSelected(TimeOfDay time) {
@@ -103,10 +100,8 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
       selectedMealTime = time;
       String hour = time.hour.toString().padLeft(2, "0");
       String minutes = time.minute.toString().padLeft(2, "0");
-
       _timeController.text = "$hour:$minutes";
     });
-    // infoLog("Horário selecionado: ${_timeController.text}");
   }
 
   DateTime? _getSelectedDate() {
@@ -120,27 +115,6 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
   @override
   void initState() {
     super.initState();
-    _pageList = [
-      MealInfo(
-        nextPage: _nextPage,
-        onDateSelected: _handleDateSelected,
-        onTimeSelected: _handleTimeSelected,
-        getSelectedDate: _getSelectedDate,
-        getSelectedTime: _getSelectedTime,
-        glicemiaController: _glicemiaController,
-        dateController: _dateController,
-        timeController: _timeController,
-        selectedMealTypeController: _selectedMealTypeController,
-        tiposDeRefeicao: _tiposDeRefeicao,
-      ),
-      DialogSelecionarAlimento(
-        searchBoxController: selecionarAlimentosController,
-        favoritesSearchBoxController: favoritosAlimentosController,
-        selectedFoodsSearchBoxController: selecionadosAlimentosController,
-        alimentosSelecionados: alimentosSelecionados,
-        setState: setState,
-      )
-    ];
     _handleDateSelected(DateTime.now());
     _handleTimeSelected(TimeOfDay.now());
   }
@@ -205,7 +179,7 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Etapa ${_currentPageIndex + 1} de ${_pageList.length}",
+                        "Etapa ${_currentPageIndex + 1} de 2",
                         style: const TextStyle(
                           color: AppColors.fontDimmed,
                         ),
@@ -225,7 +199,31 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
                   controller: _pageViewController,
                   physics: const NeverScrollableScrollPhysics(),
                   onPageChanged: _handlePageChanged,
-                  children: _pageList,
+                  children: [
+                    MealInfo(
+                      nextPage: _nextPage,
+                      onDateSelected: _handleDateSelected,
+                      onTimeSelected: _handleTimeSelected,
+                      getSelectedDate: _getSelectedDate,
+                      getSelectedTime: _getSelectedTime,
+                      glicemiaController: _glicemiaController,
+                      dateController: _dateController,
+                      timeController: _timeController,
+                      selectedMealTypeController: _selectedMealTypeController,
+                      tiposDeRefeicao: _tiposDeRefeicao,
+                    ),
+                    SelectFoods(
+                      searchBoxController: selecionarAlimentosController,
+                      favoritesSearchBoxController: favoritosAlimentosController,
+                      selectedFoodsSearchBoxController: selecionadosAlimentosController,
+                      alimentosSelecionados: alimentosSelecionados,
+                      mealDate: selectedMealDate,
+                      mealTime: selectedMealTime,
+                      selectedMealTypeController: _selectedMealTypeController,
+                      glicemiaController: _glicemiaController,
+                      setState: setState,
+                    )
+                  ],
                 ),
               ),
             ],
@@ -373,6 +371,14 @@ class MealInfo extends StatelessWidget {
               return;
             }
 
+            date = DateTime(
+              date.year,
+              date.month,
+              date.day,
+              time!.hour,
+              time.minute,
+            );
+
             nextPage();
           },
         )
@@ -380,163 +386,6 @@ class MealInfo extends StatelessWidget {
     );
   }
 }
-
-// class MealList extends StatelessWidget {
-//   final List<AlimentoIngerido> selectedFoods;
-//   const MealList({
-//     super.key,
-//     required this.selectedFoods,
-//   });
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       color: Colors.white,
-//       decoration: const BoxDecoration(color: Colors.white),
-//       child: ListView.builder(
-//         shrinkWrap: true,
-//         itemCount: selectedFoods.length,
-//         itemBuilder: (context, index) {
-//           final alimento = selectedFoods[index];
-//           return ListTile(
-//             title: Text(alimento.alimentoReferencia.nome),
-//             trailing: Text("${alimento.qtdIngerida}g"),
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }
-
-/// O botão responsável pelos eventos de cadastrar uma refeição.
-///
-/// Entenda-se por isso: criar o objeto refeição, colocar a lista de alimentos selecionados dentro dele, chamar o sequenciador que invoca os DAOs responsáveis por cadastrar a refeição (e, em seguida, os alimentos ingeridos) e, ao final, devolver você para a tela inicial com uma notificação snackbar de sucesso.
-class TextButton_CadastrarRefeicao extends StatelessWidget {
-  const TextButton_CadastrarRefeicao({
-    super.key,
-    required this.alimentosSelecionados,
-    required this.glicemia,
-    required this.totalCHO,
-    required this.tipoRefeicao,
-  });
-
-  final List<AlimentoIngerido> alimentosSelecionados;
-  final double glicemia;
-  final double totalCHO;
-  final String tipoRefeicao;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextButton.icon(
-      label: const Text("Concluir"),
-      icon: const Icon(Icons.check, color: Colors.white),
-      onPressed: () {
-        if (tipoRefeicao.isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Selecione o tipo de refeição."),
-            ),
-          );
-          return;
-        } else {
-          Refeicao refeicao = Refeicao(
-            idUser: LoggedUserAccess().user!.id!,
-            data: DateTime.now(), // TODO mudar <- tem que ter um campo pra selecionar data aqui tipo o que tem na tela de cadastro :)
-            tipoRefeicao: tipoRefeicao,
-            isActive: true,
-          );
-
-          DaoProcedureCoupler.inserirRefeicaoProcedimento(refeicao, alimentosSelecionados).then(
-            (value) {
-              //TODO
-              //se sucesso, devolver o valor pra tela home e mostrar uma snackbar de sucesso;
-              Navigator.pop(context, true);
-              //se falha, mostrar uma snackbar de erro e ficar nessa página, para o usuário poder tentar de novo.
-            },
-          );
-        }
-      },
-      style: TextButton.styleFrom(
-        backgroundColor: AppColors.defaultGreen,
-        foregroundColor: Colors.white,
-      ),
-    );
-  }
-}
-
-/// A lista de alimentos selecionados.
-///
-/// Não tem muito mais o que dizer, é só a lista dos alimentos selecionados com as quantidades (alimentoIngerido)
-class ListView_AlimentosSelecionados extends StatelessWidget {
-  const ListView_AlimentosSelecionados({
-    super.key,
-    required this.alimentosSelecionados,
-  });
-  final List<AlimentoIngerido> alimentosSelecionados;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      shrinkWrap: true,
-      itemCount: alimentosSelecionados.length,
-      itemBuilder: (context, index) {
-        final alimento = alimentosSelecionados[index];
-        return ListTile(
-          title: Text(alimento.alimentoReferencia.nome),
-          trailing: Text("${alimento.qtdIngerida}g"),
-        );
-      },
-    );
-  }
-}
-
-/// O botão responsável por abrir a página de busca de alimentos.
-///
-/// Quase certeza que aqui a gente precisa passar a lista de alimentos selecionados, pra ela ser alterada por referência.
-// class TextButton_BuscarAlimentos extends StatelessWidget {
-//   const TextButton_BuscarAlimentos({
-//     super.key,
-//     required this.alimentosSelecionados,
-//     required this.setPageState,
-//   });
-//   final List<AlimentoIngerido> alimentosSelecionados;
-//   final Function setPageState;
-//   @override
-//   Widget build(BuildContext context) {
-//     return TextButton.icon(
-//         icon: const Icon(
-//           Icons.search,
-//           color: Colors.white,
-//         ),
-//         label: const Text('Buscar...'),
-//         onPressed: () {
-//           showDialog(
-//             barrierDismissible: false,
-//             context: context,
-//             builder: (context) {
-//               return StatefulBuilder(
-//                 builder: (context, setState) {
-//                   final TextEditingController textController =
-//                       TextEditingController();
-//                   return DialogSelecionarAlimento(
-//                     searchBoxController: textController,
-//                     alimentosSelecionados: alimentosSelecionados,
-//                     setState: setState,
-//                   );
-//                 },
-//               );
-//             },
-//           ).then(
-//             (value) {
-//               setPageState(() {});
-//             },
-//           );
-//         },
-//         style: TextButton.styleFrom(
-//           backgroundColor: AppColors.defaultAppColor,
-//           foregroundColor: Colors.white,
-//         ));
-//   }
-// }
 
 class CommaToDotFormatter extends TextInputFormatter {
   @override
