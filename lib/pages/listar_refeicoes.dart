@@ -19,8 +19,7 @@ class _ListarRefeicoesState extends State<ListarRefeicoes> {
 
   @override
   void initState() {
-    _futureRefeicoes =
-        RefeicaoDAO().getRefeicoesByUser(LoggedUserAccess().user!.id!);
+    _futureRefeicoes = RefeicaoDAO().getRefeicoesByUser(LoggedUserAccess().user!.id!);
     super.initState();
   }
 
@@ -36,8 +35,7 @@ class _ListarRefeicoesState extends State<ListarRefeicoes> {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (widget._isOpenHasBeenInit == false) {
-                  widget._isOpen =
-                      List.generate(snapshot.data!.length, (i) => false);
+                  widget._isOpen = List.generate(snapshot.data!.length, (i) => false);
                   widget._isOpenHasBeenInit = true;
                 }
 
@@ -47,25 +45,18 @@ class _ListarRefeicoesState extends State<ListarRefeicoes> {
                       canTapOnHeader: true,
                       headerBuilder: (context, isOpen) {
                         return ListTile(
-                          title: Text(
-                              "${snapshot.data![i].tipoRefeicao} - ${snapshot.data![i].data.toString()}"),
+                          title: Text("${snapshot.data![i].tipoRefeicao} - ${snapshot.data![i].data.toString()}"),
                         );
                       },
                       body: ListTile(
                         //TODO: melhorar esse futuro enfiado direto no futurebuilder
                         //title: Text("a fazer; não sei como gerar uma lista de conteúdo dinâmica sem usar futuro direto no futureBuilder aqui"),
                         title: FutureBuilder(
-                            future: DaoProcedureCoupler
-                                .getAlimentoIngeridoByRefeicaoFullData(
-                                    snapshot.data![i].id),
+                            future: DaoProcedureCoupler.getAlimentoIngeridoByRefeicaoFullData(snapshot.data![i].id),
                             builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.done) {
+                              if (snapshot.connectionState == ConnectionState.done) {
                                 return Column(
-                                  children: snapshot.data!
-                                      .map((e) => Text(
-                                          "${e.alimentoReferencia.nome} - ${e.qtdIngerida}g"))
-                                      .toList(),
+                                  children: snapshot.data!.map((e) => Text("${e.alimentoReferencia.nome} - ${e.qtdIngerida}g")).toList(),
                                 );
                               } else {
                                 return const CircularProgressIndicator();

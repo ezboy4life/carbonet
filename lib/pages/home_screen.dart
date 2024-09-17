@@ -2,8 +2,6 @@ import 'package:carbonet/pages/add_refeicao.dart';
 import 'package:carbonet/pages/home.dart';
 import 'package:carbonet/pages/listar_refeicoes.dart';
 import 'package:carbonet/utils/app_colors.dart';
-import 'package:carbonet/utils/logger.dart';
-// import 'package:carbonet/utils/logger.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -25,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   Future<void> showAddMealModal() async {
-    final result = await showModalBottomSheet(
+    await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) {
@@ -36,9 +34,6 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
     setState(() {});
-
-    // if (result != null && result) {
-    // }
   }
 
   void _onItemTapped(int index) {

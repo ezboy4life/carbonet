@@ -1,13 +1,6 @@
-// Nota: A página está inteirinha sem estilos.
-// Isso é intencional, por enquanto a prioridade é fazer funcionar.
-// Reposta a nota: IUPIII! :3
-
 import 'package:carbonet/data/models/alimento_ingerido.dart';
-import 'package:carbonet/data/models/refeicao.dart';
 import 'package:carbonet/pages/selecionar_alimentos.dart';
 import 'package:carbonet/utils/app_colors.dart';
-import 'package:carbonet/utils/dao_procedure_coupler.dart';
-import 'package:carbonet/utils/logged_user_access.dart';
 import 'package:carbonet/utils/logger.dart';
 import 'package:carbonet/utils/validators.dart';
 import 'package:carbonet/widgets/date_input_field.dart';
