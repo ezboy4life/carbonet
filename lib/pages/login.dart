@@ -3,8 +3,8 @@ import 'package:carbonet/data/repository/user_repository.dart';
 import "package:carbonet/utils/app_colors.dart";
 import 'package:carbonet/utils/logged_user_access.dart';
 import 'package:carbonet/utils/logger.dart';
-import 'package:carbonet/widgets/input_field.dart';
-import 'package:carbonet/widgets/popup_dialog.dart';
+import 'package:carbonet/widgets/input/input_field.dart';
+import 'package:carbonet/widgets/dialogs/popup_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:carbonet/widgets/gradient_button.dart';
+import 'package:carbonet/widgets/buttons/gradient_button.dart';
 import 'package:carbonet/utils/app_colors.dart';
 
 class PopupDialog extends StatelessWidget {

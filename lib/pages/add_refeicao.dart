@@ -1,14 +1,14 @@
 import 'package:carbonet/data/models/alimento_ingerido.dart';
 import 'package:carbonet/pages/selecionar_alimentos.dart';
 import 'package:carbonet/utils/validators.dart';
-import 'package:carbonet/widgets/date_input_field.dart';
-import 'package:carbonet/widgets/dropdown_menu.dart';
-import 'package:carbonet/widgets/dropdown_menu_entry.dart';
-import 'package:carbonet/widgets/gradient_button.dart';
+import 'package:carbonet/widgets/input/date_input_field.dart';
+import 'package:carbonet/widgets/input/dropdown_menu.dart';
+import 'package:carbonet/widgets/cosmetic/dropdown_menu_entry.dart';
+import 'package:carbonet/widgets/buttons/gradient_button.dart';
 import 'package:carbonet/widgets/pager.dart';
-import 'package:carbonet/widgets/popup_dialog.dart';
-import 'package:carbonet/widgets/time_input_field.dart';
-import 'package:carbonet/widgets/input_field.dart';
+import 'package:carbonet/widgets/dialogs/popup_dialog.dart';
+import 'package:carbonet/widgets/input/time_input_field.dart';
+import 'package:carbonet/widgets/input/input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

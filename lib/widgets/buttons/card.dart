@@ -70,8 +70,7 @@ class CardButton extends StatelessWidget {
                       child: SizedBox(
                         height: 85,
                         child: Padding(
-                          padding:
-                              const EdgeInsets.fromLTRB(26.0, 0.0, 0.0, 0.0),
+                          padding: const EdgeInsets.fromLTRB(26.0, 0.0, 0.0, 0.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.center,
