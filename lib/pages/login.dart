@@ -47,7 +47,7 @@ class LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Só pra facilitar minha vida 1 cadinho tá bom ;v
+    // Só pra facilitar minha vida 1 cadinho tá bom ;v
     emailController.text = "teste@gmail.com";
     passwordController.text = "1231231231";
     return Scaffold(
@@ -129,7 +129,6 @@ class LoginPageState extends State<LoginPage> {
                         splashFactory: NoSplash.splashFactory,
                       ),
                       onPressed: () {
-                        // TODO: haha
                         emailController.text = emailController.text.trim();
                         passwordController.text = passwordController.text.trim();
 

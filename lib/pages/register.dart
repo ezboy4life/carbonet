@@ -1,6 +1,7 @@
 import 'package:carbonet/data/models/user.dart';
 import 'package:carbonet/data/repository/user_repository.dart';
 import 'package:carbonet/utils/logger.dart';
+import 'package:carbonet/utils/textformatters.dart';
 import 'package:carbonet/utils/validators.dart';
 import 'package:carbonet/widgets/input/date_input_field.dart';
 import 'package:carbonet/widgets/buttons/gradient_button.dart';
@@ -67,7 +68,7 @@ class RegisterPageState extends State<RegisterPage> {
       ),
     ];
 
-    // TODO: Só pra facilitar os testes no cadastro. REMOVAM DEPOIS :V
+    // Só pra facilitar os testes no cadastro. REMOVAM DEPOIS :V
 
     _emailController.text = "teste@gmail.com";
     _passwordController.text = "1231231231";
@@ -479,7 +480,6 @@ class _BirthAndWeight extends StatelessWidget {
               );
               return;
             }
-            // TODO: Implementar verificação da data selecionada
             nextPage();
           },
         ),
@@ -589,18 +589,6 @@ class _HeightAndInsulin extends StatelessWidget {
           },
         ),
       ],
-    );
-  }
-}
-
-//TODO: Coloquei isso aqui pq não sei onde mais colocar honestamente
-// Talvez numa classe Utils (?)
-class CommaToDotFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
-    return newValue.copyWith(
-      text: newValue.text.replaceAll(',', '.'),
-      selection: newValue.selection,
     );
   }
 }
