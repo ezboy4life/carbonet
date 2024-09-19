@@ -18,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const HomePage(),
     const Placeholder(),
     const Placeholder(),
-    ListarRefeicoes(),
+    const ListarRefeicoes(),
     const Placeholder(),
   ];
 

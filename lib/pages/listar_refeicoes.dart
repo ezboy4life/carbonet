@@ -6,9 +6,7 @@ import 'package:carbonet/utils/logged_user_access.dart';
 import 'package:flutter/material.dart';
 
 class ListarRefeicoes extends StatefulWidget {
-  ListarRefeicoes({super.key});
-  List<bool> _isOpen = [];
-  bool _isOpenHasBeenInit = false;
+  const ListarRefeicoes({super.key});
 
   @override
   State<ListarRefeicoes> createState() => _ListarRefeicoesState();
@@ -16,7 +14,8 @@ class ListarRefeicoes extends StatefulWidget {
 
 class _ListarRefeicoesState extends State<ListarRefeicoes> {
   late Future<List<Refeicao>> _futureRefeicoes;
-
+  List<bool> _isOpen = [];
+  bool _isOpenHasBeenInit = false;
   @override
   void initState() {
     _futureRefeicoes = RefeicaoDAO().getRefeicoesByUser(LoggedUserAccess().user!.id!);
@@ -34,9 +33,9 @@ class _ListarRefeicoesState extends State<ListarRefeicoes> {
             future: _futureRefeicoes,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
-                if (widget._isOpenHasBeenInit == false) {
-                  widget._isOpen = List.generate(snapshot.data!.length, (i) => false);
-                  widget._isOpenHasBeenInit = true;
+                if (_isOpenHasBeenInit == false) {
+                  _isOpen = List.generate(snapshot.data!.length, (i) => false);
+                  _isOpenHasBeenInit = true;
                 }
 
                 return ExpansionPanelList(
@@ -63,12 +62,12 @@ class _ListarRefeicoesState extends State<ListarRefeicoes> {
                               }
                             }),
                       ),
-                      isExpanded: widget._isOpen[i],
+                      isExpanded: _isOpen[i],
                     );
                   }),
                   expansionCallback: (i, isOpen) {
                     setState(() {
-                      widget._isOpen[i] = isOpen;
+                      _isOpen[i] = isOpen;
                     });
                   },
                 );

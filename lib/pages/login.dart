@@ -22,6 +22,11 @@ class LoginPageState extends State<LoginPage> {
 
   void login(String email, String password) async {
     User? user = await userRepository.fetchUserFromLogin(email, password);
+
+    if (!mounted) {
+      return;
+    }
+
     if (user != null) {
       // TODO pra ser sincero isso aqui é um hack bem meia boca mas é o que tem pra hoje 😇
       LoggedUserAccess().user = user;
@@ -126,8 +131,7 @@ class LoginPageState extends State<LoginPage> {
                       onPressed: () {
                         // TODO: haha
                         emailController.text = emailController.text.trim();
-                        passwordController.text =
-                            passwordController.text.trim();
+                        passwordController.text = passwordController.text.trim();
 
                         login(emailController.text, passwordController.text);
                         infoLog("Botão 'Entrar'");

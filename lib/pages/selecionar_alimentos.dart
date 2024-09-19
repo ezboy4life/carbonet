@@ -444,9 +444,9 @@ class _DialogAdicionarAlimentoState extends State<DialogAdicionarAlimento> {
 }
 
 class DialogEditSelectedFood extends StatefulWidget {
-  AlimentoIngerido selectedFood;
+  final AlimentoIngerido selectedFood;
 
-  DialogEditSelectedFood({
+  const DialogEditSelectedFood({
     super.key,
     required this.selectedFood,
   });

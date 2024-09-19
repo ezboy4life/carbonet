@@ -1,12 +1,11 @@
 import 'package:carbonet/data/models/alimento_ingerido.dart';
 import 'package:carbonet/pages/selecionar_alimentos.dart';
-import 'package:carbonet/utils/app_colors.dart';
-import 'package:carbonet/utils/logger.dart';
 import 'package:carbonet/utils/validators.dart';
 import 'package:carbonet/widgets/date_input_field.dart';
 import 'package:carbonet/widgets/dropdown_menu.dart';
 import 'package:carbonet/widgets/dropdown_menu_entry.dart';
 import 'package:carbonet/widgets/gradient_button.dart';
+import 'package:carbonet/widgets/pager.dart';
 import 'package:carbonet/widgets/popup_dialog.dart';
 import 'package:carbonet/widgets/time_input_field.dart';
 import 'package:carbonet/widgets/input_field.dart';
@@ -40,8 +39,6 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
   final PageController _pageViewController = PageController();
   double glicemia = 0.0;
   double totalCHO = 0.0;
-  double _currentProgress = 0.0;
-  int _currentPageIndex = 0;
 
   final List<DropdownMenuEntry<String>> _tiposDeRefeicao = [
     CustomDropdownMenuEntry(value: "Café da manhã", label: "Café da manhã"),
@@ -50,30 +47,9 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
     CustomDropdownMenuEntry(value: "Lanche", label: "Lanche"),
   ];
 
-  double _normalize(int min, int max, int value) {
-    return (value - min) / (max - min);
-  }
-
-  void _handlePageChanged(int currentPageIndex) {
-    _currentProgress = _normalize(0, 1, currentPageIndex);
-    setState(() {
-      _currentPageIndex = currentPageIndex;
-    });
-  }
-
   void _nextPage() {
     FocusScope.of(context).unfocus();
     _pageViewController.nextPage(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeIn,
-    );
-  }
-
-  void _previousPage() {
-    _selectedMealTypeController.text = "";
-    // _glicemiaController.text = "";
-
-    _pageViewController.previousPage(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeIn,
     );
@@ -116,7 +92,7 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
   void setState(VoidCallback fn) {
     totalCHO = 0;
     for (var alimentoIngerido in alimentosSelecionados) {
-      totalCHO += alimentoIngerido.alimentoReferencia.carbos_por_grama * alimentoIngerido.qtdIngerida;
+      totalCHO += alimentoIngerido.alimentoReferencia.carbosPorGrama * alimentoIngerido.qtdIngerida;
     }
     super.setState(fn);
   }
@@ -124,6 +100,7 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.black,
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -142,83 +119,34 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              LinearProgressIndicator(
-                value: _currentProgress,
-                minHeight: 5,
-                borderRadius: const BorderRadius.all(Radius.circular(100)),
-                color: AppColors.defaultAppColor,
+          child: Pager(
+            pageViewController: _pageViewController,
+            hintTexts: _hintTexts,
+            heightFactor: 0.75,
+            pages: [
+              MealInfo(
+                nextPage: _nextPage,
+                onDateSelected: _handleDateSelected,
+                onTimeSelected: _handleTimeSelected,
+                getSelectedDate: _getSelectedDate,
+                getSelectedTime: _getSelectedTime,
+                glicemiaController: _glicemiaController,
+                dateController: _dateController,
+                timeController: _timeController,
+                selectedMealTypeController: _selectedMealTypeController,
+                tiposDeRefeicao: _tiposDeRefeicao,
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      infoLog("Botão de voltar");
-                      _previousPage();
-                    },
-                    icon: const Icon(
-                      Icons.arrow_back_ios_new_rounded,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Etapa ${_currentPageIndex + 1} de 2",
-                        style: const TextStyle(
-                          color: AppColors.fontDimmed,
-                        ),
-                      ),
-                      Text(
-                        _hintTexts[_currentPageIndex],
-                        style: const TextStyle(
-                          color: AppColors.fontBright,
-                        ),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-              Expanded(
-                child: PageView(
-                  controller: _pageViewController,
-                  physics: const NeverScrollableScrollPhysics(),
-                  onPageChanged: _handlePageChanged,
-                  children: [
-                    MealInfo(
-                      nextPage: _nextPage,
-                      onDateSelected: _handleDateSelected,
-                      onTimeSelected: _handleTimeSelected,
-                      getSelectedDate: _getSelectedDate,
-                      getSelectedTime: _getSelectedTime,
-                      glicemiaController: _glicemiaController,
-                      dateController: _dateController,
-                      timeController: _timeController,
-                      selectedMealTypeController: _selectedMealTypeController,
-                      tiposDeRefeicao: _tiposDeRefeicao,
-                    ),
-                    SelectFoods(
-                      searchBoxController: selecionarAlimentosController,
-                      favoritesSearchBoxController: favoritosAlimentosController,
-                      selectedFoodsSearchBoxController: selecionadosAlimentosController,
-                      alimentosSelecionados: alimentosSelecionados,
-                      mealDate: selectedMealDate,
-                      mealTime: selectedMealTime,
-                      selectedMealTypeController: _selectedMealTypeController,
-                      glicemiaController: _glicemiaController,
-                      setState: setState,
-                    )
-                  ],
-                ),
-              ),
+              SelectFoods(
+                searchBoxController: selecionarAlimentosController,
+                favoritesSearchBoxController: favoritosAlimentosController,
+                selectedFoodsSearchBoxController: selecionadosAlimentosController,
+                selectedMealTypeController: _selectedMealTypeController,
+                glicemiaController: _glicemiaController,
+                alimentosSelecionados: alimentosSelecionados,
+                setState: setState,
+                mealDate: selectedMealDate,
+                mealTime: selectedMealTime,
+              )
             ],
           ),
         ),
