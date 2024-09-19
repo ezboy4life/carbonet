@@ -218,27 +218,30 @@ class AllFoodsList extends StatelessWidget {
         const SizedBox(height: 30),
         Expanded(
           child: ListView.builder(
-            // shrinkWrap: true,
             itemCount: filteredFoodReferenceList.length,
             itemBuilder: (context, index) {
-              return ListTile(
-                title: Text(
-                  filteredFoodReferenceList[index].nome,
-                  style: const TextStyle(color: AppColors.fontBright),
-                ),
-                onTap: () {
-                  infoLog('${filteredFoodReferenceList[index].nome} selected');
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return DialogAdicionarAlimento(
-                        alimentoSelecionado: filteredFoodReferenceList[index],
-                        listaAlimentosSelecionados: selectedFoodList,
+              return Column(
+                children: [
+                  ListTile(
+                    title: Text(
+                      filteredFoodReferenceList[index].nome,
+                      style: const TextStyle(color: AppColors.fontBright),
+                    ),
+                    onTap: () {
+                      infoLog('"${filteredFoodReferenceList[index].nome}" selecionado!');
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return DialogAdicionarAlimento(
+                            alimentoSelecionado: filteredFoodReferenceList[index],
+                            listaAlimentosSelecionados: selectedFoodList,
+                          );
+                        },
                       );
-                      // return PopupDialog(title: "title", message: "message");
                     },
-                  );
-                },
+                  ),
+                  if (index < filteredFoodReferenceList.length - 1) const Divider(color: AppColors.fontDimmed),
+                ],
               );
             },
           ),
@@ -253,7 +256,7 @@ class FavoriteFoodsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implementar a listagem dos favoritos
+    // TODO: Faça a boa Mateus... 	(˵ ͡° ͜ʖ ͡°˵)
     throw UnimplementedError();
   }
 }
@@ -277,37 +280,42 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
           child: ListView.builder(
             itemCount: widget.selectedFoods.length,
             itemBuilder: (context, index) {
-              return ListTile(
-                title: Text(
-                  widget.selectedFoods[index].alimentoReferencia.nome,
-                  style: const TextStyle(color: AppColors.fontBright),
-                ),
-                trailing: Text(
-                  "${widget.selectedFoods[index].qtdIngerida.toStringAsFixed(0)}g",
-                  style: const TextStyle(
-                    color: AppColors.fontBright,
-                    fontSize: 15,
-                  ),
-                ),
-                onTap: () async {
-                  infoLog(widget.selectedFoods[index].alimentoReferencia.nome);
-                  final result = await showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return DialogEditSelectedFood(
-                        selectedFood: widget.selectedFoods[index],
+              return Column(
+                children: [
+                  ListTile(
+                    title: Text(
+                      widget.selectedFoods[index].alimentoReferencia.nome,
+                      style: const TextStyle(color: AppColors.fontBright),
+                    ),
+                    trailing: Text(
+                      "${widget.selectedFoods[index].qtdIngerida.toStringAsFixed(0)}g",
+                      style: const TextStyle(
+                        color: AppColors.fontBright,
+                        fontSize: 15,
+                      ),
+                    ),
+                    onTap: () async {
+                      infoLog(widget.selectedFoods[index].alimentoReferencia.nome);
+                      final result = await showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return DialogEditSelectedFood(
+                            selectedFood: widget.selectedFoods[index],
+                          );
+                        },
                       );
-                    },
-                  );
 
-                  if (result == "delete") {
-                    setState(() {
-                      widget.selectedFoods.removeAt(index);
-                    });
-                  } else if (result != null) {
-                    setState(() {});
-                  }
-                },
+                      if (result == "delete") {
+                        setState(() {
+                          widget.selectedFoods.removeAt(index);
+                        });
+                      } else if (result != null) {
+                        setState(() {});
+                      }
+                    },
+                  ),
+                  if (index < widget.selectedFoods.length - 1) const Divider(color: AppColors.fontDimmed),
+                ],
               );
             },
           ),
