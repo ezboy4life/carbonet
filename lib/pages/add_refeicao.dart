@@ -118,7 +118,7 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+          padding: const EdgeInsets.all(20),
           child: Pager(
             pageViewController: _pageViewController,
             hintTexts: _hintTexts,
@@ -196,6 +196,7 @@ class MealInfo extends StatelessWidget {
         const Spacer(),
         DateInputField(
           labelText: "Data da refeição",
+          iconData: Icons.calendar_month_rounded,
           dateController: dateController,
           onDateSelected: onDateSelected,
         ),
@@ -204,6 +205,7 @@ class MealInfo extends StatelessWidget {
         ),
         TimeInputField(
           labelText: "Horário da refeição",
+          iconData: Icons.watch_later_rounded,
           timeController: timeController,
           onTimeSelected: onTimeSelected,
         ),
@@ -212,6 +214,7 @@ class MealInfo extends StatelessWidget {
         ),
         CustomDropDownMenu(
           labelText: "Tipo da Refeição",
+          iconData: Icons.restaurant_menu_rounded,
           dropdownMenuEntries: tiposDeRefeicao,
           selectedDropdownMenuEntry: CustomDropdownMenuEntry(
             value: selectedMealTypeController.text,
@@ -225,6 +228,7 @@ class MealInfo extends StatelessWidget {
         InputField(
           controller: glicemiaController,
           labelText: "Glicemia",
+          iconData: Icons.local_hospital_rounded,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           keyboardType: const TextInputType.numberWithOptions(decimal: false),
           maxLength: 20,

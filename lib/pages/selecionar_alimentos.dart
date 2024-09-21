@@ -213,7 +213,8 @@ class AllFoodsList extends StatelessWidget {
         InputField(
           controller: searchBoxController,
           onChanged: updateFilteredList,
-          labelText: "Pesquisar por alimentos",
+          labelText: "Pesquisar",
+          iconData: Icons.search_rounded,
         ),
         const SizedBox(height: 30),
         Expanded(
@@ -256,7 +257,6 @@ class FavoriteFoodsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Faça a boa Mateus... 	(˵ ͡° ͜ʖ ͡°˵)
     throw UnimplementedError();
   }
 }

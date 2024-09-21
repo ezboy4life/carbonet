@@ -81,6 +81,7 @@ class LoginPageState extends State<LoginPage> {
                   InputField(
                     controller: emailController,
                     labelText: "E-mail",
+                    iconData: Icons.email_rounded,
                     inputFormatters: [
                       FilteringTextInputFormatter.deny(" "),
                     ],
@@ -91,6 +92,7 @@ class LoginPageState extends State<LoginPage> {
                   InputField(
                     controller: passwordController,
                     labelText: "Senha",
+                    iconData: Icons.password_rounded,
                     obscureText: true,
                     inputFormatters: [
                       FilteringTextInputFormatter.deny(" "),

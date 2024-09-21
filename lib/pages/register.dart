@@ -145,55 +145,6 @@ class RegisterPageState extends State<RegisterPage> {
               const SizedBox(
                 height: 30,
               ),
-              // LinearProgressIndicator(
-              //   value: _currentProgress,
-              //   minHeight: 5,
-              //   borderRadius: const BorderRadius.all(Radius.circular(100)),
-              // ),
-              // const SizedBox(
-              //   height: 10,
-              // ),
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.start,
-              //   children: [
-              //     IconButton(
-              //       onPressed: () {
-              //         infoLog("Botão de voltar");
-              //         _previousPage();
-              //       },
-              //       icon: const Icon(
-              //         Icons.arrow_back_ios_new_rounded,
-              //         color: Colors.white,
-              //       ),
-              //     ),
-              //     Column(
-              //       mainAxisAlignment: MainAxisAlignment.center,
-              //       crossAxisAlignment: CrossAxisAlignment.start,
-              //       children: [
-              //         Text(
-              //           "Etapa ${_currentPageIndex + 1} de ${_pageList.length}",
-              //           style: const TextStyle(
-              //             color: AppColors.fontDimmed,
-              //           ),
-              //         ),
-              //         Text(
-              //           _hintTexts[_currentPageIndex],
-              //           style: const TextStyle(
-              //             color: AppColors.fontBright,
-              //           ),
-              //         ),
-              //       ],
-              //     )
-              //   ],
-              // ),
-              // Expanded(
-              //   child: PageView(
-              //     controller: _pageViewController,
-              //     physics: const NeverScrollableScrollPhysics(),
-              //     onPageChanged: handlePageSelected,
-              //     children: _pageList,
-              //   ),
-              // ),
               Pager(
                 pageViewController: _pageViewController,
                 pages: _pageList,
@@ -249,6 +200,7 @@ class _EmailAndPassword extends StatelessWidget {
         InputField(
           controller: emailController,
           labelText: "E-mail",
+          iconData: Icons.mail_rounded,
           inputFormatters: [
             FilteringTextInputFormatter.deny(RegExp(r'\s')),
           ],
@@ -260,6 +212,7 @@ class _EmailAndPassword extends StatelessWidget {
         InputField(
           controller: passwordController,
           labelText: "Senha",
+          iconData: Icons.password_rounded,
           obscureText: true,
           inputFormatters: [
             FilteringTextInputFormatter.deny(RegExp(r'\s')),
@@ -353,6 +306,7 @@ class _NameAndSurname extends StatelessWidget {
         InputField(
           controller: nameController,
           labelText: "Nome",
+          iconData: Icons.person_rounded,
           maxLength: 255,
         ),
         const SizedBox(
@@ -361,6 +315,7 @@ class _NameAndSurname extends StatelessWidget {
         InputField(
           controller: surnameController,
           labelText: "Sobrenome",
+          iconData: Icons.person_rounded,
           maxLength: 255,
         ),
         const SizedBox(
@@ -427,6 +382,7 @@ class _BirthAndWeight extends StatelessWidget {
       children: <Widget>[
         DateInputField(
           labelText: "Data de Nascimento",
+          iconData: Icons.calendar_month_rounded,
           dateController: dateController,
           onDateSelected: onDateSelected,
         ),
@@ -436,6 +392,7 @@ class _BirthAndWeight extends StatelessWidget {
         InputField(
           controller: weightController,
           labelText: "Peso (em KG)",
+          iconData: Icons.scale_rounded,
           maxLength: 5,
           inputFormatters: [
             FilteringTextInputFormatter.allow(RegExp(r'^\d*[.,]?\d*$')),
@@ -507,6 +464,7 @@ class _HeightAndInsulin extends StatelessWidget {
         InputField(
           controller: heightController,
           labelText: "Altura (em metros)",
+          iconData: Icons.accessibility_new_rounded,
           maxLength: 4,
           inputFormatters: [
             FilteringTextInputFormatter.allow(RegExp(r'^\d*[.,]?\d*$')),
@@ -520,6 +478,7 @@ class _HeightAndInsulin extends StatelessWidget {
         InputField(
           controller: insulinController,
           labelText: "Constante Insulinica",
+          iconData: Icons.local_hospital_rounded,
           maxLength: 5,
           inputFormatters: [
             FilteringTextInputFormatter.allow(RegExp(r'^\d*[.,]?\d*$')),
