@@ -1,6 +1,7 @@
 import 'package:carbonet/pages/add_refeicao.dart';
 import 'package:carbonet/pages/home.dart';
 import 'package:carbonet/pages/listar_refeicoes.dart';
+import 'package:carbonet/pages/registro_favoritos.dart';
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -26,9 +27,10 @@ class _HomeScreenState extends State<HomeScreen> {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       builder: (BuildContext context) {
         return SizedBox(
-          height: MediaQuery.of(context).size.height * 0.9,
+          height: (MediaQuery.of(context).size.height * 0.9) + 29, // wtf
           child: const AdicionarRefeicao(),
         );
       },
@@ -36,10 +38,28 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {});
   }
 
+  Future<void> showEditFavoritesModal() async {
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      barrierColor: Color(Colors.white.value).withOpacity(0.5),
+      builder: (BuildContext context) {
+        return SizedBox(
+          height: MediaQuery.of(context).size.height * 0.9,
+          child: RegistroFavoritos(),
+        );
+      }
+    );
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       if (index == 2) {
         showAddMealModal();
+        return;
+      } else if (index == 1) {
+        showEditFavoritesModal();
         return;
       }
       _selectedIndexNotifier.value = index;

@@ -137,11 +137,10 @@ class _SelectFoodsState extends State<SelectFoods> {
               searchBoxController: widget.searchBoxController,
               updateFilteredList: updateFilteredListDelay,
             ),
-            const Center(
-              child: Text(
-                "Página de alimentos favoritos.",
-                style: TextStyle(color: Colors.white),
-              ),
+            FavoriteFoodsList(
+              tipoRefeicao: widget.selectedMealTypeController.text,
+              listaAlimentosRef: listaAlimentoRef,
+              listaAlimentosSelecionados: widget.alimentosSelecionados,
             ),
             SelectedFoodsList(
               selectedFoods: widget.alimentosSelecionados,
@@ -252,12 +251,84 @@ class AllFoodsList extends StatelessWidget {
 }
 
 class FavoriteFoodsList extends StatelessWidget {
-  const FavoriteFoodsList({super.key});
+  FavoriteFoodsList({
+    super.key,
+    required this.tipoRefeicao,
+    required this.listaAlimentosRef,
+    required this.listaAlimentosSelecionados,
+  });
+
+  final String tipoRefeicao;
+  final List<AlimentoRef> listaAlimentosRef;
+  final List<AlimentoRef> favoritos = [];
+  final List<AlimentoIngerido> listaAlimentosSelecionados;
+
+  void _extrairFavoritos() {
+    favoritos.clear();//?
+
+    for (AlimentoRef alimento in listaAlimentosRef) {
+      if (_isFavorito(alimento, tipoRefeicao)) {
+        favoritos.add(alimento);
+      }
+    }
+  }
+
+  bool _isFavorito(AlimentoRef alimento, String tipoRefeicao) {
+    switch (tipoRefeicao) {
+      case "Café da manhã":
+      return alimento.favCafe;
+    case "Almoço":
+      return alimento.favAlmoco;
+    case "Janta":
+      return alimento.favJanta;
+    case "Lanche":
+      return alimento.favLanche;
+    default:
+      return false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     // TODO: Faça a boa Mateus... 	(˵ ͡° ͜ʖ ͡°˵)
-    throw UnimplementedError();
+    // boa feita, eu acho :pray:
+    
+    _extrairFavoritos();
+    
+    return Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text("Favoritos - $tipoRefeicao", style: const TextStyle(color: AppColors.fontBright, fontSize: 18, fontWeight: FontWeight.bold)),
+          ),
+          ListView.builder(
+            shrinkWrap: true,
+            itemCount: favoritos.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text(
+                  favoritos[index].nome, 
+                  style: const TextStyle(color: AppColors.fontBright),
+                ),
+                trailing: IconButton(onPressed: () {
+                    infoLog('"${favoritos[index].nome}" selecionado!');
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return DialogAdicionarAlimento(
+                            alimentoSelecionado: favoritos[index],
+                            listaAlimentosSelecionados: listaAlimentosSelecionados,
+                          );
+                        },
+                      );
+                  }, 
+                  icon: const Icon(Icons.add, color: Colors.blueAccent)
+                  ),
+              );
+            }
+          ),
+        ]
+      );
   }
 }
 
