@@ -39,13 +39,13 @@ class AlimentoRef {
       'id': id,
       'nome': nome,
       'porcao': porcao,
-      'gramasPorPorcao': gramasPorPorcao,
-      'carbosPorPorcao': carbosPorPorcao,
-      'carbosPorGrama': carbosPorGrama,
-      'favCafe': favCafe,
-      'favAlmoco': favAlmoco,
-      'favJanta': favJanta,
-      'favLanche': favLanche
+      'gramas_por_porcao': gramasPorPorcao,
+      'carbos_por_porcao': carbosPorPorcao,
+      'carbos_por_grama': carbosPorGrama,
+      'favCafe': favCafe ? 1 : 0,
+      'favAlmoco': favAlmoco ? 1 : 0,
+      'favJanta': favJanta ? 1 : 0,
+      'favLanche': favLanche ? 1 : 0
     };
   }
 

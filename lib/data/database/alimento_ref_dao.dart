@@ -34,6 +34,11 @@ class AlimentoRefDAO {
     });
   }
 
+  Future<void> updateStatusFavorito(AlimentoRef alimento) async {
+    final db = await _databaseHelper.database;
+    await db.update('alimento_referencia', alimento.toMap(), where: 'id = ?', whereArgs: [alimento.id]);
+  }
+
   Future<void> populateAlimentoRef() async {
     final db = await _databaseHelper.database;
 
