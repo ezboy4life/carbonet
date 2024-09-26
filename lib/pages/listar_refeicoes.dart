@@ -1,4 +1,5 @@
 import 'package:carbonet/data/database/refeicao_dao.dart';
+import 'package:carbonet/data/models/alimento_ingerido.dart';
 import 'package:carbonet/data/models/refeicao.dart';
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/utils/dao_procedure_coupler.dart';
@@ -7,7 +8,11 @@ import 'package:carbonet/widgets/input/input_field.dart';
 import 'package:flutter/material.dart';
 
 class ListarRefeicoes extends StatefulWidget {
-  const ListarRefeicoes({super.key});
+  final List<Refeicao> historicoRefeicoes;
+  const ListarRefeicoes({
+    super.key,
+    required this.historicoRefeicoes,
+  });
 
   @override
   State<ListarRefeicoes> createState() => _ListarRefeicoesState();
@@ -16,6 +21,8 @@ class ListarRefeicoes extends StatefulWidget {
 class _ListarRefeicoesState extends State<ListarRefeicoes> {
   final TextEditingController searchBoxController = TextEditingController();
   final Future<List<Refeicao>> _futureRefeicoes = RefeicaoDAO().getRefeicoesByUser(LoggedUserAccess().user!.id!);
+  final Map<int, bool> _isExpanded = {};
+  bool hasReceivedMealList = false;
 
   @override
   Widget build(BuildContext context) {
@@ -35,12 +42,16 @@ class _ListarRefeicoesState extends State<ListarRefeicoes> {
               future: _futureRefeicoes,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
+                  if (!hasReceivedMealList) {
+                    snapshot.data?.forEach((refeicao) {
+                      widget.historicoRefeicoes.add(refeicao);
+                    });
+                    hasReceivedMealList = true;
+                  }
                   return Expanded(
                     child: ListView.builder(
-                      itemCount: snapshot.data?.length ?? 0,
+                      itemCount: widget.historicoRefeicoes.length,
                       itemBuilder: (context, index) {
-                        List<Refeicao> listaRefeicoes = snapshot.data!;
-                        // if (listaRefeicoes == null) return const Text("Erro!");
                         return Theme(
                           data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
                           child: Column(
@@ -51,107 +62,76 @@ class _ListarRefeicoesState extends State<ListarRefeicoes> {
                                 title: Row(
                                   children: [
                                     Text(
-                                      listaRefeicoes[index].tipoRefeicao,
+                                      widget.historicoRefeicoes[index].tipoRefeicao,
                                       style: const TextStyle(color: Colors.white),
                                     ),
                                     const Spacer(),
                                     Text(
                                       //  - ${listaRefeicoes[index].data.day.toString().padLeft(2, "0")}/${listaRefeicoes[index].data.month.toString().padLeft(2, "0")}/${listaRefeicoes[index].data.year}"
-                                      "${listaRefeicoes[index].data.hour}:${listaRefeicoes[index].data.minute}",
+                                      "${widget.historicoRefeicoes[index].data.hour.toString().padLeft(2, '0')}:${widget.historicoRefeicoes[index].data.minute.toString().padLeft(2, '0')}",
                                       style: const TextStyle(color: Colors.white),
                                     ),
                                   ],
                                 ),
+                                onExpansionChanged: (expanded) {
+                                  setState(() {
+                                    _isExpanded[index] = expanded;
+                                  });
+                                },
                                 children: [
-                                  FutureBuilder(
-                                    future: DaoProcedureCoupler.getAlimentoIngeridoByRefeicaoFullData(snapshot.data![index].id),
-                                    builder: (context, innerSnapshot) {
-                                      if (innerSnapshot.connectionState == ConnectionState.done) {
-                                        if (innerSnapshot.hasData && innerSnapshot.data != null) {
-                                          List<Widget> widgets = [];
+                                  if (_isExpanded[index] == true)
+                                    FutureBuilder(
+                                      future: DaoProcedureCoupler.getAlimentoIngeridoByRefeicaoFullData(widget.historicoRefeicoes[index].id),
+                                      builder: (context, innerSnapshot) {
+                                        if (innerSnapshot.connectionState == ConnectionState.done) {
+                                          if (innerSnapshot.hasData && innerSnapshot.data != null) {
+                                            List<Widget> widgets = [];
+                                            List<AlimentoIngerido> alimentosIngeridos = innerSnapshot.data!;
 
-                                          for (var index = 0; index < innerSnapshot.data!.length; index++) {
-                                            widgets.add(
-                                              Padding(
-                                                padding: const EdgeInsets.fromLTRB(25.0, 0, 0, 0),
-                                                child: Column(
-                                                  children: [
-                                                    Padding(
-                                                      padding: const EdgeInsets.all(8.0),
-                                                      child: Row(
-                                                        children: [
-                                                          Text(
-                                                            innerSnapshot.data![index].alimentoReferencia.nome,
-                                                            style: const TextStyle(
-                                                              color: AppColors.fontBright,
+                                            for (var index = 0; index < alimentosIngeridos.length; index++) {
+                                              widgets.add(
+                                                Padding(
+                                                  padding: const EdgeInsets.fromLTRB(25.0, 0, 0, 0),
+                                                  child: Column(
+                                                    children: [
+                                                      Padding(
+                                                        padding: const EdgeInsets.all(8.0),
+                                                        child: Row(
+                                                          children: [
+                                                            Text(
+                                                              alimentosIngeridos[index].alimentoReferencia.nome,
+                                                              style: const TextStyle(
+                                                                color: AppColors.fontBright,
+                                                              ),
                                                             ),
-                                                          ),
-                                                          const Spacer(),
-                                                          Text(
-                                                            "${innerSnapshot.data![index].qtdIngerida} g",
-                                                            style: const TextStyle(
-                                                              color: AppColors.fontBright,
+                                                            const Spacer(),
+                                                            Text(
+                                                              "${alimentosIngeridos[index].qtdIngerida} g",
+                                                              style: const TextStyle(
+                                                                color: AppColors.fontBright,
+                                                              ),
                                                             ),
-                                                          ),
-                                                        ],
+                                                          ],
+                                                        ),
                                                       ),
-                                                    ),
-                                                    if (index < innerSnapshot.data!.length - 1) const Divider(color: AppColors.fontBright),
-                                                  ],
+                                                      if (index < alimentosIngeridos.length - 1) const Divider(color: AppColors.fontBright),
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
+                                              );
+                                            }
+                                            return Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: widgets,
                                             );
                                           }
-
-                                          // var widgets = innerSnapshot.data!.map((refeicaoDetails) {
-                                          //   return Padding(
-                                          //     padding: const EdgeInsets.fromLTRB(25.0, 0, 0, 0),
-                                          //     child: Column(
-                                          //       children: [
-                                          //         Padding(
-                                          //           padding: const EdgeInsets.all(8.0),
-                                          //           child: Row(
-                                          //             children: [
-                                          //               Text(
-                                          //                 refeicaoDetails.alimentoReferencia.nome,
-                                          //                 style: const TextStyle(
-                                          //                   color: AppColors.fontBright,
-                                          //                 ),
-                                          //               ),
-                                          //               const Spacer(),
-                                          //               Text(
-                                          //                 "${refeicaoDetails.qtdIngerida} g",
-                                          //                 style: const TextStyle(
-                                          //                   color: AppColors.fontBright,
-                                          //                 ),
-                                          //               ),
-                                          //             ],
-                                          //           ),
-                                          //         ),
-                                          //         const Divider(color: AppColors.fontBright),
-                                          //       ],
-                                          //     ),
-                                          //   );
-                                          // }).toList();
-
-                                          return Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: widgets,
-                                          );
                                         }
-                                      }
-                                      return const CircularProgressIndicator();
-                                    },
-                                  ),
+                                        return const CircularProgressIndicator();
+                                      },
+                                    ),
                                 ],
-
-                                // children: listaRefeicoes.map((refeicao) {
-                                //   return ListTile(
-                                //     title: Text(item),
-                                //   );
-                                // }).toList(),
                               ),
-                              if (index < snapshot.data!.length - 1) const Divider(color: Colors.white),
+                              if (index < widget.historicoRefeicoes.length - 1) const Divider(color: Colors.white),
                             ],
                           ),
                         );

@@ -1,4 +1,5 @@
 import 'package:carbonet/data/models/alimento_ingerido.dart';
+import 'package:carbonet/data/models/refeicao.dart';
 import 'package:carbonet/pages/selecionar_alimentos.dart';
 import 'package:carbonet/utils/validators.dart';
 import 'package:carbonet/widgets/input/date_input_field.dart';
@@ -13,7 +14,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class AdicionarRefeicao extends StatefulWidget {
-  const AdicionarRefeicao({super.key});
+  final Function(Refeicao) addMealToHistory;
+  const AdicionarRefeicao({
+    super.key,
+    required this.addMealToHistory,
+  });
 
   @override
   State<AdicionarRefeicao> createState() => _AdicionarRefeicaoState();
@@ -143,6 +148,7 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
                 selectedMealTypeController: _selectedMealTypeController,
                 glicemiaController: _glicemiaController,
                 alimentosSelecionados: alimentosSelecionados,
+                addMealToHistory: widget.addMealToHistory,
                 setState: setState,
                 mealDate: selectedMealDate,
                 mealTime: selectedMealTime,

@@ -20,10 +20,10 @@ class SelectFoods extends StatefulWidget {
   final TextEditingController selectedFoodsSearchBoxController;
   final TextEditingController selectedMealTypeController;
   final TextEditingController glicemiaController;
-
   final List<AlimentoIngerido> alimentosSelecionados;
   final DateTime? mealDate;
   final TimeOfDay? mealTime;
+  final Function(Refeicao) addMealToHistory;
 
   const SelectFoods({
     super.key,
@@ -33,6 +33,7 @@ class SelectFoods extends StatefulWidget {
     required this.selectedMealTypeController,
     required this.glicemiaController,
     required this.alimentosSelecionados,
+    required this.addMealToHistory,
     required this.setState,
     required this.mealDate,
     required this.mealTime,
@@ -181,6 +182,8 @@ class _SelectFoodsState extends State<SelectFoods> {
 
             DaoProcedureCoupler.inserirRefeicaoProcedimento(refeicao, widget.alimentosSelecionados).then(
               (value) {
+                refeicao.id = value;
+                widget.addMealToHistory(refeicao);
                 Navigator.pop(context, true);
               },
             );
