@@ -73,8 +73,6 @@ class _SelectFoodsState extends State<SelectFoods> {
     }
   }
 
-  // Delay de .3 segundos pra que a função não seja chamada literalmente
-  // toda vez que o usuário digitar algo
   void updateFilteredListDelay(String? searchTerm) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(
@@ -249,6 +247,8 @@ class _AllFoodsListState extends State<AllFoodsList> {
         qtdIngerida: double.parse(qtdController.text),
       ),
     );
+
+    qtdController.text = "";
     Navigator.pop(context);
   }
 
@@ -293,10 +293,10 @@ class _AllFoodsListState extends State<AllFoodsList> {
                                 ),
                               ),
                               TextSpan(
-                                text: selectedFoodRef?.nome ?? "ERRO!",
+                                text: selectedFoodRef?.nome.toLowerCase() ?? "ERRO!",
                                 style: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: 20,
+                                  fontSize: 17,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -304,7 +304,7 @@ class _AllFoodsListState extends State<AllFoodsList> {
                                 text: " em gramas:",
                                 style: TextStyle(
                                   color: AppColors.fontBright,
-                                  fontSize: 20,
+                                  fontSize: 17,
                                 ),
                               ),
                             ],
@@ -382,6 +382,7 @@ class _FavoriteFoodsListState extends State<FavoriteFoodsList> {
         qtdIngerida: double.parse(favoritosController.text),
       ),
     );
+    favoritosController.text = "";
     Navigator.pop(context);
   }
 
@@ -447,10 +448,10 @@ class _FavoriteFoodsListState extends State<FavoriteFoodsList> {
                               ),
                             ),
                             TextSpan(
-                              text: favoritos[index].nome,
+                              text: favoritos[index].nome.toLowerCase(),
                               style: const TextStyle(
                                 color: Colors.white,
-                                fontSize: 20,
+                                fontSize: 17,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -458,7 +459,7 @@ class _FavoriteFoodsListState extends State<FavoriteFoodsList> {
                               text: " em gramas:",
                               style: TextStyle(
                                 color: AppColors.fontBright,
-                                fontSize: 20,
+                                fontSize: 17,
                               ),
                             ),
                           ],
@@ -492,6 +493,33 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
   final TextEditingController alterController = TextEditingController();
   AlimentoIngerido? selectedFoodItem;
 
+  Future<bool?> _showDeleteConfirmationDialog(BuildContext context) {
+    // TODO: Isolar e fazer um dialog de acordo com o tema
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmar exclusão'),
+          content: const Text('Você tem certeza dque deseja excluir esse alimento?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // User canceled
+              },
+              child: const Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true); // User confirmed
+              },
+              child: const Text('Excluir'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void updateSelectedFoodItem() {
     if (selectedFoodItem == null) {
       errorLog("Erro ao atualizar quantidade ingerida de um alimento. O alimento é nulo.");
@@ -502,6 +530,7 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
       selectedFoodItem?.qtdIngerida = double.parse(alterController.text);
       Navigator.of(context).pop(selectedFoodItem?.qtdIngerida);
       selectedFoodItem = null;
+      alterController.text = "";
     } else {
       showDialog(
         context: context,
@@ -526,42 +555,85 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
             itemBuilder: (context, index) {
               return Column(
                 children: [
-                  ListTile(
-                    title: Text(
-                      widget.selectedFoods[index].alimentoReferencia.nome,
-                      style: const TextStyle(color: AppColors.fontBright),
+                  Dismissible(
+                    key: UniqueKey(),
+                    direction: DismissDirection.endToStart,
+                    background: Container(
+                      color: Colors.red,
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.only(right: 20),
+                      child: const Icon(Icons.delete, color: Colors.white),
                     ),
-                    trailing: Text(
-                      "${widget.selectedFoods[index].qtdIngerida.toStringAsFixed(0)}g",
-                      style: const TextStyle(
-                        color: AppColors.fontBright,
-                        fontSize: 15,
-                      ),
-                    ),
-                    onTap: () async {
-                      infoLog(widget.selectedFoods[index].alimentoReferencia.nome);
-                      selectedFoodItem = widget.selectedFoods[index];
-                      final result = await showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return InputDialog(
-                            controller: alterController,
-                            title: "Alterar alimento",
-                            label: "Qtd. em gramas",
-                            buttonLabel: "Alterar",
-                            onPressed: updateSelectedFoodItem,
-                          );
-                        },
-                      );
-
-                      if (result == "delete") {
+                    confirmDismiss: (direction) async {
+                      // Teve que fazer assim pq não tá chamando o onDismissed
+                      // JURO que não sei pq essa poha tá acontecendo.
+                      final result = await _showDeleteConfirmationDialog(context);
+                      if (result == true) {
                         setState(() {
                           widget.selectedFoods.removeAt(index);
                         });
-                      } else if (result != null) {
-                        setState(() {});
                       }
+                      return result;
                     },
+                    // onDismissed: (direction) {
+                    //   setState(() {});
+                    // },
+                    child: ListTile(
+                      title: Text(
+                        widget.selectedFoods[index].alimentoReferencia.nome,
+                        style: const TextStyle(color: AppColors.fontBright),
+                      ),
+                      trailing: Text(
+                        "${widget.selectedFoods[index].qtdIngerida.toStringAsFixed(0)}g",
+                        style: const TextStyle(
+                          color: AppColors.fontBright,
+                          fontSize: 15,
+                        ),
+                      ),
+                      onTap: () async {
+                        infoLog(widget.selectedFoods[index].alimentoReferencia.nome);
+                        selectedFoodItem = widget.selectedFoods[index];
+                        final result = await showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return InputDialog(
+                              controller: alterController,
+                              title: "Alterar alimento",
+                              label: "Qtd. em gramas",
+                              buttonLabel: "Alterar",
+                              onPressed: updateSelectedFoodItem,
+                              message: [
+                                const TextSpan(
+                                  text: "Insira a quantidade de ",
+                                  style: TextStyle(
+                                    color: AppColors.fontBright,
+                                    fontSize: 17,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: widget.selectedFoods[index].alimentoReferencia.nome.toLowerCase(),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const TextSpan(
+                                  text: " em gramas:",
+                                  style: TextStyle(
+                                    color: AppColors.fontBright,
+                                    fontSize: 17,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                        if (result != null) {
+                          setState(() {});
+                        }
+                      },
+                    ),
                   ),
                   if (index < widget.selectedFoods.length - 1) const Divider(color: AppColors.fontDimmed),
                 ],

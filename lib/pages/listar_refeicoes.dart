@@ -4,6 +4,7 @@ import 'package:carbonet/data/models/refeicao.dart';
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/utils/dao_procedure_coupler.dart';
 import 'package:carbonet/utils/logged_user_access.dart';
+import 'package:carbonet/utils/logger.dart';
 import 'package:carbonet/widgets/input/input_field.dart';
 import 'package:flutter/material.dart';
 
@@ -84,7 +85,7 @@ class _ListarRefeicoesState extends State<ListarRefeicoes> {
                           child: Column(
                             children: [
                               Dismissible(
-                                key: Key(widget.historicoRefeicoes[index].toString()),
+                                key: UniqueKey(),
                                 direction: DismissDirection.endToStart,
                                 background: Container(
                                   color: Colors.red, // Background color for swipe action
@@ -96,7 +97,10 @@ class _ListarRefeicoesState extends State<ListarRefeicoes> {
                                   return await _showDeleteConfirmationDialog(context);
                                 },
                                 onDismissed: (direction) {
-                                  widget.historicoRefeicoes.removeAt(index);
+                                  setState(() {
+                                    infoLog("Removido item em $index");
+                                    widget.historicoRefeicoes.removeAt(index);
+                                  });
                                   //TODO: remover do banco tbm (?)
                                 },
                                 child: ExpansionTile(
