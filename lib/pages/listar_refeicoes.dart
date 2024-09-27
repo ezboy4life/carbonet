@@ -117,6 +117,14 @@ class _ListarRefeicoesState extends State<ListarRefeicoes> {
                                     ],
                                   ),
                                   onExpansionChanged: (expanded) {
+                                    if (!expanded) {
+                                      Future.delayed(const Duration(milliseconds: 300), () {
+                                        setState(() {
+                                          _isExpanded[index] = expanded;
+                                        });
+                                      });
+                                      return;
+                                    }
                                     setState(() {
                                       _isExpanded[index] = expanded;
                                     });
