@@ -1,17 +1,18 @@
-import 'package:flutter/material.dart';
-import 'package:carbonet/widgets/buttons/button.dart';
+import 'dart:ui';
 import 'package:carbonet/utils/app_colors.dart';
+import 'package:carbonet/widgets/buttons/button.dart';
+import 'package:flutter/material.dart';
 
 class PopupDialog extends StatelessWidget {
   final String title;
   final String message;
-  final IconData icon;
+  final IconData? icon;
 
   const PopupDialog({
     super.key,
     required this.title,
     required this.message,
-    this.icon = Icons.error_rounded,
+    this.icon,
   });
 
   @override
@@ -23,55 +24,54 @@ class PopupDialog extends StatelessWidget {
         ),
       ),
       child: Dialog(
-        backgroundColor: Colors.black,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.0),
-          side: const BorderSide(
-            color: AppColors.fontDimmed,
-          ),
         ),
-        child: Container(
-          width: double.infinity,
-          constraints: BoxConstraints(
-            minHeight: MediaQuery.of(context).size.height * 0.2,
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  icon,
-                  color: Colors.white,
-                  size: 100,
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.02,
-                ),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 25,
-                  ),
-                ),
-                Text(
-                  message,
-                  style: const TextStyle(
-                    color: AppColors.fontBright,
-                    fontSize: 17,
-                  ),
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.02,
-                ),
-                Button(
-                  label: "OK",
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 2.5, sigmaY: 2.5),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12.0),
+              color: Colors.black,
+              boxShadow: const [
+                BoxShadow(
+                  color: AppColors.fontDark,
+                  spreadRadius: 2.5,
+                  blurRadius: 5,
                 ),
               ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(32.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (icon != null) Icon(icon, color: Colors.white, size: 100),
+                  if (icon != null) const SizedBox(height: 16),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 25,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    message,
+                    style: const TextStyle(
+                      color: AppColors.fontBright,
+                      fontSize: 17,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  Button(
+                    label: "OK",
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -79,33 +79,3 @@ class PopupDialog extends StatelessWidget {
     );
   }
 }
-
-// AlertDialog(
-//       title: Row(
-//         children: [
-//           const Icon(Icons.error, color: Colors.white),
-//           const SizedBox(
-//             width: 10,
-//           ),
-//           Text(title, style: const TextStyle(color: Colors.white))
-//         ],
-//       ),
-//       backgroundColor: const Color.fromARGB(255, 15, 15, 15),
-//       content: SizedBox(
-//         width: MediaQuery.of(context).size.width * 1,
-//         child:
-//             Text(message, style: const TextStyle(color: AppColors.fontBright)),
-//       ),
-//       actions: <Widget>[
-//         Button(
-//           label: "OK",
-//           buttonColors: const [
-//             AppColors.defaultDarkAppColor,
-//             AppColors.defaultAppColor,
-//           ],
-//           onPressed: () {
-//             Navigator.pop(context);
-//           },
-//         )
-//       ],
-//     );

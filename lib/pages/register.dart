@@ -527,7 +527,7 @@ class _HeightAndInsulin extends StatelessWidget {
                 context: context,
                 builder: (BuildContext context) {
                   return const PopupDialog(
-                    icon: Icons.check_circle_rounded,
+                    // icon: Icons.check_circle_rounded,
                     title: "Cadastro concluído!",
                     message: "Por gentileza, faça login com os dados que você inseriu.",
                   );
