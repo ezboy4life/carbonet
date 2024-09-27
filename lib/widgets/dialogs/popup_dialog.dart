@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:carbonet/widgets/buttons/gradient_button.dart';
+import 'package:carbonet/widgets/buttons/button.dart';
 import 'package:carbonet/utils/app_colors.dart';
 
 class PopupDialog extends StatelessWidget {
@@ -65,12 +65,8 @@ class PopupDialog extends StatelessWidget {
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.02,
                 ),
-                GradientButton(
+                Button(
                   label: "OK",
-                  buttonColors: const [
-                    AppColors.defaultDarkAppColor,
-                    AppColors.defaultAppColor,
-                  ],
                   onPressed: () {
                     Navigator.pop(context);
                   },
@@ -101,7 +97,7 @@ class PopupDialog extends StatelessWidget {
 //             Text(message, style: const TextStyle(color: AppColors.fontBright)),
 //       ),
 //       actions: <Widget>[
-//         GradientButton(
+//         Button(
 //           label: "OK",
 //           buttonColors: const [
 //             AppColors.defaultDarkAppColor,

@@ -3,6 +3,7 @@ import 'package:carbonet/data/repository/user_repository.dart';
 import "package:carbonet/utils/app_colors.dart";
 import 'package:carbonet/utils/logged_user_access.dart';
 import 'package:carbonet/utils/logger.dart';
+import 'package:carbonet/widgets/buttons/button.dart';
 import 'package:carbonet/widgets/input/input_field.dart';
 import 'package:carbonet/widgets/dialogs/popup_dialog.dart';
 import 'package:flutter/material.dart';
@@ -126,10 +127,8 @@ class LoginPageState extends State<LoginPage> {
                         ],
                       ),
                     ),
-                    child: TextButton(
-                      style: const ButtonStyle(
-                        splashFactory: NoSplash.splashFactory,
-                      ),
+                    child: Button(
+                      label: "Entrar",
                       onPressed: () {
                         emailController.text = emailController.text.trim();
                         passwordController.text = passwordController.text.trim();
@@ -137,14 +136,6 @@ class LoginPageState extends State<LoginPage> {
                         login(emailController.text, passwordController.text);
                         infoLog("Botão 'Entrar'");
                       },
-                      child: const Text(
-                        "Entrar",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        ),
-                      ),
                     ),
                   ),
                   const SizedBox(

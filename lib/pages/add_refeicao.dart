@@ -5,7 +5,7 @@ import 'package:carbonet/utils/validators.dart';
 import 'package:carbonet/widgets/input/date_input_field.dart';
 import 'package:carbonet/widgets/input/dropdown_menu.dart';
 import 'package:carbonet/widgets/cosmetic/dropdown_menu_entry.dart';
-import 'package:carbonet/widgets/buttons/gradient_button.dart';
+import 'package:carbonet/widgets/buttons/button.dart';
 import 'package:carbonet/widgets/pager.dart';
 import 'package:carbonet/widgets/dialogs/popup_dialog.dart';
 import 'package:carbonet/widgets/input/time_input_field.dart';
@@ -240,7 +240,7 @@ class MealInfo extends StatelessWidget {
           maxLength: 20,
         ),
         const Spacer(),
-        GradientButton(
+        Button(
           label: "Avançar",
           onPressed: () {
             // Validação da data

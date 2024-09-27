@@ -7,7 +7,7 @@ import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/utils/dao_procedure_coupler.dart';
 import 'package:carbonet/utils/logged_user_access.dart';
 import 'package:carbonet/utils/logger.dart';
-import 'package:carbonet/widgets/buttons/gradient_button.dart';
+import 'package:carbonet/widgets/buttons/button.dart';
 import 'package:carbonet/widgets/input/input_field.dart';
 import 'package:carbonet/widgets/dialogs/popup_dialog.dart';
 import 'package:flutter/material.dart';
@@ -148,7 +148,7 @@ class _SelectFoodsState extends State<SelectFoods> {
             ),
           ],
         ),
-        bottomNavigationBar: GradientButton(
+        bottomNavigationBar: Button(
           label: "Registrar Refeição",
           onPressed: () {
             if (widget.alimentosSelecionados.isEmpty) {
@@ -479,7 +479,7 @@ class _DialogAdicionarAlimentoState extends State<DialogAdicionarAlimento> {
                     keyboardType: TextInputType.number,
                   ),
                   const SizedBox(height: 30),
-                  GradientButton(
+                  Button(
                     label: "Adicionar",
                     onPressed: () {
                       if (qtdController.text.isEmpty || double.parse(qtdController.text) == 0) {
@@ -603,7 +603,7 @@ class _DialogEditSelectedFoodState extends State<DialogEditSelectedFood> {
                     keyboardType: TextInputType.number,
                   ),
                   const SizedBox(height: 30),
-                  GradientButton(
+                  Button(
                     label: "Alterar",
                     onPressed: () {
                       if (selectedFoodController.text.isNotEmpty && int.parse(selectedFoodController.text) != 0) {
@@ -623,12 +623,9 @@ class _DialogEditSelectedFoodState extends State<DialogEditSelectedFood> {
                     },
                   ),
                   const SizedBox(height: 30),
-                  GradientButton(
+                  Button(
                     label: "Remover",
-                    buttonColors: const [
-                      Colors.red,
-                      Colors.redAccent,
-                    ],
+                    backgroundColor: Colors.red,
                     onPressed: () {
                       Navigator.of(context).pop("delete");
                     },

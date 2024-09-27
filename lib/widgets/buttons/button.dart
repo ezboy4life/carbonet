@@ -1,19 +1,16 @@
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 
-class GradientButton extends StatelessWidget {
+class Button extends StatelessWidget {
   final String label;
-  final List<Color> buttonColors;
+  final Color backgroundColor;
   final void Function()? onPressed;
 
-  const GradientButton({
+  const Button({
     super.key,
     required this.label,
-    this.buttonColors = const [
-      AppColors.defaultDarkAppColor,
-      AppColors.defaultAppColor,
-    ],
     required this.onPressed,
+    this.backgroundColor = AppColors.defaultAppColor,
   });
 
   @override
@@ -22,9 +19,7 @@ class GradientButton extends StatelessWidget {
       width: double.infinity,
       decoration: ShapeDecoration(
         shape: const StadiumBorder(),
-        gradient: LinearGradient(
-          colors: buttonColors,
-        ),
+        color: backgroundColor,
       ),
       child: TextButton(
         style: const ButtonStyle(

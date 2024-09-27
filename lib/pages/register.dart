@@ -4,7 +4,7 @@ import 'package:carbonet/utils/logger.dart';
 import 'package:carbonet/utils/textformatters.dart';
 import 'package:carbonet/utils/validators.dart';
 import 'package:carbonet/widgets/input/date_input_field.dart';
-import 'package:carbonet/widgets/buttons/gradient_button.dart';
+import 'package:carbonet/widgets/buttons/button.dart';
 import 'package:carbonet/widgets/input/input_field.dart';
 import 'package:carbonet/widgets/pager.dart';
 import 'package:carbonet/widgets/dialogs/popup_dialog.dart';
@@ -222,7 +222,7 @@ class _EmailAndPassword extends StatelessWidget {
         const SizedBox(
           height: 30,
         ),
-        GradientButton(
+        Button(
           label: "Avançar",
           onPressed: () {
             emailController.text = emailController.text.trim();
@@ -321,7 +321,7 @@ class _NameAndSurname extends StatelessWidget {
         const SizedBox(
           height: 30,
         ),
-        GradientButton(
+        Button(
           label: "Avançar",
           onPressed: () {
             nameController.text = nameController.text.trim();
@@ -403,7 +403,7 @@ class _BirthAndWeight extends StatelessWidget {
         const SizedBox(
           height: 30,
         ),
-        GradientButton(
+        Button(
           label: "Avançar",
           onPressed: () {
             if (!Validators.isValidWeight(weightController.text)) {
@@ -489,7 +489,7 @@ class _HeightAndInsulin extends StatelessWidget {
         const SizedBox(
           height: 30,
         ),
-        GradientButton(
+        Button(
           label: "Finalizar Cadastro",
           onPressed: () {
             if (heightController.text.isEmpty ||
