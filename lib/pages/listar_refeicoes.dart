@@ -24,6 +24,33 @@ class _ListarRefeicoesState extends State<ListarRefeicoes> {
   final Map<int, bool> _isExpanded = {};
   bool hasReceivedMealList = false;
 
+  Future<bool?> _showDeleteConfirmationDialog(BuildContext context) {
+    // TODO: Isolar e fazer um dialog de acordo com o tema
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmar exclusão'),
+          content: const Text('Você tem certeza dque deseja excluir essa refeição?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // User canceled
+              },
+              child: const Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true); // User confirmed
+              },
+              child: const Text('Excluir'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,80 +83,97 @@ class _ListarRefeicoesState extends State<ListarRefeicoes> {
                           data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
                           child: Column(
                             children: [
-                              ExpansionTile(
-                                iconColor: AppColors.fontBright,
-                                collapsedIconColor: AppColors.fontBright,
-                                title: Row(
-                                  children: [
-                                    Text(
-                                      widget.historicoRefeicoes[index].tipoRefeicao,
-                                      style: const TextStyle(color: Colors.white),
-                                    ),
-                                    const Spacer(),
-                                    Text(
-                                      //  - ${listaRefeicoes[index].data.day.toString().padLeft(2, "0")}/${listaRefeicoes[index].data.month.toString().padLeft(2, "0")}/${listaRefeicoes[index].data.year}"
-                                      "${widget.historicoRefeicoes[index].data.hour.toString().padLeft(2, '0')}:${widget.historicoRefeicoes[index].data.minute.toString().padLeft(2, '0')}",
-                                      style: const TextStyle(color: Colors.white),
-                                    ),
-                                  ],
+                              Dismissible(
+                                key: Key(widget.historicoRefeicoes[index].toString()),
+                                direction: DismissDirection.endToStart,
+                                background: Container(
+                                  color: Colors.red, // Background color for swipe action
+                                  alignment: Alignment.centerRight, // Align delete icon to the right
+                                  padding: const EdgeInsets.only(right: 20),
+                                  child: const Icon(Icons.delete, color: Colors.white),
                                 ),
-                                onExpansionChanged: (expanded) {
-                                  setState(() {
-                                    _isExpanded[index] = expanded;
-                                  });
+                                confirmDismiss: (direction) async {
+                                  return await _showDeleteConfirmationDialog(context);
                                 },
-                                children: [
-                                  if (_isExpanded[index] == true)
-                                    FutureBuilder(
-                                      future: DaoProcedureCoupler.getAlimentoIngeridoByRefeicaoFullData(widget.historicoRefeicoes[index].id),
-                                      builder: (context, innerSnapshot) {
-                                        if (innerSnapshot.connectionState == ConnectionState.done) {
-                                          if (innerSnapshot.hasData && innerSnapshot.data != null) {
-                                            List<Widget> widgets = [];
-                                            List<AlimentoIngerido> alimentosIngeridos = innerSnapshot.data!;
+                                onDismissed: (direction) {
+                                  widget.historicoRefeicoes.removeAt(index);
+                                  //TODO: remover do banco tbm (?)
+                                },
+                                child: ExpansionTile(
+                                  iconColor: AppColors.fontBright,
+                                  collapsedIconColor: AppColors.fontBright,
+                                  title: Row(
+                                    children: [
+                                      Text(
+                                        widget.historicoRefeicoes[index].tipoRefeicao,
+                                        style: const TextStyle(color: Colors.white),
+                                      ),
+                                      const Spacer(),
+                                      Text(
+                                        //  - ${listaRefeicoes[index].data.day.toString().padLeft(2, "0")}/${listaRefeicoes[index].data.month.toString().padLeft(2, "0")}/${listaRefeicoes[index].data.year}"
+                                        "${widget.historicoRefeicoes[index].data.hour.toString().padLeft(2, '0')}:${widget.historicoRefeicoes[index].data.minute.toString().padLeft(2, '0')}",
+                                        style: const TextStyle(color: Colors.white),
+                                      ),
+                                    ],
+                                  ),
+                                  onExpansionChanged: (expanded) {
+                                    setState(() {
+                                      _isExpanded[index] = expanded;
+                                    });
+                                  },
+                                  children: [
+                                    if (_isExpanded[index] == true)
+                                      FutureBuilder(
+                                        future: DaoProcedureCoupler.getAlimentoIngeridoByRefeicaoFullData(widget.historicoRefeicoes[index].id),
+                                        builder: (context, innerSnapshot) {
+                                          if (innerSnapshot.connectionState == ConnectionState.done) {
+                                            if (innerSnapshot.hasData && innerSnapshot.data != null) {
+                                              List<Widget> widgets = [];
+                                              List<AlimentoIngerido> alimentosIngeridos = innerSnapshot.data!;
 
-                                            for (var index = 0; index < alimentosIngeridos.length; index++) {
-                                              widgets.add(
-                                                Padding(
-                                                  padding: const EdgeInsets.fromLTRB(25.0, 0, 0, 0),
-                                                  child: Column(
-                                                    children: [
-                                                      Padding(
-                                                        padding: const EdgeInsets.all(8.0),
-                                                        child: Row(
-                                                          children: [
-                                                            Text(
-                                                              alimentosIngeridos[index].alimentoReferencia.nome,
-                                                              style: const TextStyle(
-                                                                color: AppColors.fontBright,
+                                              for (var index = 0; index < alimentosIngeridos.length; index++) {
+                                                widgets.add(
+                                                  Padding(
+                                                    padding: const EdgeInsets.fromLTRB(25.0, 0, 0, 0),
+                                                    child: Column(
+                                                      children: [
+                                                        Padding(
+                                                          padding: const EdgeInsets.all(8.0),
+                                                          child: Row(
+                                                            children: [
+                                                              Text(
+                                                                alimentosIngeridos[index].alimentoReferencia.nome,
+                                                                style: const TextStyle(
+                                                                  color: AppColors.fontBright,
+                                                                ),
                                                               ),
-                                                            ),
-                                                            const Spacer(),
-                                                            Text(
-                                                              "${alimentosIngeridos[index].qtdIngerida} g",
-                                                              style: const TextStyle(
-                                                                color: AppColors.fontBright,
+                                                              const Spacer(),
+                                                              Text(
+                                                                "${alimentosIngeridos[index].qtdIngerida} g",
+                                                                style: const TextStyle(
+                                                                  color: AppColors.fontBright,
+                                                                ),
                                                               ),
-                                                            ),
-                                                          ],
+                                                            ],
+                                                          ),
                                                         ),
-                                                      ),
-                                                      if (index < alimentosIngeridos.length - 1) const Divider(color: AppColors.fontBright),
-                                                    ],
+                                                        if (index < alimentosIngeridos.length - 1) const Divider(color: AppColors.fontBright),
+                                                      ],
+                                                    ),
                                                   ),
-                                                ),
+                                                );
+                                              }
+                                              return Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: widgets,
                                               );
                                             }
-                                            return Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: widgets,
-                                            );
                                           }
-                                        }
-                                        return const CircularProgressIndicator();
-                                      },
-                                    ),
-                                ],
+                                          return const CircularProgressIndicator();
+                                        },
+                                      ),
+                                  ],
+                                ),
                               ),
                               if (index < widget.historicoRefeicoes.length - 1) const Divider(color: Colors.white),
                             ],
