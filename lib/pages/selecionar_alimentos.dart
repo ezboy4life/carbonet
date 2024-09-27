@@ -337,13 +337,42 @@ class FavoriteFoodsList extends StatelessWidget {
 class SelectedFoodsList extends StatefulWidget {
   final List<AlimentoIngerido> selectedFoods;
 
-  const SelectedFoodsList({super.key, required this.selectedFoods});
+  const SelectedFoodsList({
+    super.key,
+    required this.selectedFoods,
+  });
 
   @override
   State<SelectedFoodsList> createState() => _SelectedFoodsListState();
 }
 
 class _SelectedFoodsListState extends State<SelectedFoodsList> {
+  final TextEditingController alterController = TextEditingController();
+  AlimentoIngerido? selectedFoodItem;
+
+  void updateSelectedFoodItem() {
+    if (selectedFoodItem == null) {
+      errorLog("Erro ao atualizar quantidade ingerida de um alimento. O alimento é nulo.");
+      return;
+    }
+
+    if (alterController.text.isNotEmpty && int.parse(alterController.text) != 0) {
+      selectedFoodItem?.qtdIngerida = double.parse(alterController.text);
+      Navigator.of(context).pop(selectedFoodItem?.qtdIngerida);
+      selectedFoodItem = null;
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const WarningDialog(
+            title: "Quantidade inválida!",
+            message: "Insira uma quantidade (em gramas) válida.",
+          );
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -369,11 +398,15 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
                     ),
                     onTap: () async {
                       infoLog(widget.selectedFoods[index].alimentoReferencia.nome);
+                      selectedFoodItem = widget.selectedFoods[index];
                       final result = await showDialog(
                         context: context,
                         builder: (BuildContext context) {
-                          return DialogEditSelectedFood(
-                            selectedFood: widget.selectedFoods[index],
+                          return InputDialog(
+                            controller: alterController,
+                            title: "Alterar alimento",
+                            label: "Qtd. em gramas",
+                            onPressed: updateSelectedFoodItem,
                           );
                         },
                       );
