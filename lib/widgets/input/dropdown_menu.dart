@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 class CustomDropDownMenu extends StatelessWidget {
   final String? labelText;
+  final IconData? iconData;
   final List<DropdownMenuEntry<String>> dropdownMenuEntries;
   final DropdownMenuEntry<String>? selectedDropdownMenuEntry;
   final TextEditingController? controller;
@@ -18,6 +19,7 @@ class CustomDropDownMenu extends StatelessWidget {
     required this.onSelected,
     this.selectedDropdownMenuEntry,
     this.labelText,
+    this.iconData,
     this.controller,
     this.labelColor = AppColors.fontBright,
     this.textColor = Colors.white,
@@ -56,9 +58,16 @@ class CustomDropDownMenu extends StatelessWidget {
           Colors.black,
         ),
       ),
-      label: Text(
-        labelText ?? "",
-        style: TextStyle(color: labelColor),
+      label: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (iconData != null) Icon(iconData, color: AppColors.fontBright),
+          if (iconData != null) const SizedBox(width: 10),
+          Text(
+            labelText ?? "",
+            style: TextStyle(color: labelColor),
+          ),
+        ],
       ),
     );
   }

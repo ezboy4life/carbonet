@@ -1,3 +1,4 @@
+import 'package:carbonet/data/models/refeicao.dart';
 import 'package:carbonet/pages/add_refeicao.dart';
 import 'package:carbonet/pages/home.dart';
 import 'package:carbonet/pages/listar_refeicoes.dart';
@@ -14,14 +15,18 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final ValueNotifier<int> _selectedIndexNotifier = ValueNotifier<int>(0);
+  final List<Refeicao> historicoRefeicoes = [];
 
-  final List<Widget> _pages = [
-    const HomePage(),
-    const Placeholder(),
-    const Placeholder(),
-    const ListarRefeicoes(),
-    const Placeholder(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void addMealToHistory(Refeicao refeicao) {
+    setState(() {
+      historicoRefeicoes.add(refeicao);
+    });
+  }
 
   Future<void> showAddMealModal() async {
     await showModalBottomSheet(
@@ -31,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (BuildContext context) {
         return SizedBox(
           height: (MediaQuery.of(context).size.height * 0.9) + 29, // wtf
-          child: const AdicionarRefeicao(),
+          child: AdicionarRefeicao(addMealToHistory: addMealToHistory),
         );
       },
     );
@@ -40,17 +45,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> showEditFavoritesModal() async {
     await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      barrierColor: Color(Colors.white.value).withOpacity(0.5),
-      builder: (BuildContext context) {
-        return SizedBox(
-          height: MediaQuery.of(context).size.height * 0.9,
-          child: RegistroFavoritos(),
-        );
-      }
-    );
+        context: context,
+        isScrollControlled: true,
+        useSafeArea: true,
+        barrierColor: Color(Colors.white.value).withOpacity(0.5),
+        builder: (BuildContext context) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.9,
+            child: RegistroFavoritos(),
+          );
+        });
   }
 
   void _onItemTapped(int index) {
@@ -88,7 +92,15 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: IndexedStack(
         index: _selectedIndexNotifier.value,
-        children: _pages,
+        children: [
+          const HomePage(),
+          const Placeholder(),
+          const Placeholder(), // sla :3
+          ListarRefeicoes(
+            historicoRefeicoes: historicoRefeicoes,
+          ),
+          const Placeholder(),
+        ],
       ),
       bottomNavigationBar: ValueListenableBuilder<int>(
         valueListenable: _selectedIndexNotifier,

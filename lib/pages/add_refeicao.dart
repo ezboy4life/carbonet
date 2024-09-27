@@ -1,4 +1,5 @@
 import 'package:carbonet/data/models/alimento_ingerido.dart';
+import 'package:carbonet/data/models/refeicao.dart';
 import 'package:carbonet/pages/selecionar_alimentos.dart';
 import 'package:carbonet/utils/validators.dart';
 import 'package:carbonet/widgets/input/date_input_field.dart';
@@ -13,7 +14,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class AdicionarRefeicao extends StatefulWidget {
-  const AdicionarRefeicao({super.key});
+  final Function(Refeicao) addMealToHistory;
+  const AdicionarRefeicao({
+    super.key,
+    required this.addMealToHistory,
+  });
 
   @override
   State<AdicionarRefeicao> createState() => _AdicionarRefeicaoState();
@@ -118,7 +123,7 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+          padding: const EdgeInsets.all(20),
           child: Pager(
             pageViewController: _pageViewController,
             hintTexts: _hintTexts,
@@ -143,6 +148,7 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
                 selectedMealTypeController: _selectedMealTypeController,
                 glicemiaController: _glicemiaController,
                 alimentosSelecionados: alimentosSelecionados,
+                addMealToHistory: widget.addMealToHistory,
                 setState: setState,
                 mealDate: selectedMealDate,
                 mealTime: selectedMealTime,
@@ -196,6 +202,7 @@ class MealInfo extends StatelessWidget {
         const Spacer(),
         DateInputField(
           labelText: "Data da refeição",
+          iconData: Icons.calendar_month_rounded,
           dateController: dateController,
           onDateSelected: onDateSelected,
         ),
@@ -204,6 +211,7 @@ class MealInfo extends StatelessWidget {
         ),
         TimeInputField(
           labelText: "Horário da refeição",
+          iconData: Icons.watch_later_rounded,
           timeController: timeController,
           onTimeSelected: onTimeSelected,
         ),
@@ -212,6 +220,7 @@ class MealInfo extends StatelessWidget {
         ),
         CustomDropDownMenu(
           labelText: "Tipo da Refeição",
+          iconData: Icons.restaurant_menu_rounded,
           dropdownMenuEntries: tiposDeRefeicao,
           selectedDropdownMenuEntry: CustomDropdownMenuEntry(
             value: selectedMealTypeController.text,
@@ -225,6 +234,7 @@ class MealInfo extends StatelessWidget {
         InputField(
           controller: glicemiaController,
           labelText: "Glicemia",
+          iconData: Icons.local_hospital_rounded,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           keyboardType: const TextInputType.numberWithOptions(decimal: false),
           maxLength: 20,

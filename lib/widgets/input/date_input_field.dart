@@ -4,6 +4,7 @@ import 'package:carbonet/utils/app_colors.dart';
 
 class DateInputField extends StatelessWidget {
   final String labelText;
+  final IconData? iconData;
   final TextEditingController dateController;
   final Function(DateTime) onDateSelected;
 
@@ -12,6 +13,7 @@ class DateInputField extends StatelessWidget {
     required this.labelText,
     required this.dateController,
     required this.onDateSelected,
+    this.iconData,
   });
 
   void _selectDate(BuildContext context) async {
@@ -44,7 +46,15 @@ class DateInputField extends StatelessWidget {
         fontSize: 16,
       ),
       decoration: InputDecoration(
-        labelText: labelText,
+        // labelText: labelText,
+        label: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (iconData != null) Icon(iconData, color: AppColors.fontBright),
+            if (iconData != null) const SizedBox(width: 10),
+            Text(labelText),
+          ],
+        ),
         labelStyle: const TextStyle(
           color: AppColors.fontBright,
         ),
