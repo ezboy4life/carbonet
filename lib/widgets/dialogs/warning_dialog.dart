@@ -3,12 +3,13 @@ import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/widgets/buttons/button.dart';
 import 'package:flutter/material.dart';
 
-class PopupDialog extends StatelessWidget {
+// Comentário foda
+class WarningDialog extends StatelessWidget {
   final String title;
   final String message;
   final IconData? icon;
 
-  const PopupDialog({
+  const WarningDialog({
     super.key,
     required this.title,
     required this.message,
@@ -58,6 +59,7 @@ class PopupDialog extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     message,
+                    textAlign: TextAlign.center,
                     style: const TextStyle(
                       color: AppColors.fontBright,
                       fontSize: 17,

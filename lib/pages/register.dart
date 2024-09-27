@@ -7,7 +7,7 @@ import 'package:carbonet/widgets/input/date_input_field.dart';
 import 'package:carbonet/widgets/buttons/button.dart';
 import 'package:carbonet/widgets/input/input_field.dart';
 import 'package:carbonet/widgets/pager.dart';
-import 'package:carbonet/widgets/dialogs/popup_dialog.dart';
+import 'package:carbonet/widgets/dialogs/warning_dialog.dart';
 import 'package:flutter/material.dart';
 import "package:carbonet/utils/app_colors.dart";
 import 'package:flutter/services.dart';
@@ -230,7 +230,7 @@ class _EmailAndPassword extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return const PopupDialog(
+                  return const WarningDialog(
                     title: "E-mail inválido!",
                     message: "Por gentileza, insira um endereço de e-mail válido.",
                   );
@@ -245,7 +245,7 @@ class _EmailAndPassword extends StatelessWidget {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return const PopupDialog(
+                    return const WarningDialog(
                       title: "E-mail já registrado!",
                       message: "Faça o Login ou clique em \"Esqueceu sua senha?\".",
                     );
@@ -259,7 +259,7 @@ class _EmailAndPassword extends StatelessWidget {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return const PopupDialog(
+                    return const WarningDialog(
                       title: "Senha inválida!",
                       message: "Por gentileza, insira uma senha com 10 ou mais caracteres.",
                     );
@@ -272,7 +272,7 @@ class _EmailAndPassword extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return const PopupDialog(
+                  return const WarningDialog(
                     title: "Erro ao checar email!",
                     message: "Ocorreu um erro ao checar se o seu e-mail já está registrado.",
                   );
@@ -329,7 +329,7 @@ class _NameAndSurname extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return const PopupDialog(
+                  return const WarningDialog(
                     title: "Nome inválido!",
                     message: "Por favor, insira um nome válido.",
                   );
@@ -343,7 +343,7 @@ class _NameAndSurname extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return const PopupDialog(
+                  return const WarningDialog(
                     title: "Sobrenome inválido!",
                     message: "Por favor, insira um sobrenome válido.",
                   );
@@ -410,7 +410,7 @@ class _BirthAndWeight extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return const PopupDialog(
+                  return const WarningDialog(
                     title: "Peso inválido!",
                     message: "Por gentileza, defina um peso válido.\nExemplo: 75.2 KG.",
                   );
@@ -429,7 +429,7 @@ class _BirthAndWeight extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return const PopupDialog(
+                  return const WarningDialog(
                     title: "Data de nascimento inválida!",
                     message: "Verifique se a data inserida está correta.\nVocê precisa ter ao menos 18 anos para se registrar.",
                   );
@@ -499,7 +499,7 @@ class _HeightAndInsulin extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return const PopupDialog(
+                  return const WarningDialog(
                     title: "Altura inválida!",
                     message: "Por gentileza, defina uma altura válida.",
                   );
@@ -512,7 +512,7 @@ class _HeightAndInsulin extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return const PopupDialog(
+                  return const WarningDialog(
                     title: "Constante inválida!",
                     message: "Por gentileza, defina uma constante insulínica válida.",
                   );
@@ -526,7 +526,7 @@ class _HeightAndInsulin extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return const PopupDialog(
+                  return const WarningDialog(
                     // icon: Icons.check_circle_rounded,
                     title: "Cadastro concluído!",
                     message: "Por gentileza, faça login com os dados que você inseriu.",
@@ -538,7 +538,7 @@ class _HeightAndInsulin extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return const PopupDialog(
+                  return const WarningDialog(
                     title: "Erro ao realizar cadastro!",
                     message: "Por gentileza, revise se os dados inseridos estão corretos.",
                   );

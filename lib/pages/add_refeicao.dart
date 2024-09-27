@@ -7,7 +7,7 @@ import 'package:carbonet/widgets/input/dropdown_menu.dart';
 import 'package:carbonet/widgets/cosmetic/dropdown_menu_entry.dart';
 import 'package:carbonet/widgets/buttons/button.dart';
 import 'package:carbonet/widgets/pager.dart';
-import 'package:carbonet/widgets/dialogs/popup_dialog.dart';
+import 'package:carbonet/widgets/dialogs/warning_dialog.dart';
 import 'package:carbonet/widgets/input/time_input_field.dart';
 import 'package:carbonet/widgets/input/input_field.dart';
 import 'package:flutter/material.dart';
@@ -250,7 +250,7 @@ class MealInfo extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return const PopupDialog(
+                  return const WarningDialog(
                     title: "Data inválida!",
                     message: "Por gentileza, defina uma data válida.",
                   );
@@ -265,7 +265,7 @@ class MealInfo extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return const PopupDialog(
+                  return const WarningDialog(
                     title: "Horário inválido!",
                     message: "Por gentileza, defina um horário válido.",
                   );
@@ -279,7 +279,7 @@ class MealInfo extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return const PopupDialog(
+                  return const WarningDialog(
                     title: "Glicemia inválida!",
                     message: "Por gentileza, defina um valor válido.",
                   );
@@ -293,7 +293,7 @@ class MealInfo extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return const PopupDialog(
+                  return const WarningDialog(
                     title: "Tipo de refeição inválido!",
                     message: "Por gentileza, selecione valor válido.",
                   );

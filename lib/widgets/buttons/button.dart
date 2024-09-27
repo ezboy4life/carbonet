@@ -16,7 +16,6 @@ class Button extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
       decoration: ShapeDecoration(
         shape: const StadiumBorder(),
         color: backgroundColor,
@@ -26,13 +25,19 @@ class Button extends StatelessWidget {
           splashFactory: NoSplash.splashFactory,
         ),
         onPressed: onPressed,
-        child: Text(
-          label,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            )
+          ],
         ),
       ),
     );
