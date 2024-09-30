@@ -6,12 +6,14 @@ class TimeInputField extends StatelessWidget {
   final String labelText;
   final TextEditingController timeController;
   final Function(TimeOfDay) onTimeSelected;
+  final IconData? iconData;
 
   const TimeInputField({
     super.key,
     required this.labelText,
     required this.timeController,
     required this.onTimeSelected,
+    this.iconData,
   });
 
   void _selectTime(BuildContext context) async {
@@ -47,7 +49,15 @@ class TimeInputField extends StatelessWidget {
         fontSize: 16,
       ),
       decoration: InputDecoration(
-        labelText: labelText,
+        // labelText: labelText,
+        label: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (iconData != null) Icon(iconData, color: AppColors.fontBright),
+            if (iconData != null) const SizedBox(width: 10),
+            Text(labelText),
+          ],
+        ),
         labelStyle: const TextStyle(
           color: AppColors.fontBright,
         ),

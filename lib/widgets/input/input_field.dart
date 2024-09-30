@@ -3,10 +3,21 @@ import "package:carbonet/utils/app_colors.dart";
 import 'package:flutter/services.dart';
 
 class InputField extends StatelessWidget {
+  final TextEditingController controller;
+  final String labelText;
+  final IconData? iconData;
+  final bool obscureText;
+  final List<TextInputFormatter>? inputFormatters;
+  final int? maxLength;
+  final TextInputType? keyboardType;
+  final bool autofocus;
+  final Function(String)? onChanged;
+
   const InputField({
     super.key,
     required this.controller,
     required this.labelText,
+    this.iconData,
     this.obscureText = false,
     this.inputFormatters,
     this.maxLength,
@@ -14,15 +25,6 @@ class InputField extends StatelessWidget {
     this.autofocus = false,
     this.onChanged,
   });
-
-  final TextEditingController controller;
-  final String labelText;
-  final bool obscureText;
-  final List<TextInputFormatter>? inputFormatters;
-  final int? maxLength;
-  final TextInputType? keyboardType;
-  final bool autofocus;
-  final Function(String)? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -34,15 +36,21 @@ class InputField extends StatelessWidget {
       keyboardType: keyboardType,
       autofocus: autofocus,
       onChanged: onChanged,
-      buildCounter:
-          (_, {int? currentLength, int? maxLength, bool? isFocused}) => null,
+      buildCounter: (_, {int? currentLength, int? maxLength, bool? isFocused}) => null,
       // esconde a contagem de caracteres quando se tem o maxlenght
       style: const TextStyle(
         color: Colors.white,
         fontSize: 16,
       ),
       decoration: InputDecoration(
-        labelText: labelText,
+        label: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (iconData != null) Icon(iconData, color: AppColors.fontBright),
+            if (iconData != null) const SizedBox(width: 10),
+            Text(labelText),
+          ],
+        ),
         labelStyle: const TextStyle(
           color: AppColors.fontBright,
         ),

@@ -20,10 +20,10 @@ class SelectFoods extends StatefulWidget {
   final TextEditingController selectedFoodsSearchBoxController;
   final TextEditingController selectedMealTypeController;
   final TextEditingController glicemiaController;
-
   final List<AlimentoIngerido> alimentosSelecionados;
   final DateTime? mealDate;
   final TimeOfDay? mealTime;
+  final Function(Refeicao) addMealToHistory;
 
   const SelectFoods({
     super.key,
@@ -33,6 +33,7 @@ class SelectFoods extends StatefulWidget {
     required this.selectedMealTypeController,
     required this.glicemiaController,
     required this.alimentosSelecionados,
+    required this.addMealToHistory,
     required this.setState,
     required this.mealDate,
     required this.mealTime,
@@ -180,6 +181,8 @@ class _SelectFoodsState extends State<SelectFoods> {
 
             DaoProcedureCoupler.inserirRefeicaoProcedimento(refeicao, widget.alimentosSelecionados).then(
               (value) {
+                refeicao.id = value;
+                widget.addMealToHistory(refeicao);
                 Navigator.pop(context, true);
               },
             );
@@ -212,7 +215,8 @@ class AllFoodsList extends StatelessWidget {
         InputField(
           controller: searchBoxController,
           onChanged: updateFilteredList,
-          labelText: "Pesquisar por alimentos",
+          labelText: "Pesquisar",
+          iconData: Icons.search_rounded,
         ),
         const SizedBox(height: 30),
         Expanded(
@@ -264,7 +268,7 @@ class FavoriteFoodsList extends StatelessWidget {
   final List<AlimentoIngerido> listaAlimentosSelecionados;
 
   void _extrairFavoritos() {
-    favoritos.clear();//?
+    favoritos.clear(); //?
 
     for (AlimentoRef alimento in listaAlimentosRef) {
       if (_isFavorito(alimento, tipoRefeicao)) {
@@ -276,15 +280,15 @@ class FavoriteFoodsList extends StatelessWidget {
   bool _isFavorito(AlimentoRef alimento, String tipoRefeicao) {
     switch (tipoRefeicao) {
       case "Café da manhã":
-      return alimento.favCafe;
-    case "Almoço":
-      return alimento.favAlmoco;
-    case "Janta":
-      return alimento.favJanta;
-    case "Lanche":
-      return alimento.favLanche;
-    default:
-      return false;
+        return alimento.favCafe;
+      case "Almoço":
+        return alimento.favAlmoco;
+      case "Janta":
+        return alimento.favJanta;
+      case "Lanche":
+        return alimento.favLanche;
+      default:
+        return false;
     }
   }
 
@@ -292,43 +296,40 @@ class FavoriteFoodsList extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: Faça a boa Mateus... 	(˵ ͡° ͜ʖ ͡°˵)
     // boa feita, eu acho :pray:
-    
+
     _extrairFavoritos();
-    
-    return Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text("Favoritos - $tipoRefeicao", style: const TextStyle(color: AppColors.fontBright, fontSize: 18, fontWeight: FontWeight.bold)),
-          ),
-          ListView.builder(
-            shrinkWrap: true,
-            itemCount: favoritos.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                title: Text(
-                  favoritos[index].nome, 
-                  style: const TextStyle(color: AppColors.fontBright),
-                ),
-                trailing: IconButton(onPressed: () {
+
+    return Column(children: [
+      Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Text("Favoritos - $tipoRefeicao", style: const TextStyle(color: AppColors.fontBright, fontSize: 18, fontWeight: FontWeight.bold)),
+      ),
+      ListView.builder(
+          shrinkWrap: true,
+          itemCount: favoritos.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              title: Text(
+                favoritos[index].nome,
+                style: const TextStyle(color: AppColors.fontBright),
+              ),
+              trailing: IconButton(
+                  onPressed: () {
                     infoLog('"${favoritos[index].nome}" selecionado!');
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return DialogAdicionarAlimento(
-                            alimentoSelecionado: favoritos[index],
-                            listaAlimentosSelecionados: listaAlimentosSelecionados,
-                          );
-                        },
-                      );
-                  }, 
-                  icon: const Icon(Icons.add, color: Colors.blueAccent)
-                  ),
-              );
-            }
-          ),
-        ]
-      );
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return DialogAdicionarAlimento(
+                          alimentoSelecionado: favoritos[index],
+                          listaAlimentosSelecionados: listaAlimentosSelecionados,
+                        );
+                      },
+                    );
+                  },
+                  icon: const Icon(Icons.add, color: Colors.blueAccent)),
+            );
+          }),
+    ]);
   }
 }
 
