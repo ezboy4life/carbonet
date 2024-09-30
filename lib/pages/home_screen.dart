@@ -1,6 +1,5 @@
 import 'package:carbonet/data/models/refeicao.dart';
 import 'package:carbonet/pages/add_refeicao.dart';
-import 'package:carbonet/pages/camera_functionality.dart';
 import 'package:carbonet/pages/home.dart';
 import 'package:carbonet/pages/listar_refeicoes.dart';
 import 'package:carbonet/pages/registro_favoritos.dart';

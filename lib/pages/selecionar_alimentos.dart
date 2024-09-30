@@ -240,11 +240,13 @@ class AllFoodsList extends StatelessWidget {
                 //   if (image != null) {
                 // Aqui espera-se receber a imagem cortada, e é aqui que a gente vai contatar a API e registrar os alimentos que ela nos devolver.
                 // Com a lista de resultados, a gente coloca o usuário na tab de alimentos selecionados, e sucesso na vida e na morte.
-                //     //TODO: implementação api e transição de tela
-                //     //TODO: lembrete que eu preciso manter os dados de calorias
-                //     //TODO: lembrete que eu preciso colocar os cálculos de qtd no app com base no peso e nos valores por porção
-                //     //TODO: lembrete que eu preciso fazer essa tela mostrar o valor total de calorias e carbos depois
-                //     //TODO: lembrete que ao final, o cálculo de insulina tem que ser exibido.
+                //TODO: lembrete de colocar o botãzinho da câmera dentro do input field depois.
+                //TODO: lembrete de deixar editar o alimento tocando nele na lista de alimentos selecionado depois.
+                //TODO: implementação api e transição de tela
+                //TODO: lembrete que eu preciso manter os dados de calorias nas tabelas
+                //TODO: lembrete que eu preciso fazer essa tela mostrar o valor total de calorias e carbos depois
+                //TODO: lembrete que ao final, o cálculo de insulina tem que ser exibido.
+                //TODO: lembrete de implementar o cadastro de glicemia separado.
                 //   }
               }, 
               icon: const Icon(
