@@ -1,4 +1,5 @@
 import 'package:carbonet/pages/add_refeicao.dart';
+import 'package:carbonet/pages/camera_functionality.dart';
 import 'package:carbonet/pages/home.dart';
 import 'package:carbonet/pages/listar_refeicoes.dart';
 import 'package:carbonet/pages/registro_favoritos.dart';
@@ -53,6 +54,22 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Future<void> showCameraTestModal() async {
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      barrierColor: Color(Colors.white.value).withOpacity(0.5),
+      builder: (BuildContext context) {
+        return SizedBox(
+          height: MediaQuery.of(context).size.height * 0.9,
+          child: const BaseCameraScreen(),
+        );
+      }
+    );
+  }
+
+
   void _onItemTapped(int index) {
     setState(() {
       if (index == 2) {
@@ -61,6 +78,8 @@ class _HomeScreenState extends State<HomeScreen> {
       } else if (index == 1) {
         showEditFavoritesModal();
         return;
+      } else if (index == 4) {
+        showCameraTestModal();
       }
       _selectedIndexNotifier.value = index;
     });
@@ -75,10 +94,13 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(
-              Icons.disabled_by_default_outlined,
-              color: Colors.white,
+            Image(
+              image: AssetImage("assets/imgs/logo.png"),
+              width: 32,
+              height: 32,
+              fit: BoxFit.fill,
             ),
+            SizedBox(width: 16),
             Text(
               "CarboNet",
               style: TextStyle(color: Colors.white),

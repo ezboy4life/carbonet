@@ -57,11 +57,11 @@ class LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Icon(
-              Icons.disabled_by_default_outlined,
-              color: AppColors.defaultAppColor,
-              size: 130,
-              weight: 800,
+            const Image(
+              image: AssetImage("assets/imgs/logo.png"),
+              width: 130,
+              height: 130,
+              fit: BoxFit.fill,
             ),
             const Text(
               "CarboNet",
