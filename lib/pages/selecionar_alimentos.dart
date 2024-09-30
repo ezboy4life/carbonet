@@ -3,10 +3,12 @@ import 'package:carbonet/data/database/alimento_ref_dao.dart';
 import 'package:carbonet/data/models/alimento_ingerido.dart';
 import 'package:carbonet/data/models/alimento_ref.dart';
 import 'package:carbonet/data/models/refeicao.dart';
+import 'package:carbonet/pages/camera_functionality.dart';
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/utils/dao_procedure_coupler.dart';
 import 'package:carbonet/utils/logged_user_access.dart';
 import 'package:carbonet/utils/logger.dart';
+import 'package:carbonet/utils/static_image_holder.dart';
 import 'package:carbonet/widgets/buttons/gradient_button.dart';
 import 'package:carbonet/widgets/input/input_field.dart';
 import 'package:carbonet/widgets/dialogs/popup_dialog.dart';
@@ -212,11 +214,45 @@ class AllFoodsList extends StatelessWidget {
     return Column(
       children: [
         const SizedBox(height: 30),
-        InputField(
-          controller: searchBoxController,
-          onChanged: updateFilteredList,
-          labelText: "Pesquisar",
-          iconData: Icons.search_rounded,
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Expanded(
+              child: InputField(
+                controller: searchBoxController,
+                onChanged: updateFilteredList,
+                labelText: "Pesquisar",
+                iconData: Icons.search_rounded,
+              ),
+            ),
+            const SizedBox(width: 10),
+            IconButton(
+              onPressed: () async {
+                Uint8List? croppedImage = await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const BaseCameraScreen(),
+                  ),
+                );
+                print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                print("image: ${croppedImage}");
+                croppedImage = StaticImageHolder.image;
+                print("image post static holder: ${croppedImage}");
+                //   if (image != null) {
+                // Aqui espera-se receber a imagem cortada, e é aqui que a gente vai contatar a API e registrar os alimentos que ela nos devolver.
+                // Com a lista de resultados, a gente coloca o usuário na tab de alimentos selecionados, e sucesso na vida e na morte.
+                //     //TODO: implementação api e transição de tela
+                //     //TODO: lembrete que eu preciso manter os dados de calorias
+                //     //TODO: lembrete que eu preciso colocar os cálculos de qtd no app com base no peso e nos valores por porção
+                //     //TODO: lembrete que eu preciso fazer essa tela mostrar o valor total de calorias e carbos depois
+                //     //TODO: lembrete que ao final, o cálculo de insulina tem que ser exibido.
+                //   }
+              }, 
+              icon: const Icon(
+                Icons.camera_alt_outlined, 
+                color: AppColors.fontBright
+              ),
+            )
+          ],
         ),
         const SizedBox(height: 30),
         Expanded(

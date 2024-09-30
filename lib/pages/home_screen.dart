@@ -67,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (BuildContext context) {
         return SizedBox(
           height: MediaQuery.of(context).size.height * 0.9,
-          child: const BaseCameraScreen(),
+          child: null,
         );
       }
     );
