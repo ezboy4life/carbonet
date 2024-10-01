@@ -6,7 +6,7 @@ class CustomDropdownMenuEntry<T> extends DropdownMenuEntry<T> {
     required super.value,
     required super.label,
     super.style = const ButtonStyle(
-      foregroundColor: MaterialStatePropertyAll(AppColors.fontBright),
+      foregroundColor: WidgetStatePropertyAll(AppColors.fontBright),
     ),
     // this.style = customStyle,
   });

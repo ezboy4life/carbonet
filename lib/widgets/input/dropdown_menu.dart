@@ -54,7 +54,7 @@ class CustomDropDownMenu extends StatelessWidget {
         ),
       ),
       menuStyle: const MenuStyle(
-        backgroundColor: MaterialStatePropertyAll(
+        backgroundColor: WidgetStatePropertyAll(
           Colors.black,
         ),
       ),

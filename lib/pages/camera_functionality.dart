@@ -87,11 +87,10 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
 
       if (value == null) {return;}
       else if (value == true) { // continue
-        print("value: ${value}");
         // aqui dentro: levantar o "cortar" do pacote crop_your_image.
         CropController _controllerCrop = CropController();
         if (!mounted) return;
-        var image = await Navigator.of(context).push(MaterialPageRoute(builder: (context) => Scaffold(
+        await Navigator.of(context).push(MaterialPageRoute(builder: (context) => Scaffold(
           body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -105,7 +104,6 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
                     aspectRatio: 1,
                     image: File(picture.path).readAsBytesSync(),
                     onCropped: (value) {
-                      print("CROPPED VALUE: $value");
                       croppedImage = value;
                       StaticImageHolder.image = value;
                       Navigator.of(context).pop(); // coloquei aqui.

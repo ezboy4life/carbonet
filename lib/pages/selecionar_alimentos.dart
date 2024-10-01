@@ -233,10 +233,7 @@ class AllFoodsList extends StatelessWidget {
                     builder: (context) => const BaseCameraScreen(),
                   ),
                 );
-                print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-                print("image: ${croppedImage}");
-                croppedImage = StaticImageHolder.image;
-                print("image post static holder: ${croppedImage}");
+                croppedImage = StaticImageHolder.image; // meio que desnecessário agora, masss... vou deixar aí, só caso algo dê errado se eu tirar.
                 //   if (image != null) {
                 // Aqui espera-se receber a imagem cortada, e é aqui que a gente vai contatar a API e registrar os alimentos que ela nos devolver.
                 // Com a lista de resultados, a gente coloca o usuário na tab de alimentos selecionados, e sucesso na vida e na morte.
@@ -332,8 +329,6 @@ class FavoriteFoodsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Faça a boa Mateus... 	(˵ ͡° ͜ʖ ͡°˵)
-    // boa feita, eu acho :pray:
 
     _extrairFavoritos();
 
