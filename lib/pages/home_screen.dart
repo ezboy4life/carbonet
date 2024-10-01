@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
       useSafeArea: true,
       builder: (BuildContext context) {
         return SizedBox(
-          height: (MediaQuery.of(context).size.height * 0.9) + 29, // wtf
+          height: (MediaQuery.of(context).size.height * 0.9), // wtf
           child: AdicionarRefeicao(addMealToHistory: addMealToHistory),
         );
       },
@@ -52,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (BuildContext context) {
           return SizedBox(
             height: MediaQuery.of(context).size.height * 0.9,
-            child: RegistroFavoritos(),
+            child: Expanded(child: RegistroFavoritos()),
           );
         });
   }
