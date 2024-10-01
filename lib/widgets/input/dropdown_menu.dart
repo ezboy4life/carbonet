@@ -31,14 +31,14 @@ class CustomDropDownMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     // double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
-
+  
     return DropdownMenu(
       controller: controller,
       onSelected: onSelected,
       width: screenWidth * widthFactor,
       leadingIcon: leadingIcon,
       dropdownMenuEntries: dropdownMenuEntries,
-      initialSelection: selectedDropdownMenuEntry,
+      initialSelection: selectedDropdownMenuEntry!.value,
       requestFocusOnTap: false,
       textStyle: TextStyle(
         color: textColor,

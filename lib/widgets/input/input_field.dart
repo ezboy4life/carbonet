@@ -73,7 +73,7 @@ class InputField extends StatelessWidget {
           ),
           borderSide: BorderSide(
             color: AppColors.fontBright,
-            width: 2,
+            width: 1,
           ),
         ),
         suffixIcon: trailingIcon != null
