@@ -494,10 +494,6 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
   final TextEditingController alterController = TextEditingController();
   AlimentoIngerido? selectedFoodItem;
 
-  // Future<bool?> _showDeleteConfirmationDialog(BuildContext context) {
-  //   return
-  // }
-
   void updateSelectedFoodItem() {
     if (selectedFoodItem == null) {
       errorLog("Erro ao atualizar quantidade ingerida de um alimento. O alimento é nulo.");
@@ -534,7 +530,7 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
               return Column(
                 children: [
                   Dismissible(
-                    key: UniqueKey(),
+                    key: Key(widget.selectedFoods[index].alimentoReferencia.id.toString()),
                     direction: DismissDirection.endToStart,
                     background: Container(
                       color: Colors.red,
@@ -543,9 +539,7 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
                       child: const Icon(Icons.delete, color: Colors.white),
                     ),
                     confirmDismiss: (direction) async {
-                      // Teve que fazer assim pq não tá chamando o onDismissed
-                      // JURO que não sei pq essa poha tá acontecendo.
-                      final result = await showDialog<bool>(
+                      return await showDialog<bool>(
                         context: context,
                         builder: (BuildContext context) {
                           return const ConfirmationDialog(
@@ -556,16 +550,12 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
                           );
                         },
                       );
-                      if (result == true) {
-                        setState(() {
-                          widget.selectedFoods.removeAt(index);
-                        });
-                      }
-                      return result;
                     },
-                    // onDismissed: (direction) {
-                    //   setState(() {});
-                    // },
+                    onDismissed: (direction) {
+                      setState(() {
+                        widget.selectedFoods.removeAt(index);
+                      });
+                    },
                     child: ListTile(
                       title: Text(
                         widget.selectedFoods[index].alimentoReferencia.nome,
