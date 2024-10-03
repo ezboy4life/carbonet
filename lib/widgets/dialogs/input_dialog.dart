@@ -17,6 +17,7 @@ class InputDialog extends StatefulWidget {
   final List<TextInputFormatter>? inputFormatters;
   final TextInputType? keyboardType;
 
+  /// Um dialog que tem um TextField, permitindo o usuário digitar um valor nele
   const InputDialog({
     super.key,
     required this.controller,

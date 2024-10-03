@@ -8,6 +8,7 @@ import 'package:carbonet/utils/dao_procedure_coupler.dart';
 import 'package:carbonet/utils/logged_user_access.dart';
 import 'package:carbonet/utils/logger.dart';
 import 'package:carbonet/widgets/buttons/button.dart';
+import 'package:carbonet/widgets/dialogs/confirmation_dialog.dart';
 import 'package:carbonet/widgets/input/input_field.dart';
 import 'package:carbonet/widgets/dialogs/warning_dialog.dart';
 import 'package:carbonet/widgets/dialogs/input_dialog.dart';
@@ -493,32 +494,9 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
   final TextEditingController alterController = TextEditingController();
   AlimentoIngerido? selectedFoodItem;
 
-  Future<bool?> _showDeleteConfirmationDialog(BuildContext context) {
-    // TODO: Isolar e fazer um dialog de acordo com o tema
-    return showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Confirmar exclusão'),
-          content: const Text('Você tem certeza dque deseja excluir esse alimento?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(false); // User canceled
-              },
-              child: const Text('Cancelar'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(true); // User confirmed
-              },
-              child: const Text('Excluir'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // Future<bool?> _showDeleteConfirmationDialog(BuildContext context) {
+  //   return
+  // }
 
   void updateSelectedFoodItem() {
     if (selectedFoodItem == null) {
@@ -567,7 +545,17 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
                     confirmDismiss: (direction) async {
                       // Teve que fazer assim pq não tá chamando o onDismissed
                       // JURO que não sei pq essa poha tá acontecendo.
-                      final result = await _showDeleteConfirmationDialog(context);
+                      final result = await showDialog<bool>(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return const ConfirmationDialog(
+                            title: "Confirmar exclusão",
+                            message: "Você tem certeza que deseja excluir esse alimento?",
+                            confirmButtonLabel: "Excluir",
+                            confirmButtonColor: Colors.red,
+                          );
+                        },
+                      );
                       if (result == true) {
                         setState(() {
                           widget.selectedFoods.removeAt(index);

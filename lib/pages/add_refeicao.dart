@@ -1,6 +1,7 @@
 import 'package:carbonet/data/models/alimento_ingerido.dart';
 import 'package:carbonet/data/models/refeicao.dart';
 import 'package:carbonet/pages/selecionar_alimentos.dart';
+import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/utils/validators.dart';
 import 'package:carbonet/widgets/input/date_input_field.dart';
 import 'package:carbonet/widgets/input/dropdown_menu.dart';
@@ -110,16 +111,30 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.black,
-        title: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(
-            Icons.close_rounded,
-            size: 35,
-            color: Colors.white,
+        // title: IconButton(
+        //   onPressed: () {
+        //     Navigator.pop(context);
+        //   },
+        //   icon: const Icon(
+        //     Icons.close_rounded,
+        //     size: 35,
+        //     color: Colors.white,
+        //   ),
+        // ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text(
+              "Cancelar",
+              style: TextStyle(color: AppColors.defaultAppColor),
+            ),
           ),
-        ),
+          const SizedBox(
+            width: 10,
+          )
+        ],
       ),
       body: Center(
         child: Padding(
