@@ -1,8 +1,8 @@
 import 'package:carbonet/data/models/refeicao.dart';
-import 'package:carbonet/pages/add_meal/add_refeicao.dart';
+import 'package:carbonet/pages/add_meal/add_meal.dart';
 import 'package:carbonet/pages/home/home.dart';
-import 'package:carbonet/pages/listar_refeicoes.dart';
-import 'package:carbonet/pages/registro_favoritos.dart';
+import 'package:carbonet/pages/history/listar_refeicoes.dart';
+import 'package:carbonet/pages/add_favorites/registro_favoritos.dart';
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -36,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (BuildContext context) {
         return SizedBox(
           height: (MediaQuery.of(context).size.height * 0.9), // wtf
-          child: AdicionarRefeicao(addMealToHistory: addMealToHistory),
+          child: AddMeal(addMealToHistory: addMealToHistory),
         );
       },
     );
