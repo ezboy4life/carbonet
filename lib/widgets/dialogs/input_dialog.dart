@@ -85,6 +85,7 @@ class _InputDialogState extends State<InputDialog> {
                     labelText: widget.label,
                     inputFormatters: widget.inputFormatters,
                     keyboardType: widget.keyboardType,
+                    autofocus: true,
                   ),
                   const SizedBox(height: 32),
                   Button(

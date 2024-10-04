@@ -13,6 +13,7 @@ import 'package:carbonet/widgets/input/input_field.dart';
 import 'package:carbonet/widgets/dialogs/warning_dialog.dart';
 import 'package:carbonet/widgets/dialogs/input_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class SelectFoods extends StatefulWidget {
   final Function setState;
@@ -311,6 +312,8 @@ class _AllFoodsListState extends State<AllFoodsList> {
                             ],
                             label: "Qtd em gramas",
                             buttonLabel: "Adicionar",
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                             onPressed: addFoodToList,
                           );
                         },
@@ -466,6 +469,8 @@ class _FavoriteFoodsListState extends State<FavoriteFoodsList> {
                           ],
                           label: "Qtd em gramas",
                           buttonLabel: "Adicionar",
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                           onPressed: _adicionarFavorito,
                         );
                       },
@@ -580,6 +585,8 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
                               label: "Qtd. em gramas",
                               buttonLabel: "Alterar",
                               onPressed: updateSelectedFoodItem,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                               message: [
                                 const TextSpan(
                                   text: "Insira a quantidade de ",

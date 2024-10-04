@@ -2,6 +2,7 @@ import 'package:carbonet/data/models/alimento_ingerido.dart';
 import 'package:carbonet/data/models/refeicao.dart';
 import 'package:carbonet/pages/selecionar_alimentos.dart';
 import 'package:carbonet/utils/app_colors.dart';
+import 'package:carbonet/utils/logger.dart';
 import 'package:carbonet/utils/validators.dart';
 import 'package:carbonet/widgets/input/date_input_field.dart';
 import 'package:carbonet/widgets/input/dropdown_menu.dart';
@@ -54,7 +55,6 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
   ];
 
   void _nextPage() {
-    FocusScope.of(context).unfocus();
     _pageViewController.nextPage(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeIn,
@@ -224,11 +224,14 @@ class MealInfo extends StatelessWidget {
         const SizedBox(
           height: 30,
         ),
-        TimeInputField(
-          labelText: "Horário da refeição",
-          iconData: Icons.watch_later_rounded,
-          timeController: timeController,
-          onTimeSelected: onTimeSelected,
+        GestureDetector(
+          onTap: () => infoLog("message"),
+          child: TimeInputField(
+            labelText: "Horário da refeição",
+            iconData: Icons.watch_later_rounded,
+            timeController: timeController,
+            onTimeSelected: onTimeSelected,
+          ),
         ),
         const SizedBox(
           height: 30,
