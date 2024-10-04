@@ -3,10 +3,12 @@ import 'package:carbonet/data/database/alimento_ref_dao.dart';
 import 'package:carbonet/data/models/alimento_ingerido.dart';
 import 'package:carbonet/data/models/alimento_ref.dart';
 import 'package:carbonet/data/models/refeicao.dart';
+import 'package:carbonet/pages/camera_functionality.dart';
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/utils/dao_procedure_coupler.dart';
 import 'package:carbonet/utils/logged_user_access.dart';
 import 'package:carbonet/utils/logger.dart';
+import 'package:carbonet/utils/static_image_holder.dart';
 import 'package:carbonet/widgets/buttons/button.dart';
 import 'package:carbonet/widgets/dialogs/confirmation_dialog.dart';
 import 'package:carbonet/widgets/input/input_field.dart';
@@ -207,6 +209,25 @@ class AllFoodsList extends StatefulWidget {
     required this.updateFilteredList,
   });
 
+  dynamic photoFunction(BuildContext context) async {
+    Uint8List? croppedImage = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const BaseCameraScreen(),
+      ),
+    );
+    croppedImage = StaticImageHolder.image; // meio que desnecessário agora, masss... vou deixar aí, só caso algo dê errado se eu tirar.
+    //   if (image != null) {
+    // Aqui espera-se receber a imagem cortada, e é aqui que a gente vai contatar a API e registrar os alimentos que ela nos devolver.
+    // Com a lista de resultados, a gente coloca o usuário na tab de alimentos selecionados, e sucesso na vida e na morte.
+    //TODO: lembrete de deixar editar o alimento tocando nele na lista de alimentos selecionado depois.
+    //TODO: implementação api e transição de tela
+    //TODO: lembrete que eu preciso manter os dados de calorias nas tabelas
+    //TODO: lembrete que eu preciso fazer essa tela mostrar o valor total de calorias e carbos depois
+    //TODO: lembrete que ao final, o cálculo de insulina tem que ser exibido.
+    //TODO: lembrete de implementar o cadastro de glicemia separado.
+    //   }
+  }
+
   @override
   State<AllFoodsList> createState() => _AllFoodsListState();
 }
@@ -264,6 +285,8 @@ class _AllFoodsListState extends State<AllFoodsList> {
           onChanged: widget.updateFilteredList,
           labelText: "Pesquisar",
           iconData: Icons.search_rounded,
+          trailingIcon: Icons.camera_alt_outlined,
+          onTrailingIconPressed: photoFunction,
         ),
         const SizedBox(height: 30),
         Expanded(

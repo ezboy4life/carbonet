@@ -1,6 +1,6 @@
 import 'package:carbonet/data/models/alimento_ingerido.dart';
 
-class Refeicao {
+class Refeicao {  // TODO: no refactor, colocar campos de qtdCalorias, qtdCarbos também
   int id;
   int idUser;
   String tipoRefeicao;

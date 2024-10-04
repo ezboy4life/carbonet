@@ -83,13 +83,15 @@ class _PagerState extends State<Pager> {
             )
           ],
         ),
-        SizedBox(
-          height: MediaQuery.sizeOf(context).height * widget.heightFactor,
-          child: PageView(
-            controller: widget.pageViewController,
-            physics: const NeverScrollableScrollPhysics(),
-            onPageChanged: _handlePageChanged,
-            children: widget.pages,
+        Expanded( // achei a carambola que eu tinha que enfiar num expanded pra parar de dar overflow
+          child: SizedBox(
+            height: MediaQuery.sizeOf(context).height * widget.heightFactor,
+            child: PageView(
+              controller: widget.pageViewController,
+              physics: const NeverScrollableScrollPhysics(),
+              onPageChanged: _handlePageChanged,
+              children: widget.pages,
+            ),
           ),
         ),
       ],

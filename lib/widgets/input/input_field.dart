@@ -12,6 +12,8 @@ class InputField extends StatelessWidget {
   final TextInputType? keyboardType;
   final bool autofocus;
   final Function(String)? onChanged;
+  final IconData? trailingIcon;
+  final Function(BuildContext)? onTrailingIconPressed;
 
   const InputField({
     super.key,
@@ -24,6 +26,8 @@ class InputField extends StatelessWidget {
     this.keyboardType,
     this.autofocus = false,
     this.onChanged,
+    this.trailingIcon,
+    this.onTrailingIconPressed,
   });
 
   @override
@@ -71,9 +75,15 @@ class InputField extends StatelessWidget {
           ),
           borderSide: BorderSide(
             color: AppColors.fontBright,
-            width: 2,
+            width: 1,
           ),
         ),
+        suffixIcon: trailingIcon != null
+            ? IconButton(
+                onPressed: onTrailingIconPressed != null ? (() => onTrailingIconPressed!(context)) : null,
+                icon: Icon(trailingIcon, color: AppColors.fontBright),
+              )
+            : null,
       ),
     );
   }

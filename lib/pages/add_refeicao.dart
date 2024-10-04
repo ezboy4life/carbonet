@@ -187,8 +187,10 @@ class MealInfo extends StatelessWidget {
   final TextEditingController timeController;
   final TextEditingController selectedMealTypeController;
   final List<DropdownMenuEntry<String>> tiposDeRefeicao;
+  bool isFirstTime = true;
+  DropdownMenuEntry<String>? initialDropdown;
 
-  const MealInfo({
+  MealInfo({
     super.key,
     required this.nextPage,
     required this.onDateSelected,
@@ -209,8 +211,32 @@ class MealInfo extends StatelessWidget {
     selectedMealTypeController.text = object.toString();
   }
 
+  void _firstTimeResponsiveSelection() {
+    if (isFirstTime) {
+      int hora = DateTime.now().hour;
+      print("Hora: $hora 🍌");
+      if (hora >= 4 && hora < 11) {
+        initialDropdown = tiposDeRefeicao[0];
+      } else if (hora >= 11 && hora < 17) {
+        initialDropdown = tiposDeRefeicao[1];
+      } else if (hora >= 17) {
+        initialDropdown = tiposDeRefeicao[2];
+      } else {
+        initialDropdown = tiposDeRefeicao[3];
+      }
+      isFirstTime = false;
+    } else {
+      initialDropdown = CustomDropdownMenuEntry(
+        value: selectedMealTypeController.text,
+        label: selectedMealTypeController.text,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    _firstTimeResponsiveSelection();
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -240,10 +266,7 @@ class MealInfo extends StatelessWidget {
           labelText: "Tipo da Refeição",
           iconData: Icons.restaurant_menu_rounded,
           dropdownMenuEntries: tiposDeRefeicao,
-          selectedDropdownMenuEntry: CustomDropdownMenuEntry(
-            value: selectedMealTypeController.text,
-            label: selectedMealTypeController.text,
-          ),
+          selectedDropdownMenuEntry: initialDropdown,
           onSelected: _handleSelectedMealType,
         ),
         const SizedBox(
