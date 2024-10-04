@@ -3,7 +3,7 @@ import 'package:carbonet/data/database/alimento_ref_dao.dart';
 import 'package:carbonet/data/models/alimento_ingerido.dart';
 import 'package:carbonet/data/models/alimento_ref.dart';
 import 'package:carbonet/data/models/refeicao.dart';
-import 'package:carbonet/pages/camera_functionality.dart';
+import 'package:carbonet/pages/add_meal/camera_functionality.dart';
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/utils/dao_procedure_coupler.dart';
 import 'package:carbonet/utils/logged_user_access.dart';
@@ -286,7 +286,7 @@ class _AllFoodsListState extends State<AllFoodsList> {
           labelText: "Pesquisar",
           iconData: Icons.search_rounded,
           trailingIcon: Icons.camera_alt_outlined,
-          onTrailingIconPressed: photoFunction,
+          onTrailingIconPressed: widget.photoFunction,
         ),
         const SizedBox(height: 30),
         Expanded(

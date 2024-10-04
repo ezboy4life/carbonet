@@ -33,7 +33,6 @@ class _ListarRefeicoesState extends State<ListarRefeicoes> {
 
   @override
   Widget build(BuildContext context) {
-    infoLog("Quantidade de items na lista: ${widget.historicoRefeicoes.length}");
     return Scaffold(
       backgroundColor: Colors.black,
       body: Padding(
@@ -80,7 +79,7 @@ class _ListarRefeicoesState extends State<ListarRefeicoes> {
                                     builder: (BuildContext context) {
                                       return const ConfirmationDialog(
                                         title: "Confirmar exclusão",
-                                        message: "Você tem certeza que deseja excluir esse alimento?",
+                                        message: "Você tem certeza que deseja excluir essa refeição?",
                                         confirmButtonLabel: "Excluir",
                                         confirmButtonColor: Colors.red,
                                       );

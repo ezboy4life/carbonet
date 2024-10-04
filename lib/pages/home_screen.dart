@@ -1,6 +1,6 @@
 import 'package:carbonet/data/models/refeicao.dart';
-import 'package:carbonet/pages/add_refeicao.dart';
-import 'package:carbonet/pages/home.dart';
+import 'package:carbonet/pages/add_meal/add_refeicao.dart';
+import 'package:carbonet/pages/home/home.dart';
 import 'package:carbonet/pages/listar_refeicoes.dart';
 import 'package:carbonet/pages/registro_favoritos.dart';
 import 'package:carbonet/utils/app_colors.dart';
@@ -59,19 +59,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> showCameraTestModal() async {
     await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      barrierColor: Color(Colors.white.value).withOpacity(0.5),
-      builder: (BuildContext context) {
-        return SizedBox(
-          height: MediaQuery.of(context).size.height * 0.9,
-          child: null,
-        );
-      }
-    );
+        context: context,
+        isScrollControlled: true,
+        useSafeArea: true,
+        barrierColor: Color(Colors.white.value).withOpacity(0.5),
+        builder: (BuildContext context) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.9,
+            child: null,
+          );
+        });
   }
-
 
   void _onItemTapped(int index) {
     setState(() {

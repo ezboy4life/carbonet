@@ -1,12 +1,8 @@
-// Padrões do Flutter
-// import 'package:carbonet/pages/register.dart
 import 'package:carbonet/pages/home_screen.dart';
-import 'package:carbonet/pages/register.dart';
+import 'package:carbonet/pages/login/register.dart';
+import 'package:carbonet/pages/login/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// Widgets
-// Páginas
-import 'package:carbonet/pages/login.dart';
 
 void main() {
   // Trava a orientação do app para sempre ficar na vertical
