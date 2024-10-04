@@ -1,4 +1,4 @@
-import 'package:carbonet/data/database/refeicao_dao.dart';
+import 'package:carbonet/data/database/meal_dao.dart';
 import 'package:carbonet/data/models/ingested_food.dart';
 import 'package:carbonet/data/models/meal.dart';
 import 'package:carbonet/utils/app_colors.dart';
@@ -22,7 +22,7 @@ class History extends StatefulWidget {
 
 class _HistoryState extends State<History> {
   final TextEditingController searchBoxController = TextEditingController();
-  final Future<List<Meal>> _getMealsFuture = RefeicaoDAO().getRefeicoesByUser(LoggedUserAccess().user!.id!);
+  final Future<List<Meal>> _getMealsFuture = MealDAO().getMealsByUser(LoggedUserAccess().user!.id!);
   final Map<int, bool> _isExpanded = {};
   bool hasReceivedMealList = false;
 

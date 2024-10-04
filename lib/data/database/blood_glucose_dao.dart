@@ -1,15 +1,15 @@
 import 'package:carbonet/data/database/database_helper.dart';
 import 'package:carbonet/data/models/blood_glucose.dart';
 
-class GlicemiaDAO {
+class BloodGlucoseDAO {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
 
-  Future<int> insertGlicemia(BloodGlucose glicemia) async {
+  Future<int> insertBloodGlucose(BloodGlucose bloodGlucose) async {
     final db = await _databaseHelper.database;
-    return await db.insert('glicemia', glicemia.toMap());
+    return await db.insert('glicemia', bloodGlucose.toMap());
   }
 
-  Future<List<BloodGlucose>> getAllGlicemiaByUser(int idUser) async {
+  Future<List<BloodGlucose>> getAllBloodGlucoseUser(int idUser) async {
     final db = await _databaseHelper.database;
     final List<Map<String, dynamic>> maps = await db.query('glicemia', where: 'idUser = ?', whereArgs: [idUser]);
 

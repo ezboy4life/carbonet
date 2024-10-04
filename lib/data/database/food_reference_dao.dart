@@ -4,9 +4,9 @@ import 'package:carbonet/data/models/food_reference.dart';
 class FoodReferenceDAO {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
 
-  Future<int> insertFoodReference(FoodReference alimentoRef) async {
+  Future<int> insertFoodReference(FoodReference foodReference) async {
     final db = await _databaseHelper.database;
-    return await db.insert('alimento_referencia', alimentoRef.toMap());
+    return await db.insert('alimento_referencia', foodReference.toMap());
   }
 
   Future<FoodReference?> getAlimentoById(int id) async {
@@ -33,9 +33,9 @@ class FoodReferenceDAO {
     });
   }
 
-  Future<void> updateStatusFavorito(FoodReference alimento) async {
+  Future<void> updateFavoriteStatus(FoodReference foodReference) async {
     final db = await _databaseHelper.database;
-    await db.update('alimento_referencia', alimento.toMap(), where: 'id = ?', whereArgs: [alimento.id]);
+    await db.update('alimento_referencia', foodReference.toMap(), where: 'id = ?', whereArgs: [foodReference.id]);
   }
 
   Future<void> populateFoodReference() async {
@@ -43,7 +43,7 @@ class FoodReferenceDAO {
 
     var ret = await db.query('alimento_referencia');
     if (ret.isEmpty) {
-      List listaPovoamento = getPovoamentoDb();
+      List listaPovoamento = getDatabasePopulate();
 
       for (var map in listaPovoamento) {
         db.insert('alimento_referencia', map);
@@ -53,7 +53,7 @@ class FoodReferenceDAO {
     return;
   }
 
-  List<Map<String, dynamic>> getPovoamentoDb() {
+  List<Map<String, dynamic>> getDatabasePopulate() {
     // Exemplo de texto com múltiplas linhas
     String inputText = """
   ('Abacate (picado)', 'colher de sopa cheia', '45', '3', '0.066', 'false', 'false', 'false', 'false'),

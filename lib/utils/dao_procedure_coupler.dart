@@ -1,25 +1,25 @@
-import 'package:carbonet/data/database/alimento_ingerido_dao.dart';
-import 'package:carbonet/data/database/alimento_ref_dao.dart';
-import 'package:carbonet/data/database/refeicao_dao.dart';
+import 'package:carbonet/data/database/ingested_food_dao.dart';
+import 'package:carbonet/data/database/food_reference_dao.dart';
+import 'package:carbonet/data/database/meal_dao.dart';
 import 'package:carbonet/data/models/ingested_food.dart';
 import 'package:carbonet/data/models/meal.dart';
 
 class DaoProcedureCoupler {
   static Future<int> inserirRefeicaoProcedimento(Meal refeicao, List<IngestedFood> listaAlimentosSelecionados) async {
-    int idMeal = await RefeicaoDAO().insertRefeicao(refeicao);
+    int idMeal = await MealDAO().insertMeal(refeicao);
 
-    AlimentoIngeridoDAO alimentoIngeridoDAO = AlimentoIngeridoDAO();
+    IngestedFoodDAO alimentoIngeridoDAO = IngestedFoodDAO();
     for (IngestedFood item in listaAlimentosSelecionados) {
       item.idMeal = idMeal;
-      await alimentoIngeridoDAO.insertAlimentoIngerido(item);
+      await alimentoIngeridoDAO.insertIngestedFood(item);
     }
 
     return idMeal;
   }
 
   static Future<List<IngestedFood>> getAlimentoIngeridoByRefeicaoFullData(int idMeal) async {
-    AlimentoIngeridoDAO alimentoIngeridoDAO = AlimentoIngeridoDAO();
-    List<IngestedFood> listaAlimentoIngerido = await alimentoIngeridoDAO.getAlimentoIngeridoByRefeicao(idMeal);
+    IngestedFoodDAO alimentoIngeridoDAO = IngestedFoodDAO();
+    List<IngestedFood> listaAlimentoIngerido = await alimentoIngeridoDAO.getIngestedFoodByMealId(idMeal);
 
     List<Future<void>> futures = []; // lista de futuros para serem aguardados
     // essa maracutaia de colocar todos os futuros numa lista foi cortesia do chatGPT; eu queria esse resultado, mas não tinha ctz de como conseguir

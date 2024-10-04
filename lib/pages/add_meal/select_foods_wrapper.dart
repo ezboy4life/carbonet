@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:carbonet/data/database/alimento_ref_dao.dart';
+import 'package:carbonet/data/database/food_reference_dao.dart';
 import 'package:carbonet/data/models/ingested_food.dart';
 import 'package:carbonet/data/models/food_reference.dart';
 import 'package:carbonet/data/models/meal.dart';
