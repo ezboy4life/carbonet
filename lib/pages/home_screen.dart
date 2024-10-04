@@ -1,4 +1,4 @@
-import 'package:carbonet/data/models/refeicao.dart';
+import 'package:carbonet/data/models/meal.dart';
 import 'package:carbonet/pages/add_meal/add_meal.dart';
 import 'package:carbonet/pages/home/home.dart';
 import 'package:carbonet/pages/history/history.dart';
@@ -15,14 +15,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final ValueNotifier<int> _selectedIndexNotifier = ValueNotifier<int>(0);
-  final List<Refeicao> mealHistory = [];
+  final List<Meal> mealHistory = [];
 
   @override
   void initState() {
     super.initState();
   }
 
-  void addMealToHistory(Refeicao meal) {
+  void addMealToHistory(Meal meal) {
     setState(() {
       mealHistory.add(meal);
     });

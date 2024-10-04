@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:carbonet/data/database/alimento_ref_dao.dart';
 import 'package:carbonet/data/models/alimento_ingerido.dart';
 import 'package:carbonet/data/models/alimento_ref.dart';
-import 'package:carbonet/data/models/refeicao.dart';
+import 'package:carbonet/data/models/meal.dart';
 import 'package:carbonet/pages/add_meal/all_foods_list.dart';
 import 'package:carbonet/pages/add_meal/favorite_foods_list.dart';
 import 'package:carbonet/pages/add_meal/selected_foods_list.dart';
@@ -23,7 +23,7 @@ class SelectFoodsWrapper extends StatefulWidget {
   final List<AlimentoIngerido> selectedFoods;
   final DateTime? mealDate;
   final TimeOfDay? mealTime;
-  final Function(Refeicao) addMealToHistory;
+  final Function(Meal) addMealToHistory;
 
   const SelectFoodsWrapper({
     super.key,
@@ -170,10 +170,10 @@ class _SelectFoodsWrapperState extends State<SelectFoodsWrapper> {
               widget.mealTime!.minute,
             );
 
-            Refeicao refeicao = Refeicao(
+            Meal refeicao = Meal(
               idUser: LoggedUserAccess().user!.id!,
-              data: dataRefeicao,
-              tipoRefeicao: widget.selectedMealTypeController.text,
+              date: dataRefeicao,
+              mealType: widget.selectedMealTypeController.text,
               isActive: true,
             );
 

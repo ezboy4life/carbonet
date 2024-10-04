@@ -1,20 +1,21 @@
 import 'package:carbonet/data/models/alimento_ingerido.dart';
 
-class Refeicao {  // TODO: no refactor, colocar campos de qtdCalorias, qtdCarbos também
+class Meal {
+  // TODO: no refactor, colocar campos de qtdCalorias, qtdCarbos também
   int id;
   int idUser;
-  String tipoRefeicao;
-  DateTime data;
+  String mealType;
+  DateTime date;
   bool isActive;
 
   final List<AlimentoIngerido> localListaAlimentosIngeridos = [];
 
   // é uma boa, no DAO, não continuar a operação sem ter idUser > -1 e a qtdIngerida > 0; estourar uma exception e tudo o mais
-  Refeicao({
+  Meal({
     this.id = -1,
     required this.idUser,
-    required this.data,
-    required this.tipoRefeicao,
+    required this.date,
+    required this.mealType,
     this.isActive = true,
   });
 
@@ -22,28 +23,26 @@ class Refeicao {  // TODO: no refactor, colocar campos de qtdCalorias, qtdCarbos
     if (id == -1) {
       return {
         'idUser': idUser,
-        'data': data.toIso8601String(),
-        'tipoRefeicao': tipoRefeicao,
+        'data': date.toIso8601String(),
+        'tipoRefeicao': mealType,
       };
     } else {
       return {
         'id': id,
         'idUser': idUser,
-        'data': data.toIso8601String(),
-        'tipoRefeicao': tipoRefeicao,
+        'data': date.toIso8601String(),
+        'tipoRefeicao': mealType,
         'isActive': isActive,
       };
     }
-
-    
   }
 
-  factory Refeicao.fromMap(Map<String, dynamic> map) {
-    return Refeicao(
+  factory Meal.fromMap(Map<String, dynamic> map) {
+    return Meal(
       id: map['id'],
       idUser: map['idUser'],
-      data: DateTime.parse(map['data']),
-      tipoRefeicao: map['tipoRefeicao'],
+      date: DateTime.parse(map['data']),
+      mealType: map['tipoRefeicao'],
       isActive: map['isActive'] == 1 ? true : false,
     );
   }

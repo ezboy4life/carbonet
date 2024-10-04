@@ -1,5 +1,5 @@
 import 'package:carbonet/data/models/alimento_ingerido.dart';
-import 'package:carbonet/data/models/refeicao.dart';
+import 'package:carbonet/data/models/meal.dart';
 import 'package:carbonet/pages/add_meal/meal_info.dart';
 import 'package:carbonet/pages/add_meal/select_foods_wrapper.dart';
 import 'package:carbonet/utils/app_colors.dart';
@@ -8,7 +8,7 @@ import 'package:carbonet/widgets/pager.dart';
 import 'package:flutter/material.dart';
 
 class AddMeal extends StatefulWidget {
-  final Function(Refeicao) addMealToHistory;
+  final Function(Meal) addMealToHistory;
   const AddMeal({
     super.key,
     required this.addMealToHistory,

@@ -1,6 +1,6 @@
 import 'package:carbonet/data/database/refeicao_dao.dart';
 import 'package:carbonet/data/models/alimento_ingerido.dart';
-import 'package:carbonet/data/models/refeicao.dart';
+import 'package:carbonet/data/models/meal.dart';
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/utils/dao_procedure_coupler.dart';
 import 'package:carbonet/utils/logged_user_access.dart';
@@ -10,7 +10,7 @@ import 'package:carbonet/widgets/input/input_field.dart';
 import 'package:flutter/material.dart';
 
 class History extends StatefulWidget {
-  final List<Refeicao> mealHistory;
+  final List<Meal> mealHistory;
   const History({
     super.key,
     required this.mealHistory,
@@ -22,7 +22,7 @@ class History extends StatefulWidget {
 
 class _HistoryState extends State<History> {
   final TextEditingController searchBoxController = TextEditingController();
-  final Future<List<Refeicao>> _getMealsFuture = RefeicaoDAO().getRefeicoesByUser(LoggedUserAccess().user!.id!);
+  final Future<List<Meal>> _getMealsFuture = RefeicaoDAO().getRefeicoesByUser(LoggedUserAccess().user!.id!);
   final Map<int, bool> _isExpanded = {};
   bool hasReceivedMealList = false;
 
@@ -99,13 +99,13 @@ class _HistoryState extends State<History> {
                                   title: Row(
                                     children: [
                                       Text(
-                                        widget.mealHistory[index].tipoRefeicao,
+                                        widget.mealHistory[index].mealType,
                                         style: const TextStyle(color: Colors.white),
                                       ),
                                       const Spacer(),
                                       Text(
                                         //  - ${listaRefeicoes[index].data.day.toString().padLeft(2, "0")}/${listaRefeicoes[index].data.month.toString().padLeft(2, "0")}/${listaRefeicoes[index].data.year}"
-                                        "${widget.mealHistory[index].data.hour.toString().padLeft(2, '0')}:${widget.mealHistory[index].data.minute.toString().padLeft(2, '0')}",
+                                        "${widget.mealHistory[index].date.hour.toString().padLeft(2, '0')}:${widget.mealHistory[index].date.minute.toString().padLeft(2, '0')}",
                                         style: const TextStyle(color: Colors.white),
                                       ),
                                     ],
