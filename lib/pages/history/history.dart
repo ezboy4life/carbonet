@@ -1,5 +1,5 @@
 import 'package:carbonet/data/database/refeicao_dao.dart';
-import 'package:carbonet/data/models/alimento_ingerido.dart';
+import 'package:carbonet/data/models/ingested_food.dart';
 import 'package:carbonet/data/models/meal.dart';
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/utils/dao_procedure_coupler.dart';
@@ -131,7 +131,7 @@ class _HistoryState extends State<History> {
                                           if (innerSnapshot.connectionState == ConnectionState.done) {
                                             if (innerSnapshot.hasData && innerSnapshot.data != null) {
                                               List<Widget> widgets = [];
-                                              List<AlimentoIngerido> alimentosIngeridos = innerSnapshot.data!;
+                                              List<IngestedFood> alimentosIngeridos = innerSnapshot.data!;
 
                                               for (var index = 0; index < alimentosIngeridos.length; index++) {
                                                 widgets.add(
@@ -144,14 +144,14 @@ class _HistoryState extends State<History> {
                                                           child: Row(
                                                             children: [
                                                               Text(
-                                                                alimentosIngeridos[index].alimentoReferencia.nome,
+                                                                alimentosIngeridos[index].foodReference.name,
                                                                 style: const TextStyle(
                                                                   color: AppColors.fontBright,
                                                                 ),
                                                               ),
                                                               const Spacer(),
                                                               Text(
-                                                                "${alimentosIngeridos[index].qtdIngerida} g",
+                                                                "${alimentosIngeridos[index].gramsIngested} g",
                                                                 style: const TextStyle(
                                                                   color: AppColors.fontBright,
                                                                 ),

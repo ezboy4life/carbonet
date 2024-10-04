@@ -34,9 +34,9 @@ class RegisterPageState extends State<RegisterPage> {
   final TextEditingController _weightController = TextEditingController();
   final List<String> _hintTexts = [
     "Digite seu e-mail e defina um senha",
-    "Digite seu nome e sobrenome",
-    "Digite sua data de nascimento e seu peso",
-    "Digite sua altura e sua constante insulinica",
+    "Digite seu name e surname",
+    "Digite sua data de nascimento e seu weight",
+    "Digite sua height e sua constante insulinica",
   ];
 
   @override
@@ -74,8 +74,8 @@ class RegisterPageState extends State<RegisterPage> {
     _passwordController.text = "1231231231";
     _nameController.text = "Nome";
     _surnameController.text = "Sobrenome";
-    _heightController.text = "1.79"; // minha altura :D
-    _weightController.text = "71.2"; // e meu peso   :D
+    _heightController.text = "1.79"; // minha height :D
+    _weightController.text = "71.2"; // e meu weight   :D
     // Alguém precisa pelo amor de Deus me explicar o que diabos é essa
     // constante, eu juro que não acho isso em absolutamente lugar nenhum
     // na internet pra ter um ponto de referência.
@@ -104,12 +104,12 @@ class RegisterPageState extends State<RegisterPage> {
     User user = User(
       email: _emailController.text,
       senha: _passwordController.text,
-      peso: double.parse(_weightController.text),
-      altura: double.parse(_heightController.text),
-      dataNascimento: selectedBirthDate!,
+      weight: double.parse(_weightController.text),
+      height: double.parse(_heightController.text),
+      birthDate: selectedBirthDate!,
       constanteInsulinica: double.parse(_insulinController.text),
-      nome: _nameController.text,
-      sobrenome: _surnameController.text,
+      name: _nameController.text,
+      surname: _surnameController.text,
     );
     int id = await userRepository.addUser(user);
     infoLog("Usuário inserido. ID: $id");
@@ -331,7 +331,7 @@ class _NameAndSurname extends StatelessWidget {
                 builder: (BuildContext context) {
                   return const WarningDialog(
                     title: "Nome inválido!",
-                    message: "Por favor, insira um nome válido.",
+                    message: "Por favor, insira um name válido.",
                   );
                 },
               );
@@ -345,7 +345,7 @@ class _NameAndSurname extends StatelessWidget {
                 builder: (BuildContext context) {
                   return const WarningDialog(
                     title: "Sobrenome inválido!",
-                    message: "Por favor, insira um sobrenome válido.",
+                    message: "Por favor, insira um surname válido.",
                   );
                 },
               );
@@ -412,7 +412,7 @@ class _BirthAndWeight extends StatelessWidget {
                 builder: (BuildContext context) {
                   return const WarningDialog(
                     title: "Peso inválido!",
-                    message: "Por gentileza, defina um peso válido.\nExemplo: 75.2 KG.",
+                    message: "Por gentileza, defina um weight válido.\nExemplo: 75.2 KG.",
                   );
                 },
               );
@@ -501,7 +501,7 @@ class _HeightAndInsulin extends StatelessWidget {
                 builder: (BuildContext context) {
                   return const WarningDialog(
                     title: "Altura inválida!",
-                    message: "Por gentileza, defina uma altura válida.",
+                    message: "Por gentileza, defina uma height válida.",
                   );
                 },
               );

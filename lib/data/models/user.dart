@@ -5,38 +5,38 @@ import "package:crypto/crypto.dart";
 class User {
   final int? id;
   final String email;
-  final String senhaHash;
-  final double peso;
-  final double altura;
-  final DateTime dataNascimento;
+  final String passwordHash;
+  final double weight;
+  final double height;
+  final DateTime birthDate;
   final double constanteInsulinica; // alguem tem que me explicar q poha é essa
-  final String nome;
-  final String sobrenome;
+  final String name;
+  final String surname;
 
   User({
     this.id,
     required this.email,
     required senha,
-    required this.peso,
-    required this.altura,
-    required this.dataNascimento,
+    required this.weight,
+    required this.height,
+    required this.birthDate,
     required this.constanteInsulinica,
-    required this.nome,
-    required this.sobrenome,
-  }) : senhaHash = hashPassword(senha);
+    required this.name,
+    required this.surname,
+  }) : passwordHash = hashPassword(senha);
 
   Map<String, dynamic> toMap() {
     // toJSON (?)
     return {
       'id': id,
       'email': email,
-      'senha': senhaHash,
-      'peso': peso,
-      'altura': altura,
-      'data_nascimento': dataNascimento.toIso8601String(),
+      'senha': passwordHash,
+      'weight': weight,
+      'height': height,
+      'data_nascimento': birthDate.toIso8601String(),
       'const_insulinica': constanteInsulinica,
-      'nome': nome,
-      'sobrenome': sobrenome
+      'name': name,
+      'surname': surname
     };
   }
 
@@ -46,12 +46,12 @@ class User {
       id: map["id"],
       email: map["email"],
       senha: map["senha"],
-      peso: map["peso"],
-      altura: map["altura"],
-      dataNascimento: DateTime.parse(map["data_nascimento"]),
+      weight: map["peso"],
+      height: map["altura"],
+      birthDate: DateTime.parse(map["data_nascimento"]),
       constanteInsulinica: map["const_insulinica"],
-      nome: map["nome"],
-      sobrenome: map["sobrenome"],
+      name: map["nome"],
+      surname: map["sobrenome"],
     );
   }
 

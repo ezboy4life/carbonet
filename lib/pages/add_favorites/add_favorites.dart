@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:carbonet/data/database/alimento_ref_dao.dart';
-import 'package:carbonet/data/models/alimento_ref.dart';
+import 'package:carbonet/data/models/food_reference.dart';
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/utils/logger.dart';
 import 'package:carbonet/widgets/input/input_field.dart';
@@ -16,36 +16,36 @@ class AddFavorites extends StatefulWidget {
 }
 
 class _AddFavoritesState extends State<AddFavorites> {
-  final Future<List<AlimentoRef>> _alimentos = AlimentoRefDAO().getAllAlimentoRef();
+  final Future<List<FoodReference>> _alimentos = FoodReferenceDAO().getAllFoodReference();
 
-  final List<AlimentoRef> favoritosCafe = [];
+  final List<FoodReference> favoritosCafe = [];
 
-  final List<AlimentoRef> favoritosAlmoco = [];
+  final List<FoodReference> favoritosAlmoco = [];
 
-  final List<AlimentoRef> favoritosJantar = [];
+  final List<FoodReference> favoritosJantar = [];
 
-  final List<AlimentoRef> favoritosLanche = [];
+  final List<FoodReference> favoritosLanche = [];
 
-  late List<AlimentoRef> listaBase;
+  late List<FoodReference> listaBase;
 
   Future<void> separarFavoritos() async {
     listaBase = await _alimentos;
 
-    for (AlimentoRef alimento in listaBase) {
-      alimento.favCafe ? favoritosCafe.add(alimento) : null;
-      alimento.favAlmoco ? favoritosAlmoco.add(alimento) : null;
-      alimento.favJanta ? favoritosJantar.add(alimento) : null;
-      alimento.favLanche ? favoritosLanche.add(alimento) : null;
+    for (FoodReference alimento in listaBase) {
+      alimento.favoriteCoffee ? favoritosCafe.add(alimento) : null;
+      alimento.favoriteLunch ? favoritosAlmoco.add(alimento) : null;
+      alimento.favoriteDinner ? favoritosJantar.add(alimento) : null;
+      alimento.favoriteSnack ? favoritosLanche.add(alimento) : null;
     }
 
     return;
   }
 
-  ({List<AlimentoRef> favCafe, List<AlimentoRef> favAlmoco, List<AlimentoRef> favJanta, List<AlimentoRef> favLanche, List<AlimentoRef> listaBase}) getListas() {
-    return (favCafe: favoritosCafe, favAlmoco: favoritosAlmoco, favJanta: favoritosJantar, favLanche: favoritosLanche, listaBase: listaBase);
+  ({List<FoodReference> favoriteCoffee, List<FoodReference> favoriteLunch, List<FoodReference> favoriteDinner, List<FoodReference> favoriteSnack, List<FoodReference> listaBase}) getListas() {
+    return (favoriteCoffee: favoritosCafe, favoriteLunch: favoritosAlmoco, favoriteDinner: favoritosJantar, favoriteSnack: favoritosLanche, listaBase: listaBase);
   }
 
-  void _toggleFavorito(AlimentoRef alimento, MealTypeEnum refeicao, List<AlimentoRef> listaFav) async {
+  void _toggleFavorito(FoodReference alimento, MealTypeEnum refeicao, List<FoodReference> listaFav) async {
     if (listaFav.contains(alimento)) {
       listaFav.remove(alimento);
     } else {
@@ -54,20 +54,20 @@ class _AddFavoritesState extends State<AddFavorites> {
 
     switch (refeicao) {
       case MealTypeEnum.cafe:
-        alimento.favCafe = !alimento.favCafe;
+        alimento.favoriteCoffee = !alimento.favoriteCoffee;
         break;
       case MealTypeEnum.almoco:
-        alimento.favAlmoco = !alimento.favAlmoco;
+        alimento.favoriteLunch = !alimento.favoriteLunch;
         break;
       case MealTypeEnum.jantar:
-        alimento.favJanta = !alimento.favJanta;
+        alimento.favoriteDinner = !alimento.favoriteDinner;
         break;
       case MealTypeEnum.lanche:
-        alimento.favLanche = !alimento.favLanche;
+        alimento.favoriteSnack = !alimento.favoriteSnack;
         break;
     }
 
-    AlimentoRefDAO dao = AlimentoRefDAO();
+    FoodReferenceDAO dao = FoodReferenceDAO();
     dao.updateStatusFavorito(alimento);
 
     return;
@@ -170,7 +170,7 @@ class _AddFavoritesState extends State<AddFavorites> {
 class ListaFavoritosRefeicao extends StatefulWidget {
   const ListaFavoritosRefeicao({super.key, required this.favoritos, required this.refeicao, required this.toggleFavorito, required this.getListas});
 
-  final List<AlimentoRef> favoritos;
+  final List<FoodReference> favoritos;
   final MealTypeEnum refeicao;
   final Function toggleFavorito;
   final Function getListas;
@@ -248,7 +248,7 @@ class _ListaFavoritosRefeicaoState extends State<ListaFavoritosRefeicao> {
             itemBuilder: (context, index) {
               return ListTile(
                 title: Text(
-                  widget.favoritos[index].nome,
+                  widget.favoritos[index].name,
                   style: const TextStyle(color: AppColors.fontBright),
                 ),
                 trailing: IconButton(
@@ -275,26 +275,26 @@ class AdicionarFavModal extends StatefulWidget {
 }
 
 class _AdicionarFavModalState extends State<AdicionarFavModal> {
-  late List<AlimentoRef> _listaBase, listaAlimentoRefFiltrada; //_favCafe, _favAlmoco, _favJanta, _favLanche
+  late List<FoodReference> _listaBase, listaFoodReferenceFiltrada; //_favCafe, _favAlmoco, _favJanta, _favLanche
   Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
-    var (:favCafe, :favAlmoco, :favJanta, :favLanche, :listaBase) = widget.getListas();
+    var (:favoriteCoffee, :favoriteLunch, :favoriteDinner, :favoriteSnack, :listaBase) = widget.getListas();
 
     _listaBase = listaBase;
-    listaAlimentoRefFiltrada = _listaBase;
+    listaFoodReferenceFiltrada = _listaBase;
   }
 
   void _updateListaFiltrada(String? value) {
     if (value == null || value.isEmpty) {
       setState(() {
-        listaAlimentoRefFiltrada = _listaBase;
+        listaFoodReferenceFiltrada = _listaBase;
       });
     } else {
       setState(() {
-        listaAlimentoRefFiltrada = _listaBase.where((element) => element.nome.toLowerCase().contains(value.toLowerCase())).toList();
+        listaFoodReferenceFiltrada = _listaBase.where((element) => element.name.toLowerCase().contains(value.toLowerCase())).toList();
       });
     }
   }
@@ -342,23 +342,23 @@ class _AdicionarFavModalState extends State<AdicionarFavModal> {
           const SizedBox(height: 30),
           Expanded(
             child: ListView.builder(
-              itemCount: listaAlimentoRefFiltrada.length,
+              itemCount: listaFoodReferenceFiltrada.length,
               itemBuilder: (context, index) {
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     ListTile(
                       title: Text(
-                        listaAlimentoRefFiltrada[index].nome,
+                        listaFoodReferenceFiltrada[index].name,
                         style: const TextStyle(color: AppColors.fontBright),
                       ),
                       onTap: () {
-                        infoLog('"${listaAlimentoRefFiltrada[index].nome}" selecionado!');
+                        infoLog('"${listaFoodReferenceFiltrada[index].name}" selecionado!');
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
                             return DialogModificarFavorito(
-                              alimentoSelecionado: listaAlimentoRefFiltrada[index],
+                              alimentoSelecionado: listaFoodReferenceFiltrada[index],
                               getListas: widget.getListas,
                             );
                           },
@@ -366,7 +366,7 @@ class _AdicionarFavModalState extends State<AdicionarFavModal> {
                         setState(() {});
                       },
                     ),
-                    if (index < listaAlimentoRefFiltrada.length - 1) const Divider(color: AppColors.fontDimmed),
+                    if (index < listaFoodReferenceFiltrada.length - 1) const Divider(color: AppColors.fontDimmed),
                   ],
                 );
               },
@@ -381,7 +381,7 @@ class _AdicionarFavModalState extends State<AdicionarFavModal> {
 class DialogModificarFavorito extends StatefulWidget {
   const DialogModificarFavorito({super.key, required this.alimentoSelecionado, required this.getListas});
 
-  final AlimentoRef alimentoSelecionado;
+  final FoodReference alimentoSelecionado;
   final Function getListas;
 
   @override
@@ -389,7 +389,7 @@ class DialogModificarFavorito extends StatefulWidget {
 }
 
 class _DialogModificarFavoritoState extends State<DialogModificarFavorito> {
-  late List<AlimentoRef> _favCafe, _favAlmoco, _favJanta, _favLanche;
+  late List<FoodReference> _favCafe, _favAlmoco, _favJanta, _favLanche;
   late List<bool> _selectedRefeicoes;
   final List<Icon> icons = const [
     Icon(Icons.breakfast_dining),
@@ -401,35 +401,35 @@ class _DialogModificarFavoritoState extends State<DialogModificarFavorito> {
   @override
   void initState() {
     super.initState();
-    var (:favCafe, :favAlmoco, :favJanta, :favLanche, :listaBase) = widget.getListas();
+    var (:favoriteCoffee, :favoriteLunch, :favoriteDinner, :favoriteSnack, :listaBase) = widget.getListas();
 
-    _favCafe = favCafe;
-    _favAlmoco = favAlmoco;
-    _favJanta = favJanta;
-    _favLanche = favLanche;
+    _favCafe = favoriteCoffee;
+    _favAlmoco = favoriteLunch;
+    _favJanta = favoriteDinner;
+    _favLanche = favoriteSnack;
 
-    _selectedRefeicoes = [widget.alimentoSelecionado.favCafe, widget.alimentoSelecionado.favAlmoco, widget.alimentoSelecionado.favJanta, widget.alimentoSelecionado.favLanche];
+    _selectedRefeicoes = [widget.alimentoSelecionado.favoriteCoffee, widget.alimentoSelecionado.favoriteLunch, widget.alimentoSelecionado.favoriteDinner, widget.alimentoSelecionado.favoriteSnack];
   }
 
-  void updateFavorito(AlimentoRef alimento, MealTypeEnum refeicao) {
-    List<AlimentoRef> listaFav;
+  void updateFavorito(FoodReference alimento, MealTypeEnum refeicao) {
+    List<FoodReference> listaFav;
 
     switch (refeicao) {
       case MealTypeEnum.cafe:
         listaFav = _favCafe;
-        alimento.favCafe = !alimento.favCafe;
+        alimento.favoriteCoffee = !alimento.favoriteCoffee;
         break;
       case MealTypeEnum.almoco:
         listaFav = _favAlmoco;
-        alimento.favAlmoco = !alimento.favAlmoco;
+        alimento.favoriteLunch = !alimento.favoriteLunch;
         break;
       case MealTypeEnum.jantar:
         listaFav = _favJanta;
-        alimento.favJanta = !alimento.favJanta;
+        alimento.favoriteDinner = !alimento.favoriteDinner;
         break;
       case MealTypeEnum.lanche:
         listaFav = _favLanche;
-        alimento.favLanche = !alimento.favLanche;
+        alimento.favoriteSnack = !alimento.favoriteSnack;
         break;
     }
 
@@ -439,7 +439,7 @@ class _DialogModificarFavoritoState extends State<DialogModificarFavorito> {
       listaFav.add(alimento);
     }
 
-    AlimentoRefDAO dao = AlimentoRefDAO();
+    FoodReferenceDAO dao = FoodReferenceDAO();
     dao.updateStatusFavorito(alimento);
 
     return;
@@ -479,7 +479,7 @@ class _DialogModificarFavoritoState extends State<DialogModificarFavorito> {
                     TextSpan(
                       children: [
                         TextSpan(
-                          text: "Editar favorito: ${widget.alimentoSelecionado.nome}",
+                          text: "Editar favorito: ${widget.alimentoSelecionado.name}",
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 20,

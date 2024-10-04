@@ -1,4 +1,4 @@
-import 'package:carbonet/data/models/alimento_ingerido.dart';
+import 'package:carbonet/data/models/ingested_food.dart';
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/utils/logger.dart';
 import 'package:carbonet/widgets/dialogs/confirmation_dialog.dart';
@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class SelectedFoodsList extends StatefulWidget {
-  final List<AlimentoIngerido> selectedFoods;
+  final List<IngestedFood> selectedFoods;
 
   const SelectedFoodsList({
     super.key,
@@ -21,7 +21,7 @@ class SelectedFoodsList extends StatefulWidget {
 
 class _SelectedFoodsListState extends State<SelectedFoodsList> {
   final TextEditingController alterController = TextEditingController();
-  AlimentoIngerido? selectedFoodItem;
+  IngestedFood? selectedFoodItem;
 
   void updateSelectedFoodItem() {
     if (selectedFoodItem == null) {
@@ -30,8 +30,8 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
     }
 
     if (alterController.text.isNotEmpty && int.parse(alterController.text) != 0) {
-      selectedFoodItem?.qtdIngerida = double.parse(alterController.text);
-      Navigator.of(context).pop(selectedFoodItem?.qtdIngerida);
+      selectedFoodItem?.gramsIngested = double.parse(alterController.text);
+      Navigator.of(context).pop(selectedFoodItem?.gramsIngested);
       selectedFoodItem = null;
       alterController.text = "";
     } else {
@@ -59,7 +59,7 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
               return Column(
                 children: [
                   Dismissible(
-                    key: Key(widget.selectedFoods[index].alimentoReferencia.id.toString()),
+                    key: Key(widget.selectedFoods[index].foodReference.id.toString()),
                     direction: DismissDirection.endToStart,
                     background: Container(
                       color: Colors.red,
@@ -87,18 +87,18 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
                     },
                     child: ListTile(
                       title: Text(
-                        widget.selectedFoods[index].alimentoReferencia.nome,
+                        widget.selectedFoods[index].foodReference.name,
                         style: const TextStyle(color: AppColors.fontBright),
                       ),
                       trailing: Text(
-                        "${widget.selectedFoods[index].qtdIngerida.toStringAsFixed(0)}g",
+                        "${widget.selectedFoods[index].gramsIngested.toStringAsFixed(0)}g",
                         style: const TextStyle(
                           color: AppColors.fontBright,
                           fontSize: 15,
                         ),
                       ),
                       onTap: () async {
-                        infoLog(widget.selectedFoods[index].alimentoReferencia.nome);
+                        infoLog(widget.selectedFoods[index].foodReference.name);
                         selectedFoodItem = widget.selectedFoods[index];
                         final result = await showDialog(
                           context: context,
@@ -120,7 +120,7 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
                                   ),
                                 ),
                                 TextSpan(
-                                  text: widget.selectedFoods[index].alimentoReferencia.nome.toLowerCase(),
+                                  text: widget.selectedFoods[index].foodReference.name.toLowerCase(),
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 17,

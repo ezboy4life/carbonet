@@ -1,4 +1,4 @@
-import 'package:carbonet/data/models/alimento_ingerido.dart';
+import 'package:carbonet/data/models/ingested_food.dart';
 import 'package:carbonet/data/models/meal.dart';
 import 'package:carbonet/pages/add_meal/meal_info.dart';
 import 'package:carbonet/pages/add_meal/select_foods_wrapper.dart';
@@ -19,7 +19,7 @@ class AddMeal extends StatefulWidget {
 }
 
 class _AddMealState extends State<AddMeal> {
-  final List<AlimentoIngerido> selectedFoods = [];
+  final List<IngestedFood> selectedFoods = [];
   final TextEditingController allFoodsController = TextEditingController();
   final TextEditingController favoriteFoodsController = TextEditingController();
   final TextEditingController selectedFoodsController = TextEditingController();
@@ -90,7 +90,7 @@ class _AddMealState extends State<AddMeal> {
   void setState(VoidCallback fn) {
     totalCarbohydrates = 0;
     for (var ingestedFood in selectedFoods) {
-      totalCarbohydrates += ingestedFood.alimentoReferencia.carbosPorGrama * ingestedFood.qtdIngerida;
+      totalCarbohydrates += ingestedFood.foodReference.carbsPerGram * ingestedFood.gramsIngested;
     }
     super.setState(fn);
   }

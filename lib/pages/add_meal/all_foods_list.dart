@@ -1,5 +1,5 @@
-import 'package:carbonet/data/models/alimento_ingerido.dart';
-import 'package:carbonet/data/models/alimento_ref.dart';
+import 'package:carbonet/data/models/ingested_food.dart';
+import 'package:carbonet/data/models/food_reference.dart';
 import 'package:carbonet/pages/add_meal/camera_functionality.dart';
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/utils/logger.dart';
@@ -11,8 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class AllFoodsList extends StatefulWidget {
-  final List<AlimentoRef> filteredFoodReferenceList;
-  final List<AlimentoIngerido> selectedFoodList;
+  final List<FoodReference> filteredFoodReferenceList;
+  final List<IngestedFood> selectedFoodList;
   final TextEditingController searchBoxController;
   final Function(String?) updateFilteredList;
 
@@ -49,10 +49,10 @@ class AllFoodsList extends StatefulWidget {
 
 class _AllFoodsListState extends State<AllFoodsList> {
   final TextEditingController gramsController = TextEditingController();
-  AlimentoRef? selectedFoodRef;
+  FoodReference? selectedFoodReference;
 
   void addFoodToList() {
-    if (selectedFoodRef == null) {
+    if (selectedFoodReference == null) {
       errorLog("Refeição selecionada é nula.");
       return;
     }
@@ -71,18 +71,18 @@ class _AllFoodsListState extends State<AllFoodsList> {
     }
 
     for (final food in widget.selectedFoodList) {
-      if (food.idAlimentoReferencia == selectedFoodRef?.id) {
-        food.qtdIngerida += double.parse(gramsController.text);
+      if (food.idFoodReference == selectedFoodReference?.id) {
+        food.gramsIngested += double.parse(gramsController.text);
         Navigator.pop(context);
         return;
       }
     }
 
     widget.selectedFoodList.add(
-      AlimentoIngerido(
-        idAlimentoReferencia: selectedFoodRef!.id,
-        alimentoReferencia: selectedFoodRef,
-        qtdIngerida: double.parse(gramsController.text),
+      IngestedFood(
+        idFoodReference: selectedFoodReference!.id,
+        foodReference: selectedFoodReference,
+        gramsIngested: double.parse(gramsController.text),
       ),
     );
 
@@ -112,12 +112,12 @@ class _AllFoodsListState extends State<AllFoodsList> {
                 children: [
                   ListTile(
                     title: Text(
-                      widget.filteredFoodReferenceList[index].nome,
+                      widget.filteredFoodReferenceList[index].name,
                       style: const TextStyle(color: AppColors.fontBright),
                     ),
                     onTap: () {
-                      infoLog('"${widget.filteredFoodReferenceList[index].nome}" selecionado!');
-                      selectedFoodRef = widget.filteredFoodReferenceList[index];
+                      infoLog('"${widget.filteredFoodReferenceList[index].name}" selecionado!');
+                      selectedFoodReference = widget.filteredFoodReferenceList[index];
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
@@ -133,7 +133,7 @@ class _AllFoodsListState extends State<AllFoodsList> {
                                 ),
                               ),
                               TextSpan(
-                                text: selectedFoodRef?.nome.toLowerCase() ?? "ERRO!",
+                                text: selectedFoodReference?.name.toLowerCase() ?? "ERRO!",
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 17,

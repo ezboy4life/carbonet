@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:carbonet/data/database/alimento_ref_dao.dart';
-import 'package:carbonet/data/models/alimento_ingerido.dart';
-import 'package:carbonet/data/models/alimento_ref.dart';
+import 'package:carbonet/data/models/ingested_food.dart';
+import 'package:carbonet/data/models/food_reference.dart';
 import 'package:carbonet/data/models/meal.dart';
 import 'package:carbonet/pages/add_meal/all_foods_list.dart';
 import 'package:carbonet/pages/add_meal/favorite_foods_list.dart';
@@ -20,7 +20,7 @@ class SelectFoodsWrapper extends StatefulWidget {
   final TextEditingController selectedFoodsSearchBoxController;
   final TextEditingController selectedMealTypeController;
   final TextEditingController glicemiaController;
-  final List<AlimentoIngerido> selectedFoods;
+  final List<IngestedFood> selectedFoods;
   final DateTime? mealDate;
   final TimeOfDay? mealTime;
   final Function(Meal) addMealToHistory;
@@ -55,20 +55,20 @@ class _SelectFoodsWrapperState extends State<SelectFoodsWrapper> {
   Timer? _debounce;
 
   _initListAsync() async {
-    listaAlimentoRef = await AlimentoRefDAO().getAllAlimentoRef();
+    listaFoodReference = await FoodReferenceDAO().getAllFoodReference();
     setState(() {
-      listaAlimentoRefFiltrada = listaAlimentoRef;
+      listaFoodReferenceFiltrada = listaFoodReference;
     });
   }
 
   void updateFilteredList(String? value) {
     if (value == null || value.isEmpty) {
       setState(() {
-        listaAlimentoRefFiltrada = listaAlimentoRef;
+        listaFoodReferenceFiltrada = listaFoodReference;
       });
     } else {
       setState(() {
-        listaAlimentoRefFiltrada = listaAlimentoRef.where((element) => element.nome.toLowerCase().contains(value.toLowerCase())).toList();
+        listaFoodReferenceFiltrada = listaFoodReference.where((element) => element.name.toLowerCase().contains(value.toLowerCase())).toList();
       });
     }
   }
@@ -83,8 +83,8 @@ class _SelectFoodsWrapperState extends State<SelectFoodsWrapper> {
     );
   }
 
-  List<AlimentoRef> listaAlimentoRef = [];
-  List<AlimentoRef> listaAlimentoRefFiltrada = [];
+  List<FoodReference> listaFoodReference = [];
+  List<FoodReference> listaFoodReferenceFiltrada = [];
 
   @override
   Widget build(BuildContext context) {
@@ -131,14 +131,14 @@ class _SelectFoodsWrapperState extends State<SelectFoodsWrapper> {
         body: TabBarView(
           children: [
             AllFoodsList(
-              filteredFoodReferenceList: listaAlimentoRefFiltrada,
+              filteredFoodReferenceList: listaFoodReferenceFiltrada,
               selectedFoodList: widget.selectedFoods,
               searchBoxController: widget.searchBoxController,
               updateFilteredList: updateFilteredListDelay,
             ),
             FavoriteFoodsList(
               tipoRefeicao: widget.selectedMealTypeController.text,
-              listaAlimentosRef: listaAlimentoRef,
+              listaAlimentosRef: listaFoodReference,
               listaAlimentosSelecionados: widget.selectedFoods,
             ),
             SelectedFoodsList(

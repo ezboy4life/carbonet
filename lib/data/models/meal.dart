@@ -1,4 +1,4 @@
-import 'package:carbonet/data/models/alimento_ingerido.dart';
+import 'package:carbonet/data/models/ingested_food.dart';
 
 class Meal {
   // TODO: no refactor, colocar campos de qtdCalorias, qtdCarbos também
@@ -8,9 +8,9 @@ class Meal {
   DateTime date;
   bool isActive;
 
-  final List<AlimentoIngerido> localListaAlimentosIngeridos = [];
+  final List<IngestedFood> localListaAlimentosIngeridos = [];
 
-  // é uma boa, no DAO, não continuar a operação sem ter idUser > -1 e a qtdIngerida > 0; estourar uma exception e tudo o mais
+  // é uma boa, no DAO, não continuar a operação sem ter idUser > -1 e a gramsIngested > 0; estourar uma exception e tudo o mais
   Meal({
     this.id = -1,
     required this.idUser,

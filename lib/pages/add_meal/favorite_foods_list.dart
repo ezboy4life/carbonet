@@ -1,5 +1,5 @@
-import 'package:carbonet/data/models/alimento_ingerido.dart';
-import 'package:carbonet/data/models/alimento_ref.dart';
+import 'package:carbonet/data/models/ingested_food.dart';
+import 'package:carbonet/data/models/food_reference.dart';
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/utils/logger.dart';
 import 'package:carbonet/widgets/dialogs/input_dialog.dart';
@@ -16,17 +16,17 @@ class FavoriteFoodsList extends StatefulWidget {
   });
 
   final String tipoRefeicao;
-  final List<AlimentoRef> listaAlimentosRef;
-  final List<AlimentoIngerido> listaAlimentosSelecionados;
+  final List<FoodReference> listaAlimentosRef;
+  final List<IngestedFood> listaAlimentosSelecionados;
 
   @override
   State<FavoriteFoodsList> createState() => _FavoriteFoodsListState();
 }
 
 class _FavoriteFoodsListState extends State<FavoriteFoodsList> {
-  final List<AlimentoRef> favoritos = [];
+  final List<FoodReference> favoritos = [];
   final TextEditingController favoritosController = TextEditingController();
-  AlimentoRef? selectedFavorite;
+  FoodReference? selectedFavorite;
 
   void _adicionarFavorito() {
     if (selectedFavorite == null) {
@@ -48,18 +48,18 @@ class _FavoriteFoodsListState extends State<FavoriteFoodsList> {
     }
 
     for (final alimento in widget.listaAlimentosSelecionados) {
-      if (alimento.idAlimentoReferencia == selectedFavorite?.id) {
-        alimento.qtdIngerida += double.parse(favoritosController.text);
+      if (alimento.idFoodReference == selectedFavorite?.id) {
+        alimento.gramsIngested += double.parse(favoritosController.text);
         Navigator.pop(context);
         return;
       }
     }
 
     widget.listaAlimentosSelecionados.add(
-      AlimentoIngerido(
-        idAlimentoReferencia: selectedFavorite!.id,
-        alimentoReferencia: selectedFavorite,
-        qtdIngerida: double.parse(favoritosController.text),
+      IngestedFood(
+        idFoodReference: selectedFavorite!.id,
+        foodReference: selectedFavorite,
+        gramsIngested: double.parse(favoritosController.text),
       ),
     );
     favoritosController.text = "";
@@ -69,23 +69,23 @@ class _FavoriteFoodsListState extends State<FavoriteFoodsList> {
   void _extrairFavoritos() {
     favoritos.clear(); //?
 
-    for (AlimentoRef alimento in widget.listaAlimentosRef) {
+    for (FoodReference alimento in widget.listaAlimentosRef) {
       if (_isFavorito(alimento, widget.tipoRefeicao)) {
         favoritos.add(alimento);
       }
     }
   }
 
-  bool _isFavorito(AlimentoRef alimento, String tipoRefeicao) {
+  bool _isFavorito(FoodReference alimento, String tipoRefeicao) {
     switch (tipoRefeicao) {
       case "Café da manhã":
-        return alimento.favCafe;
+        return alimento.favoriteCoffee;
       case "Almoço":
-        return alimento.favAlmoco;
+        return alimento.favoriteLunch;
       case "Janta":
-        return alimento.favJanta;
+        return alimento.favoriteDinner;
       case "Lanche":
-        return alimento.favLanche;
+        return alimento.favoriteSnack;
       default:
         return false;
     }
@@ -106,12 +106,12 @@ class _FavoriteFoodsListState extends State<FavoriteFoodsList> {
           itemBuilder: (context, index) {
             return ListTile(
               title: Text(
-                favoritos[index].nome,
+                favoritos[index].name,
                 style: const TextStyle(color: AppColors.fontBright),
               ),
               trailing: IconButton(
                   onPressed: () {
-                    infoLog('"${favoritos[index].nome}" selecionado!');
+                    infoLog('"${favoritos[index].name}" selecionado!');
                     selectedFavorite = favoritos[index];
                     showDialog(
                       context: context,
@@ -128,7 +128,7 @@ class _FavoriteFoodsListState extends State<FavoriteFoodsList> {
                               ),
                             ),
                             TextSpan(
-                              text: favoritos[index].nome.toLowerCase(),
+                              text: favoritos[index].name.toLowerCase(),
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 17,

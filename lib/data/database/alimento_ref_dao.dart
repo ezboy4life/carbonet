@@ -1,45 +1,44 @@
 import 'package:carbonet/data/database/database_helper.dart';
-import 'package:carbonet/data/models/alimento_ref.dart';
+import 'package:carbonet/data/models/food_reference.dart';
 
-class AlimentoRefDAO {
+class FoodReferenceDAO {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
 
-  Future<int> insertAlimentoRef(AlimentoRef alimentoRef) async {
+  Future<int> insertFoodReference(FoodReference alimentoRef) async {
     final db = await _databaseHelper.database;
     return await db.insert('alimento_referencia', alimentoRef.toMap());
   }
 
-  Future<AlimentoRef?> getAlimentoById(int id) async {
+  Future<FoodReference?> getAlimentoById(int id) async {
     final db = await _databaseHelper.database;
-    final List<Map<String, dynamic>> maps =
-        await db.query('alimento_referencia', where: 'id = ?', whereArgs: [id]);
+    final List<Map<String, dynamic>> maps = await db.query('alimento_referencia', where: 'id = ?', whereArgs: [id]);
     if (maps.isNotEmpty) {
-      return AlimentoRef.fromMap(maps.first);
+      return FoodReference.fromMap(maps.first);
     } else {
       return null;
     }
   }
-  
-  Future<List<AlimentoRef>> getAllAlimentoRef() async {
+
+  Future<List<FoodReference>> getAllFoodReference() async {
     final db = await _databaseHelper.database;
     List<Map<String, dynamic>> maps = await db.query('alimento_referencia');
 
     if (maps.isEmpty) {
-      await populateAlimentoRef();
+      await populateFoodReference();
       maps = await db.query('alimento_referencia');
     }
 
     return List.generate(maps.length, (index) {
-      return AlimentoRef.fromMap(maps[index]);
+      return FoodReference.fromMap(maps[index]);
     });
   }
 
-  Future<void> updateStatusFavorito(AlimentoRef alimento) async {
+  Future<void> updateStatusFavorito(FoodReference alimento) async {
     final db = await _databaseHelper.database;
     await db.update('alimento_referencia', alimento.toMap(), where: 'id = ?', whereArgs: [alimento.id]);
   }
 
-  Future<void> populateAlimentoRef() async {
+  Future<void> populateFoodReference() async {
     final db = await _databaseHelper.database;
 
     var ret = await db.query('alimento_referencia');
