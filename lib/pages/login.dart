@@ -3,8 +3,9 @@ import 'package:carbonet/data/repository/user_repository.dart';
 import "package:carbonet/utils/app_colors.dart";
 import 'package:carbonet/utils/logged_user_access.dart';
 import 'package:carbonet/utils/logger.dart';
+import 'package:carbonet/widgets/buttons/button.dart';
 import 'package:carbonet/widgets/input/input_field.dart';
-import 'package:carbonet/widgets/dialogs/popup_dialog.dart';
+import 'package:carbonet/widgets/dialogs/warning_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -37,7 +38,7 @@ class LoginPageState extends State<LoginPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return const PopupDialog(
+        return const WarningDialog(
           title: "Usuário não encontrado!",
           message: "Verifique se o e-mail e senha estão corretos.",
         );
@@ -114,38 +115,14 @@ class LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-                  Container(
-                    width: double.infinity,
-                    decoration: const ShapeDecoration(
-                      shape: StadiumBorder(),
-                      // color: AppColors.defaultAppColor,
-                      gradient: LinearGradient(
-                        colors: [
-                          AppColors.defaultDarkAppColor,
-                          AppColors.defaultAppColor,
-                        ],
-                      ),
-                    ),
-                    child: TextButton(
-                      style: const ButtonStyle(
-                        splashFactory: NoSplash.splashFactory,
-                      ),
-                      onPressed: () {
-                        emailController.text = emailController.text.trim();
-                        passwordController.text = passwordController.text.trim();
-
-                        login(emailController.text, passwordController.text);
-                        infoLog("Botão 'Entrar'");
-                      },
-                      child: const Text(
-                        "Entrar",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        ),
-                      ),
-                    ),
+                  Button(
+                    label: "Entrar",
+                    onPressed: () {
+                      emailController.text = emailController.text.trim();
+                      passwordController.text = passwordController.text.trim();
+                      login(emailController.text, passwordController.text);
+                      infoLog("Botão 'Entrar'");
+                    },
                   ),
                   const SizedBox(
                     height: 30,

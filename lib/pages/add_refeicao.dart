@@ -1,13 +1,15 @@
 import 'package:carbonet/data/models/alimento_ingerido.dart';
 import 'package:carbonet/data/models/refeicao.dart';
 import 'package:carbonet/pages/selecionar_alimentos.dart';
+import 'package:carbonet/utils/app_colors.dart';
+import 'package:carbonet/utils/logger.dart';
 import 'package:carbonet/utils/validators.dart';
 import 'package:carbonet/widgets/input/date_input_field.dart';
 import 'package:carbonet/widgets/input/dropdown_menu.dart';
 import 'package:carbonet/widgets/cosmetic/dropdown_menu_entry.dart';
-import 'package:carbonet/widgets/buttons/gradient_button.dart';
+import 'package:carbonet/widgets/buttons/button.dart';
 import 'package:carbonet/widgets/pager.dart';
-import 'package:carbonet/widgets/dialogs/popup_dialog.dart';
+import 'package:carbonet/widgets/dialogs/warning_dialog.dart';
 import 'package:carbonet/widgets/input/time_input_field.dart';
 import 'package:carbonet/widgets/input/input_field.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +55,6 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
   ];
 
   void _nextPage() {
-    FocusScope.of(context).unfocus();
     _pageViewController.nextPage(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeIn,
@@ -110,16 +111,30 @@ class _AdicionarRefeicaoState extends State<AdicionarRefeicao> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.black,
-        title: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(
-            Icons.close_rounded,
-            size: 35,
-            color: Colors.white,
+        // title: IconButton(
+        //   onPressed: () {
+        //     Navigator.pop(context);
+        //   },
+        //   icon: const Icon(
+        //     Icons.close_rounded,
+        //     size: 35,
+        //     color: Colors.white,
+        //   ),
+        // ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text(
+              "Cancelar",
+              style: TextStyle(color: AppColors.defaultAppColor),
+            ),
           ),
-        ),
+          const SizedBox(
+            width: 10,
+          )
+        ],
       ),
       body: Center(
         child: Padding(
@@ -235,11 +250,14 @@ class MealInfo extends StatelessWidget {
         const SizedBox(
           height: 30,
         ),
-        TimeInputField(
-          labelText: "Horário da refeição",
-          iconData: Icons.watch_later_rounded,
-          timeController: timeController,
-          onTimeSelected: onTimeSelected,
+        GestureDetector(
+          onTap: () => infoLog("message"),
+          child: TimeInputField(
+            labelText: "Horário da refeição",
+            iconData: Icons.watch_later_rounded,
+            timeController: timeController,
+            onTimeSelected: onTimeSelected,
+          ),
         ),
         const SizedBox(
           height: 30,
@@ -263,7 +281,7 @@ class MealInfo extends StatelessWidget {
           maxLength: 20,
         ),
         const Spacer(),
-        GradientButton(
+        Button(
           label: "Avançar",
           onPressed: () {
             // Validação da data
@@ -273,7 +291,7 @@ class MealInfo extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return const PopupDialog(
+                  return const WarningDialog(
                     title: "Data inválida!",
                     message: "Por gentileza, defina uma data válida.",
                   );
@@ -288,7 +306,7 @@ class MealInfo extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return const PopupDialog(
+                  return const WarningDialog(
                     title: "Horário inválido!",
                     message: "Por gentileza, defina um horário válido.",
                   );
@@ -302,7 +320,7 @@ class MealInfo extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return const PopupDialog(
+                  return const WarningDialog(
                     title: "Glicemia inválida!",
                     message: "Por gentileza, defina um valor válido.",
                   );
@@ -316,7 +334,7 @@ class MealInfo extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return const PopupDialog(
+                  return const WarningDialog(
                     title: "Tipo de refeição inválido!",
                     message: "Por gentileza, selecione valor válido.",
                   );

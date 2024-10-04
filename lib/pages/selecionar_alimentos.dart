@@ -9,9 +9,11 @@ import 'package:carbonet/utils/dao_procedure_coupler.dart';
 import 'package:carbonet/utils/logged_user_access.dart';
 import 'package:carbonet/utils/logger.dart';
 import 'package:carbonet/utils/static_image_holder.dart';
-import 'package:carbonet/widgets/buttons/gradient_button.dart';
+import 'package:carbonet/widgets/buttons/button.dart';
+import 'package:carbonet/widgets/dialogs/confirmation_dialog.dart';
 import 'package:carbonet/widgets/input/input_field.dart';
-import 'package:carbonet/widgets/dialogs/popup_dialog.dart';
+import 'package:carbonet/widgets/dialogs/warning_dialog.dart';
+import 'package:carbonet/widgets/dialogs/input_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -75,8 +77,6 @@ class _SelectFoodsState extends State<SelectFoods> {
     }
   }
 
-  // Delay de .3 segundos pra que a função não seja chamada literalmente
-  // toda vez que o usuário digitar algo
   void updateFilteredListDelay(String? searchTerm) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(
@@ -150,14 +150,14 @@ class _SelectFoodsState extends State<SelectFoods> {
             ),
           ],
         ),
-        bottomNavigationBar: GradientButton(
+        bottomNavigationBar: Button(
           label: "Registrar Refeição",
           onPressed: () {
             if (widget.alimentosSelecionados.isEmpty) {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return const PopupDialog(
+                  return const WarningDialog(
                     title: "Refeição sem alimentos!",
                     message: "Insira pelo menos um alimento para que a refeição possa ser registrada.",
                   );
@@ -195,7 +195,7 @@ class _SelectFoodsState extends State<SelectFoods> {
   }
 }
 
-class AllFoodsList extends StatelessWidget {
+class AllFoodsList extends StatefulWidget {
   final List<AlimentoRef> filteredFoodReferenceList;
   final List<AlimentoIngerido> selectedFoodList;
   final TextEditingController searchBoxController;
@@ -229,13 +229,60 @@ class AllFoodsList extends StatelessWidget {
   }
 
   @override
+  State<AllFoodsList> createState() => _AllFoodsListState();
+}
+
+class _AllFoodsListState extends State<AllFoodsList> {
+  final TextEditingController qtdController = TextEditingController();
+  AlimentoRef? selectedFoodRef;
+
+  void addFoodToList() {
+    if (selectedFoodRef == null) {
+      errorLog("Refeição selecionada é nula.");
+      return;
+    }
+
+    if (qtdController.text.isEmpty || double.parse(qtdController.text) == 0) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const WarningDialog(
+            title: "Quantidade inválida!",
+            message: "Insira uma quantidade (em gramas) válida.",
+          );
+        },
+      );
+      return;
+    }
+
+    for (final alimento in widget.selectedFoodList) {
+      if (alimento.idAlimentoReferencia == selectedFoodRef?.id) {
+        alimento.qtdIngerida += double.parse(qtdController.text);
+        Navigator.pop(context);
+        return;
+      }
+    }
+
+    widget.selectedFoodList.add(
+      AlimentoIngerido(
+        idAlimentoReferencia: selectedFoodRef!.id,
+        alimentoReferencia: selectedFoodRef,
+        qtdIngerida: double.parse(qtdController.text),
+      ),
+    );
+
+    qtdController.text = "";
+    Navigator.pop(context);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         const SizedBox(height: 30),
         InputField(
-          controller: searchBoxController,
-          onChanged: updateFilteredList,
+          controller: widget.searchBoxController,
+          onChanged: widget.updateFilteredList,
           labelText: "Pesquisar",
           iconData: Icons.search_rounded,
           trailingIcon: Icons.camera_alt_outlined,
@@ -244,29 +291,59 @@ class AllFoodsList extends StatelessWidget {
         const SizedBox(height: 30),
         Expanded(
           child: ListView.builder(
-            itemCount: filteredFoodReferenceList.length,
+            itemCount: widget.filteredFoodReferenceList.length,
             itemBuilder: (context, index) {
               return Column(
                 children: [
                   ListTile(
                     title: Text(
-                      filteredFoodReferenceList[index].nome,
+                      widget.filteredFoodReferenceList[index].nome,
                       style: const TextStyle(color: AppColors.fontBright),
                     ),
                     onTap: () {
-                      infoLog('"${filteredFoodReferenceList[index].nome}" selecionado!');
+                      infoLog('"${widget.filteredFoodReferenceList[index].nome}" selecionado!');
+                      selectedFoodRef = widget.filteredFoodReferenceList[index];
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
-                          return DialogAdicionarAlimento(
-                            alimentoSelecionado: filteredFoodReferenceList[index],
-                            listaAlimentosSelecionados: selectedFoodList,
+                          return InputDialog(
+                            controller: qtdController,
+                            title: "Adicionar alimento",
+                            message: [
+                              const TextSpan(
+                                text: "Insira a quantidade de ",
+                                style: TextStyle(
+                                  color: AppColors.fontBright,
+                                  fontSize: 17,
+                                ),
+                              ),
+                              TextSpan(
+                                text: selectedFoodRef?.nome.toLowerCase() ?? "ERRO!",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const TextSpan(
+                                text: " em gramas:",
+                                style: TextStyle(
+                                  color: AppColors.fontBright,
+                                  fontSize: 17,
+                                ),
+                              ),
+                            ],
+                            label: "Qtd em gramas",
+                            buttonLabel: "Adicionar",
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            onPressed: addFoodToList,
                           );
                         },
                       );
                     },
                   ),
-                  if (index < filteredFoodReferenceList.length - 1) const Divider(color: AppColors.fontDimmed),
+                  if (index < widget.filteredFoodReferenceList.length - 1) const Divider(color: AppColors.fontDimmed),
                 ],
               );
             },
@@ -277,8 +354,8 @@ class AllFoodsList extends StatelessWidget {
   }
 }
 
-class FavoriteFoodsList extends StatelessWidget {
-  FavoriteFoodsList({
+class FavoriteFoodsList extends StatefulWidget {
+  const FavoriteFoodsList({
     super.key,
     required this.tipoRefeicao,
     required this.listaAlimentosRef,
@@ -287,14 +364,60 @@ class FavoriteFoodsList extends StatelessWidget {
 
   final String tipoRefeicao;
   final List<AlimentoRef> listaAlimentosRef;
-  final List<AlimentoRef> favoritos = [];
   final List<AlimentoIngerido> listaAlimentosSelecionados;
+
+  @override
+  State<FavoriteFoodsList> createState() => _FavoriteFoodsListState();
+}
+
+class _FavoriteFoodsListState extends State<FavoriteFoodsList> {
+  final List<AlimentoRef> favoritos = [];
+  final TextEditingController favoritosController = TextEditingController();
+  AlimentoRef? selectedFavorite;
+
+  void _adicionarFavorito() {
+    if (selectedFavorite == null) {
+      errorLog("Erro ao adicionar favorito");
+      return;
+    }
+
+    if (favoritosController.text.isEmpty || double.parse(favoritosController.text) == 0) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const WarningDialog(
+            title: "Quantidade inválida!",
+            message: "Insira uma quantidade (em gramas) válida.",
+          );
+        },
+      );
+      return;
+    }
+
+    for (final alimento in widget.listaAlimentosSelecionados) {
+      if (alimento.idAlimentoReferencia == selectedFavorite?.id) {
+        alimento.qtdIngerida += double.parse(favoritosController.text);
+        Navigator.pop(context);
+        return;
+      }
+    }
+
+    widget.listaAlimentosSelecionados.add(
+      AlimentoIngerido(
+        idAlimentoReferencia: selectedFavorite!.id,
+        alimentoReferencia: selectedFavorite,
+        qtdIngerida: double.parse(favoritosController.text),
+      ),
+    );
+    favoritosController.text = "";
+    Navigator.pop(context);
+  }
 
   void _extrairFavoritos() {
     favoritos.clear(); //?
 
-    for (AlimentoRef alimento in listaAlimentosRef) {
-      if (_isFavorito(alimento, tipoRefeicao)) {
+    for (AlimentoRef alimento in widget.listaAlimentosRef) {
+      if (_isFavorito(alimento, widget.tipoRefeicao)) {
         favoritos.add(alimento);
       }
     }
@@ -317,13 +440,12 @@ class FavoriteFoodsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     _extrairFavoritos();
 
     return Column(children: [
       Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Text("Favoritos - $tipoRefeicao", style: const TextStyle(color: AppColors.fontBright, fontSize: 18, fontWeight: FontWeight.bold)),
+        child: Text("Favoritos - ${widget.tipoRefeicao}", style: const TextStyle(color: AppColors.fontBright, fontSize: 18, fontWeight: FontWeight.bold)),
       ),
       ListView.builder(
           shrinkWrap: true,
@@ -337,12 +459,42 @@ class FavoriteFoodsList extends StatelessWidget {
               trailing: IconButton(
                   onPressed: () {
                     infoLog('"${favoritos[index].nome}" selecionado!');
+                    selectedFavorite = favoritos[index];
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
-                        return DialogAdicionarAlimento(
-                          alimentoSelecionado: favoritos[index],
-                          listaAlimentosSelecionados: listaAlimentosSelecionados,
+                        return InputDialog(
+                          controller: favoritosController,
+                          title: "Adicionar alimento",
+                          message: [
+                            const TextSpan(
+                              text: "Insira a quantidade de ",
+                              style: TextStyle(
+                                color: AppColors.fontBright,
+                                fontSize: 17,
+                              ),
+                            ),
+                            TextSpan(
+                              text: favoritos[index].nome.toLowerCase(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const TextSpan(
+                              text: " em gramas:",
+                              style: TextStyle(
+                                color: AppColors.fontBright,
+                                fontSize: 17,
+                              ),
+                            ),
+                          ],
+                          label: "Qtd em gramas",
+                          buttonLabel: "Adicionar",
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                          onPressed: _adicionarFavorito,
                         );
                       },
                     );
@@ -357,13 +509,43 @@ class FavoriteFoodsList extends StatelessWidget {
 class SelectedFoodsList extends StatefulWidget {
   final List<AlimentoIngerido> selectedFoods;
 
-  const SelectedFoodsList({super.key, required this.selectedFoods});
+  const SelectedFoodsList({
+    super.key,
+    required this.selectedFoods,
+  });
 
   @override
   State<SelectedFoodsList> createState() => _SelectedFoodsListState();
 }
 
 class _SelectedFoodsListState extends State<SelectedFoodsList> {
+  final TextEditingController alterController = TextEditingController();
+  AlimentoIngerido? selectedFoodItem;
+
+  void updateSelectedFoodItem() {
+    if (selectedFoodItem == null) {
+      errorLog("Erro ao atualizar quantidade ingerida de um alimento. O alimento é nulo.");
+      return;
+    }
+
+    if (alterController.text.isNotEmpty && int.parse(alterController.text) != 0) {
+      selectedFoodItem?.qtdIngerida = double.parse(alterController.text);
+      Navigator.of(context).pop(selectedFoodItem?.qtdIngerida);
+      selectedFoodItem = null;
+      alterController.text = "";
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const WarningDialog(
+            title: "Quantidade inválida!",
+            message: "Insira uma quantidade (em gramas) válida.",
+          );
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -375,37 +557,91 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
             itemBuilder: (context, index) {
               return Column(
                 children: [
-                  ListTile(
-                    title: Text(
-                      widget.selectedFoods[index].alimentoReferencia.nome,
-                      style: const TextStyle(color: AppColors.fontBright),
+                  Dismissible(
+                    key: Key(widget.selectedFoods[index].alimentoReferencia.id.toString()),
+                    direction: DismissDirection.endToStart,
+                    background: Container(
+                      color: Colors.red,
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.only(right: 20),
+                      child: const Icon(Icons.delete, color: Colors.white),
                     ),
-                    trailing: Text(
-                      "${widget.selectedFoods[index].qtdIngerida.toStringAsFixed(0)}g",
-                      style: const TextStyle(
-                        color: AppColors.fontBright,
-                        fontSize: 15,
-                      ),
-                    ),
-                    onTap: () async {
-                      infoLog(widget.selectedFoods[index].alimentoReferencia.nome);
-                      final result = await showDialog(
+                    confirmDismiss: (direction) async {
+                      return await showDialog<bool>(
                         context: context,
                         builder: (BuildContext context) {
-                          return DialogEditSelectedFood(
-                            selectedFood: widget.selectedFoods[index],
+                          return const ConfirmationDialog(
+                            title: "Confirmar exclusão",
+                            message: "Você tem certeza que deseja excluir esse alimento?",
+                            confirmButtonLabel: "Excluir",
+                            confirmButtonColor: Colors.red,
                           );
                         },
                       );
-
-                      if (result == "delete") {
-                        setState(() {
-                          widget.selectedFoods.removeAt(index);
-                        });
-                      } else if (result != null) {
-                        setState(() {});
-                      }
                     },
+                    onDismissed: (direction) {
+                      setState(() {
+                        widget.selectedFoods.removeAt(index);
+                      });
+                    },
+                    child: ListTile(
+                      title: Text(
+                        widget.selectedFoods[index].alimentoReferencia.nome,
+                        style: const TextStyle(color: AppColors.fontBright),
+                      ),
+                      trailing: Text(
+                        "${widget.selectedFoods[index].qtdIngerida.toStringAsFixed(0)}g",
+                        style: const TextStyle(
+                          color: AppColors.fontBright,
+                          fontSize: 15,
+                        ),
+                      ),
+                      onTap: () async {
+                        infoLog(widget.selectedFoods[index].alimentoReferencia.nome);
+                        selectedFoodItem = widget.selectedFoods[index];
+                        final result = await showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return InputDialog(
+                              controller: alterController,
+                              title: "Alterar alimento",
+                              label: "Qtd. em gramas",
+                              buttonLabel: "Alterar",
+                              onPressed: updateSelectedFoodItem,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                              message: [
+                                const TextSpan(
+                                  text: "Insira a quantidade de ",
+                                  style: TextStyle(
+                                    color: AppColors.fontBright,
+                                    fontSize: 17,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: widget.selectedFoods[index].alimentoReferencia.nome.toLowerCase(),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const TextSpan(
+                                  text: " em gramas:",
+                                  style: TextStyle(
+                                    color: AppColors.fontBright,
+                                    fontSize: 17,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                        if (result != null) {
+                          setState(() {});
+                        }
+                      },
+                    ),
                   ),
                   if (index < widget.selectedFoods.length - 1) const Divider(color: AppColors.fontDimmed),
                 ],
@@ -414,252 +650,6 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
           ),
         ),
       ],
-    );
-  }
-}
-
-class DialogAdicionarAlimento extends StatefulWidget {
-  const DialogAdicionarAlimento({
-    super.key,
-    required this.alimentoSelecionado,
-    required this.listaAlimentosSelecionados,
-  });
-
-  final AlimentoRef alimentoSelecionado;
-  final List<AlimentoIngerido> listaAlimentosSelecionados;
-
-  @override
-  State<DialogAdicionarAlimento> createState() => _DialogAdicionarAlimentoState();
-}
-
-class _DialogAdicionarAlimentoState extends State<DialogAdicionarAlimento> {
-  final TextEditingController qtdController = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: SingleChildScrollView(
-        child: Theme(
-          data: Theme.of(context).copyWith(
-            dialogTheme: const DialogTheme(
-              elevation: 0,
-            ),
-          ),
-          child: Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12.0),
-              side: const BorderSide(
-                color: AppColors.fontDimmed,
-              ),
-            ),
-            backgroundColor: Colors.black,
-            child: Padding(
-              padding: const EdgeInsets.all(30.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.restaurant_rounded,
-                    color: AppColors.fontBright,
-                    size: 60,
-                  ),
-                  const SizedBox(height: 30),
-                  Text.rich(
-                    TextSpan(
-                      children: [
-                        const TextSpan(
-                          text: "Insira a quantidade de ",
-                          style: TextStyle(
-                            color: AppColors.fontBright,
-                            fontSize: 20,
-                          ),
-                        ),
-                        TextSpan(
-                          text: widget.alimentoSelecionado.nome,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const TextSpan(
-                          text: " em gramas:",
-                          style: TextStyle(
-                            color: AppColors.fontBright,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-                  InputField(
-                    controller: qtdController,
-                    labelText: "Qtd. em gramas",
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    keyboardType: TextInputType.number,
-                  ),
-                  const SizedBox(height: 30),
-                  GradientButton(
-                    label: "Adicionar",
-                    onPressed: () {
-                      if (qtdController.text.isEmpty || double.parse(qtdController.text) == 0) {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return const PopupDialog(
-                              title: "Quantidade inválida!",
-                              message: "Insira uma quantidade (em gramas) válida.",
-                            );
-                          },
-                        );
-                        return;
-                      }
-
-                      for (final alimento in widget.listaAlimentosSelecionados) {
-                        if (alimento.idAlimentoReferencia == widget.alimentoSelecionado.id) {
-                          alimento.qtdIngerida += double.parse(qtdController.text);
-                          Navigator.pop(context);
-                          return;
-                        }
-                      }
-
-                      widget.listaAlimentosSelecionados.add(
-                        AlimentoIngerido(
-                          idAlimentoReferencia: widget.alimentoSelecionado.id,
-                          alimentoReferencia: widget.alimentoSelecionado,
-                          qtdIngerida: double.parse(qtdController.text),
-                        ),
-                      );
-                      Navigator.pop(context);
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class DialogEditSelectedFood extends StatefulWidget {
-  final AlimentoIngerido selectedFood;
-
-  const DialogEditSelectedFood({
-    super.key,
-    required this.selectedFood,
-  });
-
-  @override
-  State<DialogEditSelectedFood> createState() => _DialogEditSelectedFoodState();
-}
-
-class _DialogEditSelectedFoodState extends State<DialogEditSelectedFood> {
-  final TextEditingController selectedFoodController = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: SingleChildScrollView(
-        child: Theme(
-          data: Theme.of(context).copyWith(
-            dialogTheme: const DialogTheme(
-              elevation: 0,
-            ),
-          ),
-          child: Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-              side: const BorderSide(
-                color: AppColors.fontDimmed,
-              ),
-            ),
-            backgroundColor: Colors.black,
-            child: Padding(
-              padding: const EdgeInsets.all(30.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.restaurant_rounded,
-                    color: AppColors.fontBright,
-                    size: 60,
-                  ),
-                  const SizedBox(height: 30),
-                  Text.rich(
-                    TextSpan(
-                      children: [
-                        const TextSpan(
-                          text: "Insira a quantidade de ",
-                          style: TextStyle(
-                            color: AppColors.fontBright,
-                            fontSize: 20,
-                          ),
-                        ),
-                        TextSpan(
-                          text: widget.selectedFood.alimentoReferencia.nome,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const TextSpan(
-                          text: " em gramas:",
-                          style: TextStyle(
-                            color: AppColors.fontBright,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-                  InputField(
-                    controller: selectedFoodController,
-                    labelText: "Qtd. em gramas",
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    keyboardType: TextInputType.number,
-                  ),
-                  const SizedBox(height: 30),
-                  GradientButton(
-                    label: "Alterar",
-                    onPressed: () {
-                      if (selectedFoodController.text.isNotEmpty && int.parse(selectedFoodController.text) != 0) {
-                        widget.selectedFood.qtdIngerida = double.parse(selectedFoodController.text);
-                        Navigator.of(context).pop(widget.selectedFood.qtdIngerida);
-                      } else {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return const PopupDialog(
-                              title: "Quantidade inválida!",
-                              message: "Insira uma quantidade (em gramas) válida.",
-                            );
-                          },
-                        );
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 30),
-                  GradientButton(
-                    label: "Remover",
-                    buttonColors: const [
-                      Colors.red,
-                      Colors.redAccent,
-                    ],
-                    onPressed: () {
-                      Navigator.of(context).pop("delete");
-                    },
-                  )
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

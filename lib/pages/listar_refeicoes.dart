@@ -4,6 +4,8 @@ import 'package:carbonet/data/models/refeicao.dart';
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/utils/dao_procedure_coupler.dart';
 import 'package:carbonet/utils/logged_user_access.dart';
+import 'package:carbonet/utils/logger.dart';
+import 'package:carbonet/widgets/dialogs/confirmation_dialog.dart';
 import 'package:carbonet/widgets/input/input_field.dart';
 import 'package:flutter/material.dart';
 
@@ -24,35 +26,14 @@ class _ListarRefeicoesState extends State<ListarRefeicoes> {
   final Map<int, bool> _isExpanded = {};
   bool hasReceivedMealList = false;
 
-  Future<bool?> _showDeleteConfirmationDialog(BuildContext context) {
-    // TODO: Isolar e fazer um dialog de acordo com o tema
-    return showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Confirmar exclusão'),
-          content: const Text('Você tem certeza dque deseja excluir essa refeição?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(false); // User canceled
-              },
-              child: const Text('Cancelar'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(true); // User confirmed
-              },
-              child: const Text('Excluir'),
-            ),
-          ],
-        );
-      },
-    );
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    infoLog("Quantidade de items na lista: ${widget.historicoRefeicoes.length}");
     return Scaffold(
       backgroundColor: Colors.black,
       body: Padding(
@@ -74,6 +55,7 @@ class _ListarRefeicoesState extends State<ListarRefeicoes> {
                       widget.historicoRefeicoes.add(refeicao);
                     });
                     hasReceivedMealList = true;
+                    infoLog("widget.historicoRefeicoes setado!");
                   }
                   return Expanded(
                     child: ListView.builder(
@@ -84,19 +66,32 @@ class _ListarRefeicoesState extends State<ListarRefeicoes> {
                           child: Column(
                             children: [
                               Dismissible(
-                                key: Key(widget.historicoRefeicoes[index].toString()),
+                                key: Key(widget.historicoRefeicoes[index].id.toString()),
                                 direction: DismissDirection.endToStart,
                                 background: Container(
-                                  color: Colors.red, // Background color for swipe action
-                                  alignment: Alignment.centerRight, // Align delete icon to the right
+                                  color: Colors.red,
+                                  alignment: Alignment.centerRight,
                                   padding: const EdgeInsets.only(right: 20),
                                   child: const Icon(Icons.delete, color: Colors.white),
                                 ),
                                 confirmDismiss: (direction) async {
-                                  return await _showDeleteConfirmationDialog(context);
+                                  return await showDialog<bool>(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return const ConfirmationDialog(
+                                        title: "Confirmar exclusão",
+                                        message: "Você tem certeza que deseja excluir esse alimento?",
+                                        confirmButtonLabel: "Excluir",
+                                        confirmButtonColor: Colors.red,
+                                      );
+                                    },
+                                  );
                                 },
                                 onDismissed: (direction) {
-                                  widget.historicoRefeicoes.removeAt(index);
+                                  setState(() {
+                                    widget.historicoRefeicoes.removeAt(index);
+                                  });
+                                  infoLog("Removido item em $index");
                                   //TODO: remover do banco tbm (?)
                                 },
                                 child: ExpansionTile(

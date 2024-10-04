@@ -41,7 +41,9 @@ class InputField extends StatelessWidget {
       autofocus: autofocus,
       onChanged: onChanged,
       buildCounter: (_, {int? currentLength, int? maxLength, bool? isFocused}) => null,
-      // esconde a contagem de caracteres quando se tem o maxlenght
+      onTapOutside: (event) {
+        FocusScope.of(context).unfocus();
+      },
       style: const TextStyle(
         color: Colors.white,
         fontSize: 16,
