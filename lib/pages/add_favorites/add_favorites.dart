@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:carbonet/data/database/alimento_ref_dao.dart';
 import 'package:carbonet/data/models/alimento_ref.dart';
 import 'package:carbonet/utils/app_colors.dart';
@@ -7,19 +6,27 @@ import 'package:carbonet/utils/logger.dart';
 import 'package:carbonet/widgets/input/input_field.dart';
 import 'package:flutter/material.dart';
 
-enum RefeicoesEnum { cafe, almoco, jantar, lanche }
+enum MealTypeEnum { cafe, almoco, jantar, lanche }
 
+class AddFavorites extends StatefulWidget {
+  const AddFavorites({super.key});
 
-class RegistroFavoritos extends StatelessWidget {
-  RegistroFavoritos({super.key});
+  @override
+  State<AddFavorites> createState() => _AddFavoritesState();
+}
 
+class _AddFavoritesState extends State<AddFavorites> {
   final Future<List<AlimentoRef>> _alimentos = AlimentoRefDAO().getAllAlimentoRef();
-  final List<AlimentoRef> favoritosCafe = [];
-  final List<AlimentoRef> favoritosAlmoco = [];
-  final List<AlimentoRef> favoritosJantar = [];
-  final List<AlimentoRef> favoritosLanche = [];
-  late List<AlimentoRef> listaBase;
 
+  final List<AlimentoRef> favoritosCafe = [];
+
+  final List<AlimentoRef> favoritosAlmoco = [];
+
+  final List<AlimentoRef> favoritosJantar = [];
+
+  final List<AlimentoRef> favoritosLanche = [];
+
+  late List<AlimentoRef> listaBase;
 
   Future<void> separarFavoritos() async {
     listaBase = await _alimentos;
@@ -35,16 +42,10 @@ class RegistroFavoritos extends StatelessWidget {
   }
 
   ({List<AlimentoRef> favCafe, List<AlimentoRef> favAlmoco, List<AlimentoRef> favJanta, List<AlimentoRef> favLanche, List<AlimentoRef> listaBase}) getListas() {
-    return (
-      favCafe: favoritosCafe, 
-      favAlmoco: favoritosAlmoco, 
-      favJanta: favoritosJantar, 
-      favLanche: favoritosLanche, 
-      listaBase: listaBase);
+    return (favCafe: favoritosCafe, favAlmoco: favoritosAlmoco, favJanta: favoritosJantar, favLanche: favoritosLanche, listaBase: listaBase);
   }
 
-  void _toggleFavorito(AlimentoRef alimento, RefeicoesEnum refeicao, List<AlimentoRef> listaFav) async {
-
+  void _toggleFavorito(AlimentoRef alimento, MealTypeEnum refeicao, List<AlimentoRef> listaFav) async {
     if (listaFav.contains(alimento)) {
       listaFav.remove(alimento);
     } else {
@@ -52,16 +53,16 @@ class RegistroFavoritos extends StatelessWidget {
     }
 
     switch (refeicao) {
-      case RefeicoesEnum.cafe:
+      case MealTypeEnum.cafe:
         alimento.favCafe = !alimento.favCafe;
         break;
-      case RefeicoesEnum.almoco:
+      case MealTypeEnum.almoco:
         alimento.favAlmoco = !alimento.favAlmoco;
         break;
-      case RefeicoesEnum.jantar:
+      case MealTypeEnum.jantar:
         alimento.favJanta = !alimento.favJanta;
         break;
-      case RefeicoesEnum.lanche:
+      case MealTypeEnum.lanche:
         alimento.favLanche = !alimento.favLanche;
         break;
     }
@@ -132,25 +133,25 @@ class RegistroFavoritos extends StatelessWidget {
                 children: [
                   ListaFavoritosRefeicao(
                     favoritos: favoritosCafe,
-                    refeicao: RefeicoesEnum.cafe,
+                    refeicao: MealTypeEnum.cafe,
                     toggleFavorito: _toggleFavorito,
                     getListas: getListas,
                   ),
                   ListaFavoritosRefeicao(
                     favoritos: favoritosAlmoco,
-                    refeicao: RefeicoesEnum.almoco,
+                    refeicao: MealTypeEnum.almoco,
                     toggleFavorito: _toggleFavorito,
                     getListas: getListas,
                   ),
                   ListaFavoritosRefeicao(
                     favoritos: favoritosJantar,
-                    refeicao: RefeicoesEnum.jantar,
+                    refeicao: MealTypeEnum.jantar,
                     toggleFavorito: _toggleFavorito,
                     getListas: getListas,
                   ),
                   ListaFavoritosRefeicao(
                     favoritos: favoritosLanche,
-                    refeicao: RefeicoesEnum.lanche,
+                    refeicao: MealTypeEnum.lanche,
                     toggleFavorito: _toggleFavorito,
                     getListas: getListas,
                   ),
@@ -166,18 +167,11 @@ class RegistroFavoritos extends StatelessWidget {
   }
 }
 
-
 class ListaFavoritosRefeicao extends StatefulWidget {
-  const ListaFavoritosRefeicao({
-    super.key,
-    required this.favoritos,
-    required this.refeicao,
-    required this.toggleFavorito,
-    required this.getListas
-    });
+  const ListaFavoritosRefeicao({super.key, required this.favoritos, required this.refeicao, required this.toggleFavorito, required this.getListas});
 
   final List<AlimentoRef> favoritos;
-  final RefeicoesEnum refeicao;
+  final MealTypeEnum refeicao;
   final Function toggleFavorito;
   final Function getListas;
 
@@ -186,7 +180,6 @@ class ListaFavoritosRefeicao extends StatefulWidget {
 }
 
 class _ListaFavoritosRefeicaoState extends State<ListaFavoritosRefeicao> {
-
   Future<void> showAdicionarModal() async {
     await showModalBottomSheet(
       backgroundColor: Colors.grey[900],
@@ -202,15 +195,15 @@ class _ListaFavoritosRefeicaoState extends State<ListaFavoritosRefeicao> {
     }
   }
 
-  String getRefeicaoName(RefeicoesEnum refeicao) {
+  String getRefeicaoName(MealTypeEnum refeicao) {
     switch (refeicao) {
-      case RefeicoesEnum.cafe:
+      case MealTypeEnum.cafe:
         return "Café";
-      case RefeicoesEnum.almoco:
+      case MealTypeEnum.almoco:
         return "Almoço";
-      case RefeicoesEnum.jantar:
+      case MealTypeEnum.jantar:
         return "Jantar";
-      case RefeicoesEnum.lanche:
+      case MealTypeEnum.lanche:
         return "Lanche";
     }
   }
@@ -218,65 +211,58 @@ class _ListaFavoritosRefeicaoState extends State<ListaFavoritosRefeicao> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                Text("Favoritos - ${getRefeicaoName(widget.refeicao)}", style: const TextStyle(color: AppColors.fontBright, fontSize: 18, fontWeight: FontWeight.bold)),
-                const Spacer(),
-                TextButton.icon(
-                  onPressed: () {
-                    if (mounted) {
-                      setState(() {
-                        showAdicionarModal();
-                      });
-                    }
-                  },
-                  icon: const Icon(
-                    Icons.add,
-                    color: AppColors.fontBright,
-                  ),
-                  label: const Text(
-                    "Adicionar",
-                    style: TextStyle(color: AppColors.fontBright),
-                  ),
-                  style: TextButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    shape: const RoundedRectangleBorder(
-                      side: BorderSide(color: AppColors.fontBright),
-                      borderRadius: BorderRadius.all(Radius.circular(5)),
-                    ),
-                  )
+      child: Column(children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(children: [
+            Text("Favoritos - ${getRefeicaoName(widget.refeicao)}", style: const TextStyle(color: AppColors.fontBright, fontSize: 18, fontWeight: FontWeight.bold)),
+            const Spacer(),
+            TextButton.icon(
+                onPressed: () {
+                  if (mounted) {
+                    setState(() {
+                      showAdicionarModal();
+                    });
+                  }
+                },
+                icon: const Icon(
+                  Icons.add,
+                  color: AppColors.fontBright,
                 ),
-              ]
-            ),
-          ),
-          ListView.builder(
+                label: const Text(
+                  "Adicionar",
+                  style: TextStyle(color: AppColors.fontBright),
+                ),
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  shape: const RoundedRectangleBorder(
+                    side: BorderSide(color: AppColors.fontBright),
+                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                  ),
+                )),
+          ]),
+        ),
+        ListView.builder(
             shrinkWrap: true,
             itemCount: widget.favoritos.length,
             itemBuilder: (context, index) {
               return ListTile(
                 title: Text(
-                  widget.favoritos[index].nome, 
+                  widget.favoritos[index].nome,
                   style: const TextStyle(color: AppColors.fontBright),
                 ),
-                trailing: IconButton(onPressed: () {
-                    widget.toggleFavorito(widget.favoritos[index], widget.refeicao, widget.favoritos);
-                    setState(() {});
-                  }, 
-                  icon: const Icon(Icons.remove_circle_outline, color: Colors.red)
-                  ),
+                trailing: IconButton(
+                    onPressed: () {
+                      widget.toggleFavorito(widget.favoritos[index], widget.refeicao, widget.favoritos);
+                      setState(() {});
+                    },
+                    icon: const Icon(Icons.remove_circle_outline, color: Colors.red)),
               );
-            }
-          ),
-        ]
-      ),
+            }),
+      ]),
     );
   }
 }
-
 
 class AdicionarFavModal extends StatefulWidget {
   AdicionarFavModal({super.key, required this.getListas});
@@ -291,7 +277,6 @@ class AdicionarFavModal extends StatefulWidget {
 class _AdicionarFavModalState extends State<AdicionarFavModal> {
   late List<AlimentoRef> _listaBase, listaAlimentoRefFiltrada; //_favCafe, _favAlmoco, _favJanta, _favLanche
   Timer? _debounce;
-  
 
   @override
   void initState() {
@@ -323,7 +308,7 @@ class _AdicionarFavModalState extends State<AdicionarFavModal> {
       },
     );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -343,7 +328,7 @@ class _AdicionarFavModalState extends State<AdicionarFavModal> {
               ),
               const Spacer(),
               IconButton(
-                onPressed: () => Navigator.pop(context), 
+                onPressed: () => Navigator.pop(context),
                 icon: const Icon(Icons.close, color: AppColors.fontBright),
               ),
             ],
@@ -394,11 +379,7 @@ class _AdicionarFavModalState extends State<AdicionarFavModal> {
 }
 
 class DialogModificarFavorito extends StatefulWidget {
-  const DialogModificarFavorito({
-    super.key,
-    required this.alimentoSelecionado,
-    required this.getListas
-  });
+  const DialogModificarFavorito({super.key, required this.alimentoSelecionado, required this.getListas});
 
   final AlimentoRef alimentoSelecionado;
   final Function getListas;
@@ -420,45 +401,33 @@ class _DialogModificarFavoritoState extends State<DialogModificarFavorito> {
   @override
   void initState() {
     super.initState();
-    var (
-      :favCafe,
-      :favAlmoco,
-      :favJanta,
-      :favLanche,
-      :listaBase
-    ) = widget.getListas();
-
+    var (:favCafe, :favAlmoco, :favJanta, :favLanche, :listaBase) = widget.getListas();
 
     _favCafe = favCafe;
     _favAlmoco = favAlmoco;
     _favJanta = favJanta;
     _favLanche = favLanche;
 
-    _selectedRefeicoes = [
-      widget.alimentoSelecionado.favCafe, 
-      widget.alimentoSelecionado.favAlmoco, 
-      widget.alimentoSelecionado.favJanta, 
-      widget.alimentoSelecionado.favLanche
-    ];
+    _selectedRefeicoes = [widget.alimentoSelecionado.favCafe, widget.alimentoSelecionado.favAlmoco, widget.alimentoSelecionado.favJanta, widget.alimentoSelecionado.favLanche];
   }
 
-  void updateFavorito(AlimentoRef alimento, RefeicoesEnum refeicao) {
+  void updateFavorito(AlimentoRef alimento, MealTypeEnum refeicao) {
     List<AlimentoRef> listaFav;
 
     switch (refeicao) {
-      case RefeicoesEnum.cafe:
+      case MealTypeEnum.cafe:
         listaFav = _favCafe;
         alimento.favCafe = !alimento.favCafe;
         break;
-      case RefeicoesEnum.almoco:
+      case MealTypeEnum.almoco:
         listaFav = _favAlmoco;
         alimento.favAlmoco = !alimento.favAlmoco;
         break;
-      case RefeicoesEnum.jantar:
+      case MealTypeEnum.jantar:
         listaFav = _favJanta;
         alimento.favJanta = !alimento.favJanta;
         break;
-      case RefeicoesEnum.lanche:
+      case MealTypeEnum.lanche:
         listaFav = _favLanche;
         alimento.favLanche = !alimento.favLanche;
         break;
@@ -526,7 +495,7 @@ class _DialogModificarFavoritoState extends State<DialogModificarFavorito> {
                       setState(() {
                         // All buttons are selectable.
                         _selectedRefeicoes[index] = !_selectedRefeicoes[index];
-                        updateFavorito(widget.alimentoSelecionado, RefeicoesEnum.values[index]);
+                        updateFavorito(widget.alimentoSelecionado, MealTypeEnum.values[index]);
                       });
                     },
                     borderRadius: const BorderRadius.all(Radius.circular(8)),
@@ -541,17 +510,13 @@ class _DialogModificarFavoritoState extends State<DialogModificarFavorito> {
                   TextButton(
                     onPressed: () {
                       Navigator.pop(context);
-                    }, 
+                    },
                     style: TextButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        side: const BorderSide(color: AppColors.fontBright),
-                        borderRadius: BorderRadius.circular(24.0),
-                      )
-                    ),
-                    child: const Text(
-                      "Ok", 
-                      style: TextStyle(color: AppColors.fontBright)
-                    ),
+                        shape: RoundedRectangleBorder(
+                      side: const BorderSide(color: AppColors.fontBright),
+                      borderRadius: BorderRadius.circular(24.0),
+                    )),
+                    child: const Text("Ok", style: TextStyle(color: AppColors.fontBright)),
                   ),
                 ],
               ),

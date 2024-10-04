@@ -19,15 +19,15 @@ class AddMeal extends StatefulWidget {
 }
 
 class _AddMealState extends State<AddMeal> {
-  final List<AlimentoIngerido> alimentosSelecionados = [];
-  final TextEditingController selecionarAlimentosController = TextEditingController();
-  final TextEditingController favoritosAlimentosController = TextEditingController();
-  final TextEditingController selecionadosAlimentosController = TextEditingController();
-  final TextEditingController tipoRefeicaoController = TextEditingController();
-  final TextEditingController _glicemiaController = TextEditingController();
-  final TextEditingController _dateController = TextEditingController();
-  final TextEditingController _timeController = TextEditingController();
-  final TextEditingController _selectedMealTypeController = TextEditingController();
+  final List<AlimentoIngerido> selectedFoods = [];
+  final TextEditingController allFoodsController = TextEditingController();
+  final TextEditingController favoriteFoodsController = TextEditingController();
+  final TextEditingController selectedFoodsController = TextEditingController();
+  final TextEditingController mealTypeController = TextEditingController();
+  final TextEditingController bloodGlucoseController = TextEditingController();
+  final TextEditingController dateController = TextEditingController();
+  final TextEditingController timeController = TextEditingController();
+  final TextEditingController selectedMealTypeController = TextEditingController();
   DateTime selectedMealDate = DateTime.now();
   TimeOfDay selectedMealTime = TimeOfDay.now();
 
@@ -36,10 +36,10 @@ class _AddMealState extends State<AddMeal> {
     "Selecione os alimentos",
   ];
   final PageController _pageViewController = PageController();
-  double glicemia = 0.0;
-  double totalCHO = 0.0;
+  double bloodGlucose = 0.0;
+  double totalCarbohydrates = 0.0;
 
-  final List<DropdownMenuEntry<String>> _tiposDeRefeicao = [
+  final List<DropdownMenuEntry<String>> _mealTypes = [
     CustomDropdownMenuEntry(value: "Café da manhã", label: "Café da manhã"),
     CustomDropdownMenuEntry(value: "Almoço", label: "Almoço"),
     CustomDropdownMenuEntry(value: "Janta", label: "Janta"),
@@ -58,7 +58,7 @@ class _AddMealState extends State<AddMeal> {
       selectedMealDate = date;
       String day = date.day.toString().padLeft(2, "0");
       String month = date.month.toString().padLeft(2, "0");
-      _dateController.text = "$day/$month/${date.year}";
+      dateController.text = "$day/$month/${date.year}";
     });
   }
 
@@ -67,7 +67,7 @@ class _AddMealState extends State<AddMeal> {
       selectedMealTime = time;
       String hour = time.hour.toString().padLeft(2, "0");
       String minutes = time.minute.toString().padLeft(2, "0");
-      _timeController.text = "$hour:$minutes";
+      timeController.text = "$hour:$minutes";
     });
   }
 
@@ -88,9 +88,9 @@ class _AddMealState extends State<AddMeal> {
 
   @override
   void setState(VoidCallback fn) {
-    totalCHO = 0;
-    for (var alimentoIngerido in alimentosSelecionados) {
-      totalCHO += alimentoIngerido.alimentoReferencia.carbosPorGrama * alimentoIngerido.qtdIngerida;
+    totalCarbohydrates = 0;
+    for (var ingestedFood in selectedFoods) {
+      totalCarbohydrates += ingestedFood.alimentoReferencia.carbosPorGrama * ingestedFood.qtdIngerida;
     }
     super.setState(fn);
   }
@@ -103,16 +103,6 @@ class _AddMealState extends State<AddMeal> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.black,
-        // title: IconButton(
-        //   onPressed: () {
-        //     Navigator.pop(context);
-        //   },
-        //   icon: const Icon(
-        //     Icons.close_rounded,
-        //     size: 35,
-        //     color: Colors.white,
-        //   ),
-        // ),
         actions: [
           TextButton(
             onPressed: () {
@@ -142,19 +132,19 @@ class _AddMealState extends State<AddMeal> {
                 onTimeSelected: _handleTimeSelected,
                 getSelectedDate: _getSelectedDate,
                 getSelectedTime: _getSelectedTime,
-                glicemiaController: _glicemiaController,
-                dateController: _dateController,
-                timeController: _timeController,
-                selectedMealTypeController: _selectedMealTypeController,
-                tiposDeRefeicao: _tiposDeRefeicao,
+                glicemiaController: bloodGlucoseController,
+                dateController: dateController,
+                timeController: timeController,
+                selectedMealTypeController: selectedMealTypeController,
+                tiposDeRefeicao: _mealTypes,
               ),
-              SelectFoods(
-                searchBoxController: selecionarAlimentosController,
-                favoritesSearchBoxController: favoritosAlimentosController,
-                selectedFoodsSearchBoxController: selecionadosAlimentosController,
-                selectedMealTypeController: _selectedMealTypeController,
-                glicemiaController: _glicemiaController,
-                alimentosSelecionados: alimentosSelecionados,
+              SelectFoodsWrapper(
+                searchBoxController: allFoodsController,
+                favoritesSearchBoxController: favoriteFoodsController,
+                selectedFoodsSearchBoxController: selectedFoodsController,
+                selectedMealTypeController: selectedMealTypeController,
+                glicemiaController: bloodGlucoseController,
+                selectedFoods: selectedFoods,
                 addMealToHistory: widget.addMealToHistory,
                 setState: setState,
                 mealDate: selectedMealDate,

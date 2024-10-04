@@ -13,26 +13,26 @@ import 'package:carbonet/widgets/buttons/button.dart';
 import 'package:carbonet/widgets/dialogs/warning_dialog.dart';
 import 'package:flutter/material.dart';
 
-class SelectFoods extends StatefulWidget {
+class SelectFoodsWrapper extends StatefulWidget {
   final Function setState;
   final TextEditingController searchBoxController;
   final TextEditingController favoritesSearchBoxController;
   final TextEditingController selectedFoodsSearchBoxController;
   final TextEditingController selectedMealTypeController;
   final TextEditingController glicemiaController;
-  final List<AlimentoIngerido> alimentosSelecionados;
+  final List<AlimentoIngerido> selectedFoods;
   final DateTime? mealDate;
   final TimeOfDay? mealTime;
   final Function(Refeicao) addMealToHistory;
 
-  const SelectFoods({
+  const SelectFoodsWrapper({
     super.key,
     required this.searchBoxController,
     required this.favoritesSearchBoxController,
     required this.selectedFoodsSearchBoxController,
     required this.selectedMealTypeController,
     required this.glicemiaController,
-    required this.alimentosSelecionados,
+    required this.selectedFoods,
     required this.addMealToHistory,
     required this.setState,
     required this.mealDate,
@@ -40,10 +40,10 @@ class SelectFoods extends StatefulWidget {
   });
 
   @override
-  State<SelectFoods> createState() => _SelectFoodsState();
+  State<SelectFoodsWrapper> createState() => _SelectFoodsWrapperState();
 }
 
-class _SelectFoodsState extends State<SelectFoods> {
+class _SelectFoodsWrapperState extends State<SelectFoodsWrapper> {
   @override
   void initState() {
     super.initState();
@@ -132,24 +132,24 @@ class _SelectFoodsState extends State<SelectFoods> {
           children: [
             AllFoodsList(
               filteredFoodReferenceList: listaAlimentoRefFiltrada,
-              selectedFoodList: widget.alimentosSelecionados,
+              selectedFoodList: widget.selectedFoods,
               searchBoxController: widget.searchBoxController,
               updateFilteredList: updateFilteredListDelay,
             ),
             FavoriteFoodsList(
               tipoRefeicao: widget.selectedMealTypeController.text,
               listaAlimentosRef: listaAlimentoRef,
-              listaAlimentosSelecionados: widget.alimentosSelecionados,
+              listaAlimentosSelecionados: widget.selectedFoods,
             ),
             SelectedFoodsList(
-              selectedFoods: widget.alimentosSelecionados,
+              selectedFoods: widget.selectedFoods,
             ),
           ],
         ),
         bottomNavigationBar: Button(
           label: "Registrar Refeição",
           onPressed: () {
-            if (widget.alimentosSelecionados.isEmpty) {
+            if (widget.selectedFoods.isEmpty) {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -177,7 +177,7 @@ class _SelectFoodsState extends State<SelectFoods> {
               isActive: true,
             );
 
-            DaoProcedureCoupler.inserirRefeicaoProcedimento(refeicao, widget.alimentosSelecionados).then(
+            DaoProcedureCoupler.inserirRefeicaoProcedimento(refeicao, widget.selectedFoods).then(
               (value) {
                 refeicao.id = value;
                 widget.addMealToHistory(refeicao);

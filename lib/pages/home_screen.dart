@@ -1,8 +1,8 @@
 import 'package:carbonet/data/models/refeicao.dart';
 import 'package:carbonet/pages/add_meal/add_meal.dart';
 import 'package:carbonet/pages/home/home.dart';
-import 'package:carbonet/pages/history/listar_refeicoes.dart';
-import 'package:carbonet/pages/add_favorites/registro_favoritos.dart';
+import 'package:carbonet/pages/history/history.dart';
+import 'package:carbonet/pages/add_favorites/add_favorites.dart';
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -15,16 +15,16 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final ValueNotifier<int> _selectedIndexNotifier = ValueNotifier<int>(0);
-  final List<Refeicao> historicoRefeicoes = [];
+  final List<Refeicao> mealHistory = [];
 
   @override
   void initState() {
     super.initState();
   }
 
-  void addMealToHistory(Refeicao refeicao) {
+  void addMealToHistory(Refeicao meal) {
     setState(() {
-      historicoRefeicoes.add(refeicao);
+      mealHistory.add(meal);
     });
   }
 
@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
       useSafeArea: true,
       builder: (BuildContext context) {
         return SizedBox(
-          height: (MediaQuery.of(context).size.height * 0.9), // wtf
+          height: (MediaQuery.of(context).size.height * 0.9),
           child: AddMeal(addMealToHistory: addMealToHistory),
         );
       },
@@ -52,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (BuildContext context) {
           return SizedBox(
             height: MediaQuery.of(context).size.height * 0.9,
-            child: Expanded(child: RegistroFavoritos()),
+            child: const Expanded(child: AddFavorites()),
           );
         });
   }
@@ -115,8 +115,8 @@ class _HomeScreenState extends State<HomeScreen> {
           const HomePage(),
           const Placeholder(),
           const Placeholder(), // sla :3
-          ListarRefeicoes(
-            historicoRefeicoes: historicoRefeicoes,
+          History(
+            mealHistory: mealHistory,
           ),
           const Placeholder(),
         ],

@@ -48,7 +48,7 @@ class AllFoodsList extends StatefulWidget {
 }
 
 class _AllFoodsListState extends State<AllFoodsList> {
-  final TextEditingController qtdController = TextEditingController();
+  final TextEditingController gramsController = TextEditingController();
   AlimentoRef? selectedFoodRef;
 
   void addFoodToList() {
@@ -57,7 +57,7 @@ class _AllFoodsListState extends State<AllFoodsList> {
       return;
     }
 
-    if (qtdController.text.isEmpty || double.parse(qtdController.text) == 0) {
+    if (gramsController.text.isEmpty || double.parse(gramsController.text) == 0) {
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -70,9 +70,9 @@ class _AllFoodsListState extends State<AllFoodsList> {
       return;
     }
 
-    for (final alimento in widget.selectedFoodList) {
-      if (alimento.idAlimentoReferencia == selectedFoodRef?.id) {
-        alimento.qtdIngerida += double.parse(qtdController.text);
+    for (final food in widget.selectedFoodList) {
+      if (food.idAlimentoReferencia == selectedFoodRef?.id) {
+        food.qtdIngerida += double.parse(gramsController.text);
         Navigator.pop(context);
         return;
       }
@@ -82,11 +82,11 @@ class _AllFoodsListState extends State<AllFoodsList> {
       AlimentoIngerido(
         idAlimentoReferencia: selectedFoodRef!.id,
         alimentoReferencia: selectedFoodRef,
-        qtdIngerida: double.parse(qtdController.text),
+        qtdIngerida: double.parse(gramsController.text),
       ),
     );
 
-    qtdController.text = "";
+    gramsController.text = "";
     Navigator.pop(context);
   }
 
@@ -122,7 +122,7 @@ class _AllFoodsListState extends State<AllFoodsList> {
                         context: context,
                         builder: (BuildContext context) {
                           return InputDialog(
-                            controller: qtdController,
+                            controller: gramsController,
                             title: "Adicionar alimento",
                             message: [
                               const TextSpan(

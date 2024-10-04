@@ -9,20 +9,20 @@ import 'package:carbonet/widgets/dialogs/confirmation_dialog.dart';
 import 'package:carbonet/widgets/input/input_field.dart';
 import 'package:flutter/material.dart';
 
-class ListarRefeicoes extends StatefulWidget {
-  final List<Refeicao> historicoRefeicoes;
-  const ListarRefeicoes({
+class History extends StatefulWidget {
+  final List<Refeicao> mealHistory;
+  const History({
     super.key,
-    required this.historicoRefeicoes,
+    required this.mealHistory,
   });
 
   @override
-  State<ListarRefeicoes> createState() => _ListarRefeicoesState();
+  State<History> createState() => _HistoryState();
 }
 
-class _ListarRefeicoesState extends State<ListarRefeicoes> {
+class _HistoryState extends State<History> {
   final TextEditingController searchBoxController = TextEditingController();
-  final Future<List<Refeicao>> _futureRefeicoes = RefeicaoDAO().getRefeicoesByUser(LoggedUserAccess().user!.id!);
+  final Future<List<Refeicao>> _getMealsFuture = RefeicaoDAO().getRefeicoesByUser(LoggedUserAccess().user!.id!);
   final Map<int, bool> _isExpanded = {};
   bool hasReceivedMealList = false;
 
@@ -46,26 +46,26 @@ class _ListarRefeicoesState extends State<ListarRefeicoes> {
             ),
             const SizedBox(height: 30),
             FutureBuilder(
-              future: _futureRefeicoes,
+              future: _getMealsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   if (!hasReceivedMealList) {
                     snapshot.data?.forEach((refeicao) {
-                      widget.historicoRefeicoes.add(refeicao);
+                      widget.mealHistory.add(refeicao);
                     });
                     hasReceivedMealList = true;
-                    infoLog("widget.historicoRefeicoes setado!");
+                    infoLog("widget.mealHistory setado!");
                   }
                   return Expanded(
                     child: ListView.builder(
-                      itemCount: widget.historicoRefeicoes.length,
+                      itemCount: widget.mealHistory.length,
                       itemBuilder: (context, index) {
                         return Theme(
                           data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
                           child: Column(
                             children: [
                               Dismissible(
-                                key: Key(widget.historicoRefeicoes[index].id.toString()),
+                                key: Key(widget.mealHistory[index].id.toString()),
                                 direction: DismissDirection.endToStart,
                                 background: Container(
                                   color: Colors.red,
@@ -88,7 +88,7 @@ class _ListarRefeicoesState extends State<ListarRefeicoes> {
                                 },
                                 onDismissed: (direction) {
                                   setState(() {
-                                    widget.historicoRefeicoes.removeAt(index);
+                                    widget.mealHistory.removeAt(index);
                                   });
                                   infoLog("Removido item em $index");
                                   //TODO: remover do banco tbm (?)
@@ -99,13 +99,13 @@ class _ListarRefeicoesState extends State<ListarRefeicoes> {
                                   title: Row(
                                     children: [
                                       Text(
-                                        widget.historicoRefeicoes[index].tipoRefeicao,
+                                        widget.mealHistory[index].tipoRefeicao,
                                         style: const TextStyle(color: Colors.white),
                                       ),
                                       const Spacer(),
                                       Text(
                                         //  - ${listaRefeicoes[index].data.day.toString().padLeft(2, "0")}/${listaRefeicoes[index].data.month.toString().padLeft(2, "0")}/${listaRefeicoes[index].data.year}"
-                                        "${widget.historicoRefeicoes[index].data.hour.toString().padLeft(2, '0')}:${widget.historicoRefeicoes[index].data.minute.toString().padLeft(2, '0')}",
+                                        "${widget.mealHistory[index].data.hour.toString().padLeft(2, '0')}:${widget.mealHistory[index].data.minute.toString().padLeft(2, '0')}",
                                         style: const TextStyle(color: Colors.white),
                                       ),
                                     ],
@@ -126,7 +126,7 @@ class _ListarRefeicoesState extends State<ListarRefeicoes> {
                                   children: [
                                     if (_isExpanded[index] == true)
                                       FutureBuilder(
-                                        future: DaoProcedureCoupler.getAlimentoIngeridoByRefeicaoFullData(widget.historicoRefeicoes[index].id),
+                                        future: DaoProcedureCoupler.getAlimentoIngeridoByRefeicaoFullData(widget.mealHistory[index].id),
                                         builder: (context, innerSnapshot) {
                                           if (innerSnapshot.connectionState == ConnectionState.done) {
                                             if (innerSnapshot.hasData && innerSnapshot.data != null) {
@@ -177,7 +177,7 @@ class _ListarRefeicoesState extends State<ListarRefeicoes> {
                                   ],
                                 ),
                               ),
-                              if (index < widget.historicoRefeicoes.length - 1) const Divider(color: Colors.white),
+                              if (index < widget.mealHistory.length - 1) const Divider(color: Colors.white),
                             ],
                           ),
                         );
