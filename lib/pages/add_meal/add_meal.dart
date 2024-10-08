@@ -110,7 +110,10 @@ class _AddMealState extends State<AddMeal> {
             },
             child: const Text(
               "Cancelar",
-              style: TextStyle(color: AppColors.defaultAppColor),
+              style: TextStyle(
+                color: AppColors.defaultBrightAppColor,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           const SizedBox(

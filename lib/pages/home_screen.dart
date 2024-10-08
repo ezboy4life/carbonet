@@ -34,10 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
       isScrollControlled: true,
       useSafeArea: true,
       builder: (BuildContext context) {
-        return SizedBox(
-          height: (MediaQuery.of(context).size.height * 0.9),
-          child: AddMeal(addMealToHistory: addMealToHistory),
-        );
+        return AddMeal(addMealToHistory: addMealToHistory);
       },
     );
     setState(() {});
@@ -48,12 +45,9 @@ class _HomeScreenState extends State<HomeScreen> {
         context: context,
         isScrollControlled: true,
         useSafeArea: true,
-        barrierColor: Color(Colors.white.value).withOpacity(0.5),
+        // barrierColor: Color(Colors.white.value).withOpacity(0.5),
         builder: (BuildContext context) {
-          return SizedBox(
-            height: MediaQuery.of(context).size.height * 0.9,
-            child: const Expanded(child: AddFavorites()),
-          );
+          return const Expanded(child: AddFavorites());
         });
   }
 

@@ -16,24 +16,61 @@ class AddFavorites extends StatefulWidget {
 }
 
 class _AddFavoritesState extends State<AddFavorites> {
-  final Future<List<FoodReference>> _foods = FoodReferenceDAO().getAllFoodReference();
+  final Future<List<FoodReference>> _foodsFuture = FoodReferenceDAO().getAllFoodReference();
+  final List<FoodReference> _foods = [];
+  bool hasResolvedFoodsFuture = false;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        FutureBuilder(
-          future: _foods,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              // snapshot.data.forEach((comida) {});
-              return Placeholder();
-            } else {
-              return const CircularProgressIndicator();
-            }
-          },
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.black,
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text(
+              "Cancelar",
+              style: TextStyle(
+                color: AppColors.defaultAppColor,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const SizedBox(
+            width: 10,
+          )
+        ],
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              FutureBuilder(
+                future: _foodsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    return ListView.builder(
+                      itemCount: snapshot.data?.length ?? 0,
+                      itemBuilder: (context, index) {
+                        // return const Text(snapshot.data?[index].);
+                        // TODO: Fazer isso aqui
+                      },
+                    );
+                  } else {
+                    return const CircularProgressIndicator();
+                  }
+                },
+              )
+            ],
+          ),
         ),
-      ],
+      ),
     );
   }
 }
