@@ -16,29 +16,52 @@ class AddFavorites extends StatefulWidget {
 }
 
 class _AddFavoritesState extends State<AddFavorites> {
+  final Future<List<FoodReference>> _foods = FoodReferenceDAO().getAllFoodReference();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        FutureBuilder(
+          future: _foods,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              // snapshot.data.forEach((comida) {});
+              return Placeholder();
+            } else {
+              return const CircularProgressIndicator();
+            }
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class AddFavoritesOld extends StatefulWidget {
+  const AddFavoritesOld({super.key});
+
+  @override
+  State<AddFavoritesOld> createState() => _AddFavoritesOldState();
+}
+
+class _AddFavoritesOldState extends State<AddFavoritesOld> {
   final Future<List<FoodReference>> _alimentos = FoodReferenceDAO().getAllFoodReference();
 
   final List<FoodReference> favoritosCafe = [];
-
   final List<FoodReference> favoritosAlmoco = [];
-
   final List<FoodReference> favoritosJantar = [];
-
   final List<FoodReference> favoritosLanche = [];
-
   late List<FoodReference> listaBase;
 
   Future<void> separarFavoritos() async {
     listaBase = await _alimentos;
-
     for (FoodReference alimento in listaBase) {
       alimento.favoriteCoffee ? favoritosCafe.add(alimento) : null;
       alimento.favoriteLunch ? favoritosAlmoco.add(alimento) : null;
       alimento.favoriteDinner ? favoritosJantar.add(alimento) : null;
       alimento.favoriteSnack ? favoritosLanche.add(alimento) : null;
     }
-
-    return;
   }
 
   ({List<FoodReference> favoriteCoffee, List<FoodReference> favoriteLunch, List<FoodReference> favoriteDinner, List<FoodReference> favoriteSnack, List<FoodReference> listaBase}) getListas() {

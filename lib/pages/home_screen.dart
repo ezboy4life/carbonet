@@ -151,11 +151,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(
-                    Icons.search_rounded,
+                    Icons.star_rounded,
                     color: AppColors.fontBright,
                   ),
                   activeIcon: Icon(
-                    Icons.search_rounded,
+                    Icons.star_rounded,
                     color: Colors.white,
                   ),
                   label: '',
