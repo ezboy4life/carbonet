@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:carbonet/data/database/food_reference_dao.dart';
 import 'package:carbonet/data/models/food_reference.dart';
 import 'package:carbonet/utils/app_colors.dart';
@@ -17,8 +18,23 @@ class AddFavorites extends StatefulWidget {
 
 class _AddFavoritesState extends State<AddFavorites> {
   final Future<List<FoodReference>> _foodsFuture = FoodReferenceDAO().getAllFoodReference();
-  final List<FoodReference> _foods = [];
-  bool hasResolvedFoodsFuture = false;
+  late List<FoodReference> _foods = [];
+  final List<FoodReference> favoritesCoffee = [];
+  final List<FoodReference> favoritesLunch = [];
+  final List<FoodReference> favoritesDinner = [];
+  final List<FoodReference> favoritesSnack = [];
+  final TextEditingController searchBoxController = TextEditingController();
+  // bool hasResolvedFoodsFuture = false;
+
+  Future<void> sortFavorites() async {
+    _foods = await _foodsFuture;
+    for (FoodReference food in _foods) {
+      food.favoriteCoffee ? favoritesCoffee.add(food) : null;
+      food.favoriteLunch ? favoritesLunch.add(food) : null;
+      food.favoriteDinner ? favoritesDinner.add(food) : null;
+      food.favoriteSnack ? favoritesSnack.add(food) : null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,25 +65,100 @@ class _AddFavoritesState extends State<AddFavorites> {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              FutureBuilder(
-                future: _foodsFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    return ListView.builder(
-                      itemCount: snapshot.data?.length ?? 0,
+          child: FutureBuilder(
+            future: sortFavorites(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return Column(
+                  children: [
+                    // TODO: Terminar esse InputField
+                    InputField(
+                      controller: searchBoxController,
+                      onChanged: updateFilteredList,
+                      labelText: "Pesquisar",
+                      iconData: Icons.search_rounded,
+                      trailingIcon: Icons.camera_alt_outlined,
+                      onTrailingIconPressed: widget.photoFunction,
+                    ),
+                    const SizedBox(height: 30),
+                    ListView.builder(
+                      itemCount: _foods.length,
                       itemBuilder: (context, index) {
-                        // return const Text(snapshot.data?[index].);
-                        // TODO: Fazer isso aqui
+                        return Column(
+                          children: [
+                            ListTile(
+                              title: Text(
+                                _foods[index].name,
+                                style: const TextStyle(color: AppColors.fontBright),
+                              ),
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return Theme(
+                                      data: Theme.of(context).copyWith(
+                                        dialogTheme: const DialogTheme(
+                                          elevation: 0,
+                                        ),
+                                      ),
+                                      child: Dialog(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12.0),
+                                        ),
+                                        child: BackdropFilter(
+                                          filter: ImageFilter.blur(sigmaX: 2.5, sigmaY: 2.5),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(12.0),
+                                              color: Colors.black,
+                                              boxShadow: const [
+                                                BoxShadow(
+                                                  color: AppColors.fontDark,
+                                                  spreadRadius: 2.5,
+                                                  blurRadius: 5,
+                                                ),
+                                              ],
+                                            ),
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(32.0),
+                                              child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  CheckboxListTile(
+                                                    title: const Text(
+                                                      "Café",
+                                                      style: TextStyle(
+                                                        color: AppColors.fontBright,
+                                                      ),
+                                                    ),
+                                                    value: false,
+                                                    onChanged: (value) {
+                                                      infoLog(value.toString());
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                            if (index < _foods.length - 1) const Divider(color: AppColors.fontDimmed),
+                          ],
+                        );
                       },
-                    );
-                  } else {
-                    return const CircularProgressIndicator();
-                  }
-                },
-              )
-            ],
+                    ),
+                  ],
+                );
+              } else {
+                return const CircularProgressIndicator();
+              }
+            },
           ),
         ),
       ),

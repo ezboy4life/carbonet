@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
         useSafeArea: true,
         // barrierColor: Color(Colors.white.value).withOpacity(0.5),
         builder: (BuildContext context) {
-          return const Expanded(child: AddFavorites());
+          return const AddFavorites();
         });
   }
 
