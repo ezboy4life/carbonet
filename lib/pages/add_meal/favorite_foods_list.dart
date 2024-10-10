@@ -1,32 +1,61 @@
+import 'dart:async';
 import 'package:carbonet/data/models/ingested_food.dart';
 import 'package:carbonet/data/models/food_reference.dart';
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/utils/logger.dart';
 import 'package:carbonet/widgets/dialogs/input_dialog.dart';
 import 'package:carbonet/widgets/dialogs/warning_dialog.dart';
+import 'package:carbonet/widgets/input/input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class FavoriteFoodsList extends StatefulWidget {
+  final String mealType;
+  final List<FoodReference> foodList;
+  final List<IngestedFood> selectedFoodsList;
+  // final TextEditingController searchBoxController;
+
   const FavoriteFoodsList({
     super.key,
-    required this.tipoRefeicao,
-    required this.listaAlimentosRef,
-    required this.listaAlimentosSelecionados,
+    required this.mealType,
+    required this.foodList,
+    required this.selectedFoodsList,
+    // required this.searchBoxController,
   });
-
-  final String tipoRefeicao;
-  final List<FoodReference> listaAlimentosRef;
-  final List<IngestedFood> listaAlimentosSelecionados;
 
   @override
   State<FavoriteFoodsList> createState() => _FavoriteFoodsListState();
 }
 
 class _FavoriteFoodsListState extends State<FavoriteFoodsList> {
-  final List<FoodReference> favoritos = [];
-  final TextEditingController favoritosController = TextEditingController();
+  final TextEditingController favoritesSearchBoxController = TextEditingController();
+  final TextEditingController gramsController = TextEditingController();
+  final List<FoodReference> favorites = [];
+  List<FoodReference> filteredFavorites = [];
   FoodReference? selectedFavorite;
+  Timer? _debounce;
+
+  void updateFilteredList(String? value) {
+    if (value == null || value.isEmpty) {
+      setState(() {
+        filteredFavorites = favorites;
+      });
+    } else {
+      setState(() {
+        filteredFavorites = filteredFavorites.where((element) => element.name.toLowerCase().contains(value.toLowerCase())).toList();
+      });
+    }
+  }
+
+  void updateFilteredListDelay(String? searchTerm) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(
+      const Duration(milliseconds: 300),
+      () {
+        updateFilteredList(searchTerm);
+      },
+    );
+  }
 
   void _adicionarFavorito() {
     if (selectedFavorite == null) {
@@ -34,7 +63,7 @@ class _FavoriteFoodsListState extends State<FavoriteFoodsList> {
       return;
     }
 
-    if (favoritosController.text.isEmpty || double.parse(favoritosController.text) == 0) {
+    if (gramsController.text.isEmpty || double.parse(gramsController.text) == 0) {
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -47,44 +76,44 @@ class _FavoriteFoodsListState extends State<FavoriteFoodsList> {
       return;
     }
 
-    for (final alimento in widget.listaAlimentosSelecionados) {
+    for (final alimento in widget.selectedFoodsList) {
       if (alimento.idFoodReference == selectedFavorite?.id) {
-        alimento.gramsIngested += double.parse(favoritosController.text);
+        alimento.gramsIngested += double.parse(gramsController.text);
         Navigator.pop(context);
         return;
       }
     }
 
-    widget.listaAlimentosSelecionados.add(
+    widget.selectedFoodsList.add(
       IngestedFood(
         idFoodReference: selectedFavorite!.id,
         foodReference: selectedFavorite,
-        gramsIngested: double.parse(favoritosController.text),
+        gramsIngested: double.parse(gramsController.text),
       ),
     );
-    favoritosController.text = "";
+    gramsController.text = "";
     Navigator.pop(context);
   }
 
   void _extrairFavoritos() {
-    favoritos.clear(); //?
+    favorites.clear(); //?
 
-    for (FoodReference alimento in widget.listaAlimentosRef) {
-      if (_isFavorito(alimento, widget.tipoRefeicao)) {
-        favoritos.add(alimento);
+    for (FoodReference alimento in widget.foodList) {
+      if (_isFavorito(alimento, widget.mealType)) {
+        favorites.add(alimento);
       }
     }
   }
 
-  bool _isFavorito(FoodReference alimento, String tipoRefeicao) {
-    switch (tipoRefeicao) {
-      case "Café da manhã":
+  bool _isFavorito(FoodReference alimento, String mealType) {
+    switch (mealType) {
+      case "coffee":
         return alimento.favoriteCoffee;
-      case "Almoço":
+      case "lunch":
         return alimento.favoriteLunch;
-      case "Janta":
+      case "dinner":
         return alimento.favoriteDinner;
-      case "Lanche":
+      case "snack":
         return alimento.favoriteSnack;
       default:
         return false;
@@ -96,63 +125,65 @@ class _FavoriteFoodsListState extends State<FavoriteFoodsList> {
     _extrairFavoritos();
 
     return Column(children: [
-      Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Text("Favoritos - ${widget.tipoRefeicao}", style: const TextStyle(color: AppColors.fontBright, fontSize: 18, fontWeight: FontWeight.bold)),
+      const SizedBox(height: 32),
+      InputField(
+        controller: favoritesSearchBoxController,
+        onChanged: updateFilteredListDelay,
+        labelText: "Pesquisar favoritos",
+        iconData: Icons.search_rounded,
       ),
+      const SizedBox(height: 32),
       ListView.builder(
           shrinkWrap: true,
-          itemCount: favoritos.length,
+          itemCount: favorites.length,
           itemBuilder: (context, index) {
             return ListTile(
               title: Text(
-                favoritos[index].name,
+                favorites[index].name,
                 style: const TextStyle(color: AppColors.fontBright),
               ),
-              trailing: IconButton(
-                  onPressed: () {
-                    infoLog('"${favoritos[index].name}" selecionado!');
-                    selectedFavorite = favoritos[index];
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return InputDialog(
-                          controller: favoritosController,
-                          title: "Adicionar alimento",
-                          message: [
-                            const TextSpan(
-                              text: "Insira a quantidade de ",
-                              style: TextStyle(
-                                color: AppColors.fontBright,
-                                fontSize: 17,
-                              ),
-                            ),
-                            TextSpan(
-                              text: favoritos[index].name.toLowerCase(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 17,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const TextSpan(
-                              text: " em gramas:",
-                              style: TextStyle(
-                                color: AppColors.fontBright,
-                                fontSize: 17,
-                              ),
-                            ),
-                          ],
-                          label: "Qtd em gramas",
-                          buttonLabel: "Adicionar",
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                          onPressed: _adicionarFavorito,
-                        );
-                      },
+              onTap: () {
+                infoLog('"${favorites[index].name}" selecionado!');
+                selectedFavorite = favorites[index];
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return InputDialog(
+                      controller: gramsController,
+                      title: "Adicionar alimento",
+                      message: [
+                        const TextSpan(
+                          text: "Insira a quantidade de ",
+                          style: TextStyle(
+                            color: AppColors.fontBright,
+                            fontSize: 17,
+                          ),
+                        ),
+                        TextSpan(
+                          text: favorites[index].name.toLowerCase(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const TextSpan(
+                          text: " em gramas:",
+                          style: TextStyle(
+                            color: AppColors.fontBright,
+                            fontSize: 17,
+                          ),
+                        ),
+                      ],
+                      label: "Qtd em gramas",
+                      buttonLabel: "Adicionar",
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      onPressed: _adicionarFavorito,
                     );
                   },
-                  icon: const Icon(Icons.add, color: Colors.blueAccent)),
+                );
+              },
             );
           }),
     ]);

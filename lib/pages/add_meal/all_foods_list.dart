@@ -94,7 +94,7 @@ class _AllFoodsListState extends State<AllFoodsList> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 30),
+        const SizedBox(height: 32),
         InputField(
           controller: widget.searchBoxController,
           onChanged: widget.updateFilteredList,
@@ -103,7 +103,7 @@ class _AllFoodsListState extends State<AllFoodsList> {
           trailingIcon: Icons.camera_alt_outlined,
           onTrailingIconPressed: widget.photoFunction,
         ),
-        const SizedBox(height: 30),
+        const SizedBox(height: 32),
         Expanded(
           child: ListView.builder(
             itemCount: widget.filteredFoodReferenceList.length,

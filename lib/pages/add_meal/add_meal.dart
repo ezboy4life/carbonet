@@ -40,10 +40,10 @@ class _AddMealState extends State<AddMeal> {
   double totalCarbohydrates = 0.0;
 
   final List<DropdownMenuEntry<String>> _mealTypes = [
-    CustomDropdownMenuEntry(value: "Café da manhã", label: "Café da manhã"),
-    CustomDropdownMenuEntry(value: "Almoço", label: "Almoço"),
-    CustomDropdownMenuEntry(value: "Janta", label: "Janta"),
-    CustomDropdownMenuEntry(value: "Lanche", label: "Lanche"),
+    CustomDropdownMenuEntry(value: "coffee", label: "Café da manhã"),
+    CustomDropdownMenuEntry(value: "lunch", label: "Almoço"),
+    CustomDropdownMenuEntry(value: "dinner", label: "Janta"),
+    CustomDropdownMenuEntry(value: "snack", label: "Lanche"),
   ];
 
   void _nextPage() {

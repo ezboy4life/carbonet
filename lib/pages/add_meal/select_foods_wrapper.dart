@@ -137,9 +137,9 @@ class _SelectFoodsWrapperState extends State<SelectFoodsWrapper> {
               updateFilteredList: updateFilteredListDelay,
             ),
             FavoriteFoodsList(
-              tipoRefeicao: widget.selectedMealTypeController.text,
-              listaAlimentosRef: listaFoodReference,
-              listaAlimentosSelecionados: widget.selectedFoods,
+              mealType: widget.selectedMealTypeController.value.text,
+              foodList: listaFoodReference,
+              selectedFoodsList: widget.selectedFoods,
             ),
             SelectedFoodsList(
               selectedFoods: widget.selectedFoods,

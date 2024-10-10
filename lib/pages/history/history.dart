@@ -159,7 +159,7 @@ class _HistoryState extends State<History> {
                                                             ],
                                                           ),
                                                         ),
-                                                        if (index < alimentosIngeridos.length - 1) const Divider(color: AppColors.fontBright),
+                                                        if (index < alimentosIngeridos.length - 1) const Divider(color: AppColors.fontDimmed),
                                                       ],
                                                     ),
                                                   ),
@@ -177,7 +177,7 @@ class _HistoryState extends State<History> {
                                   ],
                                 ),
                               ),
-                              if (index < widget.mealHistory.length - 1) const Divider(color: Colors.white),
+                              if (index < widget.mealHistory.length - 1) const Divider(color: AppColors.fontBright),
                             ],
                           ),
                         );

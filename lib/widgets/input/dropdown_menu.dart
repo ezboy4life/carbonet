@@ -36,7 +36,7 @@ class CustomDropDownMenu extends StatelessWidget {
       width: screenWidth * widthFactor,
       leadingIcon: leadingIcon,
       dropdownMenuEntries: dropdownMenuEntries,
-      initialSelection: selectedDropdownMenuEntry!.value,
+      initialSelection: selectedDropdownMenuEntry?.value,
       requestFocusOnTap: false,
       textStyle: TextStyle(
         color: textColor,

@@ -4,6 +4,8 @@ import 'package:carbonet/data/models/food_reference.dart';
 import 'package:carbonet/data/models/meal_type.dart';
 import 'package:carbonet/pages/add_favorites/favorite_type_dialog.dart';
 import 'package:carbonet/utils/app_colors.dart';
+import 'package:carbonet/widgets/cosmetic/dropdown_menu_entry.dart';
+import 'package:carbonet/widgets/input/dropdown_menu.dart';
 import 'package:carbonet/widgets/input/input_field.dart';
 import 'package:flutter/material.dart';
 
@@ -20,36 +22,23 @@ class _AddFavoritesState extends State<AddFavorites> {
   final List<FoodReference> favoritesDinner = [];
   final List<FoodReference> favoritesSnack = [];
   final TextEditingController searchBoxController = TextEditingController();
+  final List<DropdownMenuEntry<String>> _mealTypes = [
+    CustomDropdownMenuEntry(value: "null", label: "Sem filtro"),
+    CustomDropdownMenuEntry(value: "coffee", label: "Café da manhã"),
+    CustomDropdownMenuEntry(value: "lunch", label: "Almoço"),
+    CustomDropdownMenuEntry(value: "dinner", label: "Janta"),
+    CustomDropdownMenuEntry(value: "snack", label: "Lanche"),
+  ];
   late List<FoodReference> _foods = [];
   List<FoodReference> _filteredFoods = [];
   Timer? _searchDebounce;
+  bool isFilterEnabled = false;
+  String selectedFilterSearch = "null";
 
   @override
   void initState() {
     super.initState();
     _initListAsync();
-  }
-
-  void setFavorite(FoodReference food, MealType type, bool value) {
-    setState(() {
-      switch (type) {
-        case MealType.coffee:
-          food.favoriteCoffee = value;
-          break;
-        case MealType.lunch:
-          food.favoriteLunch = value;
-          break;
-        case MealType.dinner:
-          food.favoriteDinner = value;
-          break;
-        case MealType.snack:
-          food.favoriteSnack = value;
-          break;
-      }
-    });
-
-    FoodReferenceDAO dao = FoodReferenceDAO();
-    dao.updateFavoriteStatus(food);
   }
 
   _initListAsync() async {
@@ -65,11 +54,109 @@ class _AddFavoritesState extends State<AddFavorites> {
     });
   }
 
+  void _handleSelectedMealType(Object? value) {
+    setState(() {
+      switch (value) {
+        case "null":
+          _filteredFoods = _foods;
+          selectedFilterSearch = "null";
+          break;
+        case "coffee":
+          _filteredFoods = favoritesCoffee;
+          selectedFilterSearch = "coffee";
+          break;
+        case "lunch":
+          _filteredFoods = favoritesLunch;
+          selectedFilterSearch = "lunch";
+          break;
+        case "dinner":
+          _filteredFoods = favoritesDinner;
+          selectedFilterSearch = "dinner";
+          break;
+        case "snack":
+          _filteredFoods = favoritesSnack;
+          selectedFilterSearch = "snack";
+          break;
+        default:
+          throw Exception("! Seleção do DropDownMenu não implementada");
+      }
+    });
+  }
+
+  void toggleFilterField(BuildContext context) {
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(() {
+      if (isFilterEnabled) {
+        _filteredFoods = _foods;
+      }
+      isFilterEnabled = !isFilterEnabled;
+    });
+  }
+
+  void setFavorite(FoodReference food, MealType type, bool value) {
+    List<FoodReference> localFoodList;
+
+    setState(() {
+      switch (type) {
+        case MealType.coffee:
+          food.favoriteCoffee = value;
+          localFoodList = favoritesCoffee;
+          // favoritesCoffee.add(food);
+          break;
+        case MealType.lunch:
+          food.favoriteLunch = value;
+          localFoodList = favoritesLunch;
+          // favoritesLunch.add(food);
+          break;
+        case MealType.dinner:
+          food.favoriteDinner = value;
+          localFoodList = favoritesDinner;
+          // favoritesDinner.add(food);
+          break;
+        case MealType.snack:
+          food.favoriteSnack = value;
+          localFoodList = favoritesSnack;
+          // favoritesSnack.add(food);
+          break;
+      }
+
+      if (value) {
+        localFoodList.add(food);
+      } else {
+        localFoodList.remove(food);
+      }
+    });
+
+    FoodReferenceDAO dao = FoodReferenceDAO();
+    dao.updateFavoriteStatus(food);
+  }
+
   void updateFilteredList(String? value) {
+    List<FoodReference> localFoodList;
+
+    switch (selectedFilterSearch) {
+      case "null":
+        localFoodList = _foods;
+        break;
+      case "coffee":
+        localFoodList = favoritesCoffee;
+        break;
+      case "lunch":
+        localFoodList = favoritesLunch;
+        break;
+      case "dinner":
+        localFoodList = favoritesDinner;
+        break;
+      case "snack":
+        localFoodList = favoritesSnack;
+        break;
+      default:
+        localFoodList = [];
+    }
     if (value == null || value.isEmpty) {
-      _filteredFoods = _foods;
+      _filteredFoods = localFoodList;
     } else {
-      _filteredFoods = _foods.where((element) => element.name.toLowerCase().contains(value.toLowerCase())).toList();
+      _filteredFoods = localFoodList.where((element) => element.name.toLowerCase().contains(value.toLowerCase())).toList();
     }
   }
 
@@ -130,8 +217,20 @@ class _AddFavoritesState extends State<AddFavorites> {
                 onChanged: updateFilteredListDelay,
                 labelText: "Pesquisar",
                 iconData: Icons.search_rounded,
+                trailingIcon: Icons.filter_list_rounded,
+                onTrailingIconPressed: toggleFilterField,
               ),
               const SizedBox(height: 15),
+              if (isFilterEnabled) ...[
+                CustomDropDownMenu(
+                  labelText: "Tipo da Refeição",
+                  iconData: Icons.restaurant_menu_rounded,
+                  dropdownMenuEntries: _mealTypes,
+                  selectedDropdownMenuEntry: _mealTypes[0],
+                  onSelected: _handleSelectedMealType,
+                ),
+                const SizedBox(height: 15),
+              ],
               Expanded(
                 child: ListView.builder(
                   itemCount: _filteredFoods.length,
