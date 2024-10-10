@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:carbonet/data/database/food_reference_dao.dart';
 import 'package:carbonet/data/models/ingested_food.dart';
 import 'package:carbonet/data/models/food_reference.dart';
@@ -44,106 +43,82 @@ class SelectFoodsWrapper extends StatefulWidget {
 }
 
 class _SelectFoodsWrapperState extends State<SelectFoodsWrapper> {
+  late List<FoodReference> foodList = [];
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initListAsync();
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    _initListAsync();
+    // });
   }
-
-  Timer? _debounce;
 
   _initListAsync() async {
-    listaFoodReference = await FoodReferenceDAO().getAllFoodReference();
+    List<FoodReference> list = await FoodReferenceDAO().getAllFoodReference();
     setState(() {
-      listaFoodReferenceFiltrada = listaFoodReference;
+      foodList = list;
     });
   }
-
-  void updateFilteredList(String? value) {
-    if (value == null || value.isEmpty) {
-      setState(() {
-        listaFoodReferenceFiltrada = listaFoodReference;
-      });
-    } else {
-      setState(() {
-        listaFoodReferenceFiltrada = listaFoodReference.where((element) => element.name.toLowerCase().contains(value.toLowerCase())).toList();
-      });
-    }
-  }
-
-  void updateFilteredListDelay(String? searchTerm) {
-    if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(
-      const Duration(milliseconds: 300),
-      () {
-        updateFilteredList(searchTerm);
-      },
-    );
-  }
-
-  List<FoodReference> listaFoodReference = [];
-  List<FoodReference> listaFoodReferenceFiltrada = [];
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: foodList.isEmpty ? 0 : 3,
       child: Scaffold(
         backgroundColor: Colors.black,
-        appBar: const TabBar(
+        appBar: TabBar(
           dividerColor: AppColors.fontBright,
           indicatorColor: AppColors.defaultAppColor,
           tabs: [
-            Tab(
-              icon: Icon(
-                Icons.restaurant_rounded,
-                color: AppColors.fontBright,
+            if (foodList.isNotEmpty) ...[
+              const Tab(
+                icon: Icon(
+                  Icons.restaurant_rounded,
+                  color: AppColors.fontBright,
+                ),
+                child: Text(
+                  "Todos Alimentos",
+                  style: TextStyle(color: AppColors.fontBright),
+                ),
               ),
-              child: Text(
-                "Todos Alimentos",
-                style: TextStyle(color: AppColors.fontBright),
+              const Tab(
+                icon: Icon(
+                  Icons.star_rounded,
+                  color: AppColors.fontBright,
+                ),
+                child: Text(
+                  "Favoritos",
+                  style: TextStyle(color: AppColors.fontBright),
+                ),
               ),
-            ),
-            Tab(
-              icon: Icon(
-                Icons.star_rounded,
-                color: AppColors.fontBright,
+              const Tab(
+                icon: Icon(
+                  Icons.check_rounded,
+                  color: AppColors.fontBright,
+                ),
+                child: Text(
+                  "Selecionados",
+                  style: TextStyle(color: AppColors.fontBright),
+                ),
               ),
-              child: Text(
-                "Favoritos",
-                style: TextStyle(color: AppColors.fontBright),
-              ),
-            ),
-            Tab(
-              icon: Icon(
-                Icons.check_rounded,
-                color: AppColors.fontBright,
-              ),
-              child: Text(
-                "Selecionados",
-                style: TextStyle(color: AppColors.fontBright),
-              ),
-            ),
+            ]
           ],
         ),
         body: TabBarView(
           children: [
-            AllFoodsList(
-              filteredFoodReferenceList: listaFoodReferenceFiltrada,
-              selectedFoodList: widget.selectedFoods,
-              searchBoxController: widget.searchBoxController,
-              updateFilteredList: updateFilteredListDelay,
-            ),
-            FavoriteFoodsList(
-              mealType: widget.selectedMealTypeController.value.text,
-              foodList: listaFoodReference,
-              selectedFoodsList: widget.selectedFoods,
-            ),
-            SelectedFoodsList(
-              selectedFoods: widget.selectedFoods,
-            ),
+            if (foodList.isNotEmpty) ...[
+              AllFoodsList(
+                foodList: foodList,
+                selectedFoodList: widget.selectedFoods,
+              ),
+              FavoriteFoodsList(
+                mealType: widget.selectedMealTypeController.value.text,
+                foodList: foodList,
+                selectedFoodsList: widget.selectedFoods,
+              ),
+              SelectedFoodsList(
+                selectedFoods: widget.selectedFoods,
+              ),
+            ]
           ],
         ),
         bottomNavigationBar: Button(

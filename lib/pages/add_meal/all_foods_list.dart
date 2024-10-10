@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:carbonet/data/models/ingested_food.dart';
 import 'package:carbonet/data/models/food_reference.dart';
 import 'package:carbonet/pages/add_meal/camera_functionality.dart';
@@ -11,17 +13,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class AllFoodsList extends StatefulWidget {
-  final List<FoodReference> filteredFoodReferenceList;
+  final List<FoodReference> foodList;
   final List<IngestedFood> selectedFoodList;
-  final TextEditingController searchBoxController;
-  final Function(String?) updateFilteredList;
 
   const AllFoodsList({
     super.key,
-    required this.filteredFoodReferenceList,
+    required this.foodList,
     required this.selectedFoodList,
-    required this.searchBoxController,
-    required this.updateFilteredList,
   });
 
   dynamic photoFunction(BuildContext context) async {
@@ -49,7 +47,18 @@ class AllFoodsList extends StatefulWidget {
 
 class _AllFoodsListState extends State<AllFoodsList> {
   final TextEditingController gramsController = TextEditingController();
+  final TextEditingController searchBoxController = TextEditingController();
+  List<FoodReference> filteredFoodList = [];
   FoodReference? selectedFoodReference;
+  Timer? _debounce;
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      filteredFoodList = widget.foodList;
+    });
+  }
 
   void addFoodToList() {
     if (selectedFoodReference == null) {
@@ -90,14 +99,36 @@ class _AllFoodsListState extends State<AllFoodsList> {
     Navigator.pop(context);
   }
 
+  void updateFilteredList(String? value) {
+    if (value == null || value.isEmpty) {
+      setState(() {
+        filteredFoodList = widget.foodList;
+      });
+    } else {
+      setState(() {
+        filteredFoodList = widget.foodList.where((element) => element.name.toLowerCase().contains(value.toLowerCase())).toList();
+      });
+    }
+  }
+
+  void updateFilteredListDelay(String? searchTerm) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(
+      const Duration(milliseconds: 300),
+      () {
+        updateFilteredList(searchTerm);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         const SizedBox(height: 32),
         InputField(
-          controller: widget.searchBoxController,
-          onChanged: widget.updateFilteredList,
+          controller: searchBoxController,
+          onChanged: updateFilteredListDelay,
           labelText: "Pesquisar",
           iconData: Icons.search_rounded,
           trailingIcon: Icons.camera_alt_outlined,
@@ -106,18 +137,18 @@ class _AllFoodsListState extends State<AllFoodsList> {
         const SizedBox(height: 32),
         Expanded(
           child: ListView.builder(
-            itemCount: widget.filteredFoodReferenceList.length,
+            itemCount: filteredFoodList.length,
             itemBuilder: (context, index) {
               return Column(
                 children: [
                   ListTile(
                     title: Text(
-                      widget.filteredFoodReferenceList[index].name,
+                      filteredFoodList[index].name,
                       style: const TextStyle(color: AppColors.fontBright),
                     ),
                     onTap: () {
-                      infoLog('"${widget.filteredFoodReferenceList[index].name}" selecionado!');
-                      selectedFoodReference = widget.filteredFoodReferenceList[index];
+                      infoLog('"${filteredFoodList[index].name}" selecionado!');
+                      selectedFoodReference = filteredFoodList[index];
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
@@ -158,7 +189,7 @@ class _AllFoodsListState extends State<AllFoodsList> {
                       );
                     },
                   ),
-                  if (index < widget.filteredFoodReferenceList.length - 1) const Divider(color: AppColors.fontDimmed),
+                  if (index < filteredFoodList.length - 1) const Divider(color: AppColors.fontDimmed),
                 ],
               );
             },

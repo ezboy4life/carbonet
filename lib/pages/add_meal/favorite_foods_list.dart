@@ -35,6 +35,12 @@ class _FavoriteFoodsListState extends State<FavoriteFoodsList> {
   FoodReference? selectedFavorite;
   Timer? _debounce;
 
+  @override
+  void initState() {
+    super.initState();
+    _extrairFavoritos();
+  }
+
   void updateFilteredList(String? value) {
     if (value == null || value.isEmpty) {
       setState(() {
@@ -96,13 +102,15 @@ class _FavoriteFoodsListState extends State<FavoriteFoodsList> {
   }
 
   void _extrairFavoritos() {
-    favorites.clear(); //?
-
+    favorites.clear();
     for (FoodReference alimento in widget.foodList) {
       if (_isFavorito(alimento, widget.mealType)) {
         favorites.add(alimento);
       }
     }
+    setState(() {
+      filteredFavorites = favorites;
+    });
   }
 
   bool _isFavorito(FoodReference alimento, String mealType) {
@@ -120,72 +128,110 @@ class _FavoriteFoodsListState extends State<FavoriteFoodsList> {
     }
   }
 
+  String? getMealName(String mealType) {
+    switch (mealType) {
+      case "coffee":
+        return "café da manhã";
+      case "lunch":
+        return "almoço";
+      case "dinner":
+        return "jantar";
+      case "snack":
+        return "lanche";
+    }
+
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
-    _extrairFavoritos();
-
     return Column(children: [
-      const SizedBox(height: 32),
-      InputField(
-        controller: favoritesSearchBoxController,
-        onChanged: updateFilteredListDelay,
-        labelText: "Pesquisar favoritos",
-        iconData: Icons.search_rounded,
-      ),
-      const SizedBox(height: 32),
-      ListView.builder(
-          shrinkWrap: true,
-          itemCount: favorites.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text(
-                favorites[index].name,
-                style: const TextStyle(color: AppColors.fontBright),
+      if (favorites.isNotEmpty) ...[
+        const SizedBox(height: 32),
+        InputField(
+          controller: favoritesSearchBoxController,
+          onChanged: updateFilteredListDelay,
+          labelText: "Pesquisar favoritos",
+          iconData: Icons.search_rounded,
+        ),
+        const SizedBox(height: 32),
+        ListView.builder(
+            shrinkWrap: true,
+            itemCount: filteredFavorites.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text(
+                  filteredFavorites[index].name,
+                  style: const TextStyle(color: AppColors.fontBright),
+                ),
+                onTap: () {
+                  infoLog('"${filteredFavorites[index].name}" selecionado!');
+                  selectedFavorite = filteredFavorites[index];
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return InputDialog(
+                        controller: gramsController,
+                        title: "Adicionar alimento",
+                        message: [
+                          const TextSpan(
+                            text: "Insira a quantidade de ",
+                            style: TextStyle(
+                              color: AppColors.fontBright,
+                              fontSize: 17,
+                            ),
+                          ),
+                          TextSpan(
+                            text: filteredFavorites[index].name.toLowerCase(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 17,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const TextSpan(
+                            text: " em gramas:",
+                            style: TextStyle(
+                              color: AppColors.fontBright,
+                              fontSize: 17,
+                            ),
+                          ),
+                        ],
+                        label: "Qtd em gramas",
+                        buttonLabel: "Adicionar",
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        onPressed: _adicionarFavorito,
+                      );
+                    },
+                  );
+                },
+              );
+            })
+      ] else ...[
+        Expanded(
+          child: Center(
+            child: Text.rich(
+              TextSpan(
+                children: [
+                  const TextSpan(
+                    text: "Nenhum favorito para a categoria ",
+                    style: TextStyle(color: AppColors.fontBright),
+                  ),
+                  TextSpan(
+                    text: getMealName(widget.mealType),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                ],
               ),
-              onTap: () {
-                infoLog('"${favorites[index].name}" selecionado!');
-                selectedFavorite = favorites[index];
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return InputDialog(
-                      controller: gramsController,
-                      title: "Adicionar alimento",
-                      message: [
-                        const TextSpan(
-                          text: "Insira a quantidade de ",
-                          style: TextStyle(
-                            color: AppColors.fontBright,
-                            fontSize: 17,
-                          ),
-                        ),
-                        TextSpan(
-                          text: favorites[index].name.toLowerCase(),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 17,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const TextSpan(
-                          text: " em gramas:",
-                          style: TextStyle(
-                            color: AppColors.fontBright,
-                            fontSize: 17,
-                          ),
-                        ),
-                      ],
-                      label: "Qtd em gramas",
-                      buttonLabel: "Adicionar",
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      onPressed: _adicionarFavorito,
-                    );
-                  },
-                );
-              },
-            );
-          }),
+              // style: const TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
+      ],
     ]);
   }
 }
