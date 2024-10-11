@@ -59,6 +59,20 @@ class _SelectFoodsWrapperState extends State<SelectFoodsWrapper> {
     });
   }
 
+  String? getMealName(String mealType) {
+    switch (mealType) {
+      case "coffee":
+        return "Café da manhã";
+      case "lunch":
+        return "Almoço";
+      case "dinner":
+        return "Jantar";
+      case "snack":
+        return "Lanche";
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -148,7 +162,7 @@ class _SelectFoodsWrapperState extends State<SelectFoodsWrapper> {
             Meal refeicao = Meal(
               idUser: LoggedUserAccess().user!.id!,
               date: dataRefeicao,
-              mealType: widget.selectedMealTypeController.text,
+              mealType: getMealName(widget.selectedMealTypeController.text)!,
               isActive: true,
             );
 

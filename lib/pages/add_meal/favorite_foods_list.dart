@@ -48,7 +48,7 @@ class _FavoriteFoodsListState extends State<FavoriteFoodsList> {
       });
     } else {
       setState(() {
-        filteredFavorites = filteredFavorites.where((element) => element.name.toLowerCase().contains(value.toLowerCase())).toList();
+        filteredFavorites = favorites.where((element) => element.name.toLowerCase().contains(value.toLowerCase())).toList();
       });
     }
   }
