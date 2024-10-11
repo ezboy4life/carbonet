@@ -42,8 +42,13 @@ class MealInfo extends StatefulWidget {
 
 class _MealInfoState extends State<MealInfo> {
   bool isFirstTime = true;
-
   DropdownMenuEntry<String>? initialDropdown;
+
+  @override
+  void initState() {
+    super.initState();
+    _firstTimeResponsiveSelection();
+  }
 
   void _handleSelectedMealType(Object? object) {
     if (object == null) {
@@ -55,7 +60,7 @@ class _MealInfoState extends State<MealInfo> {
   void _firstTimeResponsiveSelection() {
     if (isFirstTime) {
       int hora = DateTime.now().hour;
-      print("Hora: $hora 🍌");
+      // print("Hora: $hora 🍌");
       if (hora >= 4 && hora < 11) {
         initialDropdown = widget.tiposDeRefeicao[0];
       } else if (hora >= 11 && hora < 17) {
@@ -72,12 +77,11 @@ class _MealInfoState extends State<MealInfo> {
         label: widget.selectedMealTypeController.text,
       );
     }
+    widget.selectedMealTypeController.text = initialDropdown?.value ?? "coffee";
   }
 
   @override
   Widget build(BuildContext context) {
-    _firstTimeResponsiveSelection();
-
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -156,20 +160,6 @@ class _MealInfoState extends State<MealInfo> {
               return;
             }
 
-            // Validação da Glicemia
-            if (widget.glicemiaController.text.isEmpty || int.parse(widget.glicemiaController.text) == 0) {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return const WarningDialog(
-                    title: "Glicemia inválida!",
-                    message: "Por gentileza, defina um valor válido.",
-                  );
-                },
-              );
-              return;
-            }
-
             // Validação do tipo da refeição
             if (widget.selectedMealTypeController.text.isEmpty) {
               showDialog(
@@ -178,6 +168,20 @@ class _MealInfoState extends State<MealInfo> {
                   return const WarningDialog(
                     title: "Tipo de refeição inválido!",
                     message: "Por gentileza, selecione valor válido.",
+                  );
+                },
+              );
+              return;
+            }
+
+            // Validação da Glicemia
+            if (widget.glicemiaController.text.isEmpty || int.parse(widget.glicemiaController.text) == 0) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return const WarningDialog(
+                    title: "Glicemia inválida!",
+                    message: "Por gentileza, defina um valor válido.",
                   );
                 },
               );
