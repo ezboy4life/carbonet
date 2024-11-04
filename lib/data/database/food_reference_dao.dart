@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:carbonet/data/database/database_helper.dart';
 import 'package:carbonet/data/models/food_reference.dart';
+import 'package:flutter/services.dart';
 
 class FoodReferenceDAO {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
@@ -24,7 +27,8 @@ class FoodReferenceDAO {
     List<Map<String, dynamic>> maps = await db.query('alimento_referencia');
 
     if (maps.isEmpty) {
-      await populateFoodReference();
+      //await populateFoodReference();
+      await populateTableFoodReference();
       maps = await db.query('alimento_referencia');
     }
 
@@ -928,5 +932,22 @@ laranja, mamão)', 'taça pequena', '100', '13', '0.13', 'false', 'false', 'fals
     }
 
     return results;
+  }
+
+  Future<void> populateTableFoodReference() async {
+    final db = await _databaseHelper.database;
+    String sql = await rootBundle.loadString("assets/inputs_p4.sql");
+
+    List<String> commands = sql.split(";");
+    List<Future> futures = [];
+    for (String command in commands) {
+      command = command.trim();
+      if (command.isNotEmpty) {
+        futures.add(db.execute(command));
+      }
+    }
+
+    await Future.wait(futures);
+    return;
   }
 }

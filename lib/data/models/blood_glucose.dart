@@ -3,12 +3,16 @@ class BloodGlucose {
   final int idUser;
   double bloodGlucose;
   DateTime date;
+  int insulinDosage;
+  int? idRefeicao;
 
   BloodGlucose({
     this.id = -1,
     required this.idUser,
     required this.bloodGlucose,
     required this.date,
+    required this.insulinDosage,
+    this.idRefeicao,
   });
 
   Map<String, dynamic> toMap() {
@@ -17,6 +21,8 @@ class BloodGlucose {
         'idUser': idUser,
         'glicemia': bloodGlucose,
         'data': date.toIso8601String(),
+        'doseInsulina': insulinDosage,
+        'idRefeicao': idRefeicao
       };
     } else {
       return {
@@ -24,6 +30,8 @@ class BloodGlucose {
         'idUser': idUser,
         'glicemia': bloodGlucose,
         'data': date.toIso8601String(),
+        'doseInsulina': insulinDosage,
+        'idRefeicao': idRefeicao
       };
     }
   }
@@ -34,6 +42,8 @@ class BloodGlucose {
       idUser: map['idUser'],
       bloodGlucose: (map['glicemia']),
       date: DateTime.parse(map['data']),
+      insulinDosage: map['doseInsulina'],
+      idRefeicao: map['idRefeicao'],
     );
   }
 }

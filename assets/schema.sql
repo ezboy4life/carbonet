@@ -1,30 +1,33 @@
 CREATE TABLE users (
     id integer primary key autoincrement,
     email varchar(320),
-    senha varchar(255), -- talvez mudar pq o hash talvez tenha mais de 255 caracteres
-    peso real,
-    data_nascimento date,
-    const_insulinica real,
+    senha varchar(255),
+    dataNascimento date,
+    constInsulinica real,
     nome varchar(255),
     sobrenome varchar(255),
-    altura real
+    glicemiaMinima integer,
+    glicemiaMaxima integer
 );
 
 create table glicemia (
-	id integer PRIMARY KEY AUTOINCREMENT,
-  	idUser integer,
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+  	idUser INTEGER,
+    idRefeicao INTEGER,
   	glicemia double,
-  	data date,
-  	FOREIGN KEY (idUser) references users(id)
+  	data DATE,
+    doseInsulina INTEGER,
+  	FOREIGN KEY (idUser) REFERENCES users(id),
+    FOREIGN KEY (idRefeicao) REFERENCES refeicao(id)
 );
 
 create table alimento_referencia (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
   	nome VARCHAR(255),
   	porcao VARCHAR(255),
-  	gramas_por_porcao VARCHAR(255),
-  	carbos_por_porcao VARCHAR(255),
-  	carbos_por_grama VARCHAR(255),
+  	gramasPorPorcao VARCHAR(255),
+  	carbosPorPorcao VARCHAR(255),
+    caloriasPorPorcao VARCHAR(255),
     favCafe INTEGER,
     favAlmoco INTEGER,
     favJanta INTEGER,
@@ -32,18 +35,20 @@ create table alimento_referencia (
 );
 
 CREATE TABLE refeicao (
-	id integer PRIMARY KEY AUTOINCREMENT,
-    idUser integer,
-    tipoRefeicao varchar(255),
-    data date,
-    isActive integer,
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+    idUser INTEGER,
+    tipoRefeicao VARCHAR(255),
+    data DATE,
+    isActive INTEGER,
+    totalCarbos INTEGER,
+    totalCalorias INTEGER,
     FOREIGN KEY (idUser) REFERENCES users(id)
 );
 
 CREATE TABLE alimento_ingerido (
-	id integer primary key AUTOINCREMENT,
-  	idAlimentoReferencia integer,
-  	idRefeicao integer,
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+  	idAlimentoReferencia INTEGER,
+  	idRefeicao INTEGER,
   	qtdIngerida double,
   	FOREIGN KEY (idAlimentoReferencia) REFERENCES alimento_referencia(id),
   	FOREIGN KEY (idRefeicao) REFERENCES refeicao(id)

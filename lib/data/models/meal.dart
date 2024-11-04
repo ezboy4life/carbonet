@@ -1,12 +1,13 @@
 import 'package:carbonet/data/models/ingested_food.dart';
 
 class Meal {
-  // TODO: no refactor, colocar campos de qtdCalorias, qtdCarbos também
   int id;
   int idUser;
   String mealType;
   DateTime date;
   bool isActive;
+  int carbTotal;
+  int calorieTotal;
 
   final List<IngestedFood> localListaAlimentosIngeridos = [];
 
@@ -16,6 +17,8 @@ class Meal {
     required this.idUser,
     required this.date,
     required this.mealType,
+    required this.carbTotal,
+    required this.calorieTotal,
     this.isActive = true,
   });
 
@@ -25,6 +28,8 @@ class Meal {
         'idUser': idUser,
         'data': date.toIso8601String(),
         'tipoRefeicao': mealType,
+        'totalCarbos': carbTotal,
+        'totalCalorias': calorieTotal,
       };
     } else {
       return {
@@ -33,6 +38,8 @@ class Meal {
         'data': date.toIso8601String(),
         'tipoRefeicao': mealType,
         'isActive': isActive,
+        'totalCarbos': carbTotal,
+        'totalCalorias': calorieTotal,
       };
     }
   }
@@ -44,6 +51,8 @@ class Meal {
       date: DateTime.parse(map['data']),
       mealType: map['tipoRefeicao'],
       isActive: map['isActive'] == 1 ? true : false,
+      carbTotal: map['totalCarbos'],
+      calorieTotal: map['totalCalorias'],
     );
   }
 }

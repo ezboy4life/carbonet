@@ -6,23 +6,23 @@ class User {
   final int? id;
   final String email;
   final String passwordHash;
-  final double weight;
-  final double height;
   final DateTime birthDate;
-  final double constanteInsulinica; // alguem tem que me explicar q poha é essa
+  final double constanteInsulinica; // proporção carboidratos - dose de insulina
   final String name;
   final String surname;
+  final int minBloodGlucose;
+  final int maxBloodGlucose;
 
   User({
     this.id,
     required this.email,
     required senha,
-    required this.weight,
-    required this.height,
     required this.birthDate,
     required this.constanteInsulinica,
     required this.name,
     required this.surname,
+    required this.minBloodGlucose,
+    required this.maxBloodGlucose,
   }) : passwordHash = hashPassword(senha);
 
   Map<String, dynamic> toMap() {
@@ -31,12 +31,12 @@ class User {
       'id': id,
       'email': email,
       'senha': passwordHash,
-      'weight': weight,
-      'height': height,
-      'data_nascimento': birthDate.toIso8601String(),
-      'const_insulinica': constanteInsulinica,
-      'name': name,
-      'surname': surname
+      'dataNascimento': birthDate.toIso8601String(),
+      'constInsulinica': constanteInsulinica,
+      'nome': name,
+      'sobrenome': surname,
+      'glicemiaMinima': minBloodGlucose,
+      'glicemiaMaxima': maxBloodGlucose,
     };
   }
 
@@ -46,12 +46,12 @@ class User {
       id: map["id"],
       email: map["email"],
       senha: map["senha"],
-      weight: map["peso"],
-      height: map["altura"],
-      birthDate: DateTime.parse(map["data_nascimento"]),
-      constanteInsulinica: map["const_insulinica"],
+      birthDate: DateTime.parse(map["dataNascimento"]),
+      constanteInsulinica: map["constInsulinica"],
       name: map["nome"],
       surname: map["sobrenome"],
+      minBloodGlucose: map["glicemiaMinima"],
+      maxBloodGlucose: map["glicemiaMaxima"],
     );
   }
 

@@ -1,5 +1,6 @@
 import 'package:carbonet/data/models/user.dart';
 import 'package:carbonet/data/repository/user_repository.dart';
+import 'package:carbonet/utils/calculator.dart';
 import 'package:carbonet/utils/logger.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +16,7 @@ class Validators {
     return password.length >= 10;
   }
 
+  /// WARN: deprecated
   static bool isValidHeight(double height) {
     return height < 3;
   }
@@ -44,6 +46,7 @@ class Validators {
     return age >= 18 && age < 122; // 122 = pessoa mais velha do mundo
   }
 
+  /// WARN: deprecated
   static bool isValidWeight(String weightString) {
     if (weightString.isEmpty) {
       return false;
@@ -71,5 +74,18 @@ class Validators {
 
   static bool isTimeValid(TimeOfDay? time) {
     return time != null;
+  }
+
+  static bool isValidMinBloodGlucose(int min, int max) {
+    return min >= 70 && min < 180 && min <= max - Calculator.mgOfGlucoseOneInsulinUnitLowers;
+  }
+
+
+  static bool isValidMaxBloodGlucose(int min, int max) {
+    return max > 70 && max <= 180 && max >= min + Calculator.mgOfGlucoseOneInsulinUnitLowers;
+  }
+
+  static bool isValidIdealBloodGlucoseInterval(int min, int max) {
+    return max - min >= Calculator.mgOfGlucoseOneInsulinUnitLowers;
   }
 }

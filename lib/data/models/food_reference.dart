@@ -10,7 +10,7 @@ class FoodReference {
   final String portion;
   final double gramsPerPortion;
   final double carbsPerPortion;
-  final double carbsPerGram;
+  final double caloriesPerPortion;
 
   bool favoriteCoffee;
   bool favoriteLunch;
@@ -23,15 +23,16 @@ class FoodReference {
       required this.portion,
       required this.gramsPerPortion,
       required this.carbsPerPortion,
-      required this.carbsPerGram,
+      required this.caloriesPerPortion,
       this.favoriteCoffee = false,
       this.favoriteLunch = false,
       this.favoriteDinner = false,
       this.favoriteSnack = false});
 
+  /// Até onde eu sei, isso só é um fallback para um getter específico quando o foodReference setado nele for nulo, para evitar uma exception. Talvez algo a ser removido depois.
   static FoodReference fromId(int id) {
     // usar o DAO para buscar essa instância do alimento na db
-    return FoodReference(id: 0, name: "a", portion: "b", gramsPerPortion: 0, carbsPerPortion: 0, carbsPerGram: 0);
+    return FoodReference(id: 0, name: "ERROR", portion: "ERROR", gramsPerPortion: 0, carbsPerPortion: 0, caloriesPerPortion: 0);
   }
 
   Map<String, dynamic> toMap() {
@@ -39,9 +40,9 @@ class FoodReference {
       'id': id,
       'nome': name,
       'porcao': portion,
-      'gramas_por_porcao': gramsPerPortion,
-      'carbos_por_porcao': carbsPerPortion,
-      'carbos_por_grama': carbsPerGram,
+      'gramasPorPorcao': gramsPerPortion,
+      'carbosPorPorcao': carbsPerPortion,
+      'caloriasPorPorcao': caloriesPerPortion,
       'favCafe': favoriteCoffee ? 1 : 0,
       'favAlmoco': favoriteLunch ? 1 : 0,
       'favJanta': favoriteDinner ? 1 : 0,
@@ -54,9 +55,9 @@ class FoodReference {
         id: map['id'],
         name: map['nome'],
         portion: map['porcao'],
-        gramsPerPortion: double.parse(map['gramas_por_porcao'] == "-" ? "-1" : map['gramas_por_porcao']),
-        carbsPerPortion: double.parse(map['carbos_por_porcao']),
-        carbsPerGram: double.parse(map['carbos_por_grama'] == "#VALUE!" ? "-1" : map['carbos_por_grama']),
+        gramsPerPortion: double.parse(map['gramasPorPorcao'] == "-" ? "-1" : map['gramasPorPorcao']),
+        carbsPerPortion: double.parse(map['carbosPorPorcao'] == "-" ? "-1" : map['carbosPorPorcao']),
+        caloriesPerPortion: double.parse(map['caloriasPorPorcao'] == "-" ? "-1" : map['caloriasPorPorcao']),
         favoriteCoffee: map['favCafe'] == 1 ? true : false,
         favoriteLunch: map['favAlmoco'] == 1 ? true : false,
         favoriteDinner: map['favJanta'] == 1 ? true : false,

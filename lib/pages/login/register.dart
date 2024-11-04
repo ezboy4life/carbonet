@@ -28,15 +28,15 @@ class RegisterPageState extends State<RegisterPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _surnameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
-  final TextEditingController _heightController = TextEditingController();
   final TextEditingController _insulinController = TextEditingController();
+  final TextEditingController _minBloodGlucoseController = TextEditingController();
   DateTime? selectedBirthDate;
-  final TextEditingController _weightController = TextEditingController();
+  final TextEditingController _maxBloodGlucoseController = TextEditingController();
   final List<String> _hintTexts = [
-    "Digite seu e-mail e defina um senha",
-    "Digite seu name e surname",
-    "Digite sua data de nascimento e seu weight",
-    "Digite sua height e sua constante insulinica",
+    "Digite seu e-mail e defina uma senha",
+    "Digite seu nome e sobrenome",
+    "Digite sua data de nascimento e sua \nproporção de gramas de carboidratos \npor unidade de insulina",
+    "Digite seu intervalo ideal de glicemia \n(limite mínimo de 70 mg/dL e máximo \nde 180 mg/dL)",
   ];
 
   @override
@@ -54,32 +54,32 @@ class RegisterPageState extends State<RegisterPage> {
         nameController: _nameController,
         surnameController: _surnameController,
       ),
-      _BirthAndWeight(
+      _BirthAndInsulin(
         nextPage: _nextPage,
         dateController: _dateController,
-        weightController: _weightController,
+        insulinController: _insulinController,
         onDateSelected: _handleDateSelected,
         getSelectedBirthDate: _getSelectedBirthDate,
       ),
-      _HeightAndInsulin(
-        heightController: _heightController,
-        insulinController: _insulinController,
+      MinAndMaxBloodGlucose(
+        minBloodGlucoseController: _minBloodGlucoseController,
+        maxBloodGlucoseController: _maxBloodGlucoseController,
         registerUser: _registerUser,
       ),
     ];
 
-    // Só pra facilitar os testes no cadastro. REMOVAM DEPOIS :V
+    // TODO Só pra facilitar os testes no cadastro. REMOVAM DEPOIS :V
 
     _emailController.text = "teste@gmail.com";
     _passwordController.text = "1231231231";
     _nameController.text = "Nome";
     _surnameController.text = "Sobrenome";
-    _heightController.text = "1.79"; // minha height :D
-    _weightController.text = "71.2"; // e meu weight   :D
+    _minBloodGlucoseController.text = "80"; // ex de valor mínimo dentro do intervalo
+    _maxBloodGlucoseController.text = "150"; // ex de valor máximo dentro do intervalo
     // Alguém precisa pelo amor de Deus me explicar o que diabos é essa
     // constante, eu juro que não acho isso em absolutamente lugar nenhum
     // na internet pra ter um ponto de referência.
-    _insulinController.text = "1.0";
+    _insulinController.text = "15";
   }
 
   void _nextPage() {
@@ -103,13 +103,13 @@ class RegisterPageState extends State<RegisterPage> {
   void _registerUser() async {
     User user = User(
       email: _emailController.text,
-      senha: _passwordController.text,
-      weight: double.parse(_weightController.text),
-      height: double.parse(_heightController.text),
       birthDate: selectedBirthDate!,
       constanteInsulinica: double.parse(_insulinController.text),
       name: _nameController.text,
       surname: _surnameController.text,
+      senha: _passwordController.text,
+      minBloodGlucose: int.parse(_minBloodGlucoseController.text),
+      maxBloodGlucose: int.parse(_maxBloodGlucoseController.text),
     );
     int id = await userRepository.addUser(user);
     infoLog("Usuário inserido. ID: $id");
@@ -154,7 +154,7 @@ class RegisterPageState extends State<RegisterPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   const Text(
-                    "Já possuí uma conta?",
+                    "Já possui uma conta?",
                     style: TextStyle(color: AppColors.fontBright),
                   ),
                   TextButton(
@@ -360,17 +360,17 @@ class _NameAndSurname extends StatelessWidget {
   }
 }
 
-class _BirthAndWeight extends StatelessWidget {
+class _BirthAndInsulin extends StatelessWidget {
   final TextEditingController dateController;
-  final TextEditingController weightController;
+  final TextEditingController insulinController;
   final VoidCallback nextPage;
   final Function(DateTime) onDateSelected;
   final Function getSelectedBirthDate;
 
-  const _BirthAndWeight({
+  const _BirthAndInsulin({
     required this.nextPage,
     required this.dateController,
-    required this.weightController,
+    required this.insulinController,
     required this.onDateSelected,
     required this.getSelectedBirthDate,
   });
@@ -390,15 +390,15 @@ class _BirthAndWeight extends StatelessWidget {
           height: 30,
         ),
         InputField(
-          controller: weightController,
-          labelText: "Peso (em KG)",
-          iconData: Icons.scale_rounded,
+          controller: insulinController,
+          labelText: "Constante Insulinica",
+          iconData: Icons.local_hospital_rounded,
           maxLength: 5,
           inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'^\d*[.,]?\d*$')),
+            FilteringTextInputFormatter.allow(RegExp(r'^\d*$')),
             CommaToDotFormatter(),
           ],
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          keyboardType: const TextInputType.numberWithOptions(decimal: false),
         ),
         const SizedBox(
           height: 30,
@@ -406,13 +406,13 @@ class _BirthAndWeight extends StatelessWidget {
         Button(
           label: "Avançar",
           onPressed: () {
-            if (!Validators.isValidWeight(weightController.text)) {
+            if (insulinController.text.isEmpty) {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
                   return const WarningDialog(
-                    title: "Peso inválido!",
-                    message: "Por gentileza, defina um weight válido.\nExemplo: 75.2 KG.",
+                    title: "Proporção inválida!",
+                    message: "Por gentileza, defina uma proporção insulina-carboidrato válida.",
                   );
                 },
               );
@@ -445,14 +445,14 @@ class _BirthAndWeight extends StatelessWidget {
   }
 }
 
-class _HeightAndInsulin extends StatelessWidget {
-  final TextEditingController heightController;
-  final TextEditingController insulinController;
+class MinAndMaxBloodGlucose extends StatelessWidget {
+  final TextEditingController minBloodGlucoseController;
+  final TextEditingController maxBloodGlucoseController;
   final Function registerUser;
 
-  const _HeightAndInsulin({
-    required this.heightController,
-    required this.insulinController,
+  const MinAndMaxBloodGlucose({
+    required this.minBloodGlucoseController,
+    required this.maxBloodGlucoseController,
     required this.registerUser,
   });
 
@@ -462,12 +462,12 @@ class _HeightAndInsulin extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         InputField(
-          controller: heightController,
-          labelText: "Altura (em metros)",
-          iconData: Icons.accessibility_new_rounded,
+          controller: minBloodGlucoseController,
+          labelText: "Valor mínimo do intervalo de glicemia ideal",
+          iconData: Icons.local_hospital_rounded,
           maxLength: 4,
           inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'^\d*[.,]?\d*$')),
+            FilteringTextInputFormatter.allow(RegExp(r'^\d*$')),
             CommaToDotFormatter(),
           ],
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -476,12 +476,12 @@ class _HeightAndInsulin extends StatelessWidget {
           height: 30,
         ),
         InputField(
-          controller: insulinController,
-          labelText: "Constante Insulinica",
+          controller: maxBloodGlucoseController,
+          labelText: "Valor máximo do intervalo de glicemia ideal",
           iconData: Icons.local_hospital_rounded,
           maxLength: 5,
           inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'^\d*[.,]?\d*$')),
+            FilteringTextInputFormatter.allow(RegExp(r'^\d*$')),
             CommaToDotFormatter(),
           ],
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -492,29 +492,61 @@ class _HeightAndInsulin extends StatelessWidget {
         Button(
           label: "Finalizar Cadastro",
           onPressed: () {
-            if (heightController.text.isEmpty ||
-                !Validators.isValidHeight(
-                  double.parse(heightController.text),
-                )) {
+            if (minBloodGlucoseController.text.isEmpty || maxBloodGlucoseController.text.isEmpty) {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
                   return const WarningDialog(
-                    title: "Altura inválida!",
-                    message: "Por gentileza, defina uma height válida.",
+                    title: "Os valores do intervalo ideal de glicemia são obrigatórios.",
+                    message: "Por gentileza, preencha os campos de valores mínimo e máximo do intervalo ideal de glicose.",
                   );
                 },
               );
               return;
             }
 
-            if (insulinController.text.isEmpty) {
+            if (!Validators.isValidMinBloodGlucose(
+                int.parse(minBloodGlucoseController.text), 
+                int.parse(maxBloodGlucoseController.text),
+            )) {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
                   return const WarningDialog(
-                    title: "Constante inválida!",
-                    message: "Por gentileza, defina uma constante insulínica válida.",
+                    title: "Valor mínimo inválido!",
+                    message: "Por gentileza, defina um valor mínimo válido (entre 70 e 180).",
+                  );
+                },
+              );
+              return;
+            }
+
+            if (!Validators.isValidMaxBloodGlucose(
+              int.parse(minBloodGlucoseController.text), 
+              int.parse(maxBloodGlucoseController.text),
+            )) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return const WarningDialog(
+                    title: "Valor máximo inválido!",
+                    message: "Por gentileza, defina um valor máximo válido (entre 70 e 180).",
+                  );
+                },
+              );
+              return;
+            }
+
+            if (!Validators.isValidIdealBloodGlucoseInterval(
+              int.parse(minBloodGlucoseController.text), 
+              int.parse(maxBloodGlucoseController.text),
+            )) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return const WarningDialog(
+                    title: "Intervalo ideal inválido!",
+                    message: "Os valores mínimos e máximos devem estar, ao menos, a 50 mg/dL de distância entre si. Por gentileza, corrija os valores.",
                   );
                 },
               );

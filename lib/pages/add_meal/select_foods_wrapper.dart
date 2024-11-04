@@ -6,6 +6,7 @@ import 'package:carbonet/pages/add_meal/all_foods_list.dart';
 import 'package:carbonet/pages/add_meal/favorite_foods_list.dart';
 import 'package:carbonet/pages/add_meal/selected_foods_list.dart';
 import 'package:carbonet/utils/app_colors.dart';
+import 'package:carbonet/utils/calculator.dart';
 import 'package:carbonet/utils/dao_procedure_coupler.dart';
 import 'package:carbonet/utils/logged_user_access.dart';
 import 'package:carbonet/widgets/buttons/button.dart';
@@ -138,6 +139,8 @@ class _SelectFoodsWrapperState extends State<SelectFoodsWrapper> {
         bottomNavigationBar: Button(
           label: "Registrar Refeição",
           onPressed: () {
+            print("botão clicado");
+
             if (widget.selectedFoods.isEmpty) {
               showDialog(
                 context: context,
@@ -151,6 +154,9 @@ class _SelectFoodsWrapperState extends State<SelectFoodsWrapper> {
               return;
             }
 
+            // Registro efetivo da refeição e da glicemia
+            // TODO : Implementar o registro da glicemia
+
             final DateTime dataRefeicao = DateTime(
               widget.mealDate!.year,
               widget.mealDate!.month,
@@ -159,17 +165,76 @@ class _SelectFoodsWrapperState extends State<SelectFoodsWrapper> {
               widget.mealTime!.minute,
             );
 
+            double totalCarbohydrates = 0;
+            double totalCalories = 0;
+
+            //TODO isso aqui tá implementado dentro do Calculator, e daria pra usar ele, mas... né.
+            for (var ingestedFood in widget.selectedFoods) {
+              totalCarbohydrates += 
+              ingestedFood.foodReference.carbsPerPortion * 
+              (ingestedFood.gramsIngested / ingestedFood.foodReference.gramsPerPortion);
+
+              totalCalories += 
+              ingestedFood.foodReference.caloriesPerPortion * 
+              (ingestedFood.gramsIngested / ingestedFood.foodReference.gramsPerPortion);
+            }
+
             Meal refeicao = Meal(
               idUser: LoggedUserAccess().user!.id!,
               date: dataRefeicao,
               mealType: getMealName(widget.selectedMealTypeController.text)!,
               isActive: true,
+              carbTotal: totalCarbohydrates.round(),
+              calorieTotal: totalCalories.round(),
             );
 
+            print('ué');
             DaoProcedureCoupler.inserirRefeicaoProcedimento(refeicao, widget.selectedFoods).then(
-              (value) {
+              (value) async {
                 refeicao.id = value;
                 widget.addMealToHistory(refeicao);
+
+                double totalCarbs = totalCarbohydrates;
+                int totalCalories = refeicao.calorieTotal;
+                int minGlucose = LoggedUserAccess().user!.minBloodGlucose;
+                int maxGlucose = LoggedUserAccess().user!.maxBloodGlucose;
+                int currentBloodSugar = int.parse(widget.glicemiaController.text);
+                int insulinRatio = LoggedUserAccess().user!.constanteInsulinica.toInt();
+                //TODO aqui vai o cálculo da insulina
+                await showDialog(
+                  context: context, 
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text("Cálculo de insulina"),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text("Total de carboidratos consumidos: ${totalCarbs}g"),
+                          Text("Total de calorias consumidas: ${totalCalories} kcal"),
+                          Text("Glicemia inicial: ${currentBloodSugar} mg/dL"),
+                          const SizedBox(height: 16,),
+                          Text("Dose de insulina recomendada: ${Calculator.calculateInsulinDosage(
+                            totalCarbs, 
+                            currentBloodSugar, 
+                            minGlucose, 
+                            maxGlucose, 
+                            insulinRatio
+                          )}"),
+                        ],
+                      ),
+                      actions: [
+                        TextButton.icon(
+                          onPressed: () => Navigator.of(context).pop(), 
+                          label: Text("Ok"),
+                          icon: Icon(Icons.check),)
+                      ],
+                    );
+                  }
+                );
+                print("wah");
+                // seria bom tbm exibir a lógica nesse cálculo
+                // seria bom, também, salvar essa dose (e qual caso é) no cadastro de glicemia, e permitir caçar essa glicemia no histórico
+                // vincular glicemia à refeição = bom tbm
                 Navigator.pop(context, true);
               },
             );

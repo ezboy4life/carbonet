@@ -36,8 +36,12 @@ class _AddMealState extends State<AddMeal> {
     "Selecione os alimentos",
   ];
   final PageController _pageViewController = PageController();
+  
+  /// Usado na somente na exibição
   double bloodGlucose = 0.0;
+  /// Usado na somente na exibição
   double totalCarbohydrates = 0.0;
+  //TODO exibir o total de calorias
 
   final List<DropdownMenuEntry<String>> _mealTypes = [
     CustomDropdownMenuEntry(value: "coffee", label: "Café da manhã"),
@@ -90,7 +94,7 @@ class _AddMealState extends State<AddMeal> {
   void setState(VoidCallback fn) {
     totalCarbohydrates = 0;
     for (var ingestedFood in selectedFoods) {
-      totalCarbohydrates += ingestedFood.foodReference.carbsPerGram * ingestedFood.gramsIngested;
+      totalCarbohydrates += ingestedFood.foodReference.carbsPerPortion * (ingestedFood.gramsIngested / ingestedFood.foodReference.gramsPerPortion);
     }
     super.setState(fn);
   }

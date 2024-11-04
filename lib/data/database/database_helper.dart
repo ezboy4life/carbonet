@@ -44,4 +44,15 @@ class DatabaseHelper {
     final db = await database;
     db.close();
   }
+
+  // 👀
+  Future<void> recreateDatabase() async {
+    await closeDatabase();
+
+    final databasePath = await getDatabasesPath();
+    final path = join(databasePath, 'carbonet.db');
+    await databaseFactory.deleteDatabase(path);
+
+    await database;
+  }
 }

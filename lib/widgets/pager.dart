@@ -37,6 +37,7 @@ class _PagerState extends State<Pager> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         LinearProgressIndicator(
@@ -64,6 +65,7 @@ class _PagerState extends State<Pager> {
               ),
             ),
             Column(
+              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -83,8 +85,9 @@ class _PagerState extends State<Pager> {
             )
           ],
         ),
-        Expanded( // achei a carambola que eu tinha que enfiar num expanded pra parar de dar overflow
+        Flexible( // achei a carambola que eu tinha que enfiar num expanded pra parar de dar overflow
           child: SizedBox(
+            width: MediaQuery.sizeOf(context).width,
             height: MediaQuery.sizeOf(context).height * widget.heightFactor,
             child: PageView(
               controller: widget.pageViewController,
