@@ -1,4 +1,3 @@
-import 'package:carbonet/data/models/ingested_food.dart';
 import 'package:carbonet/pages/add_meal/custom_types/food_union_type.dart';
 
 class Calculator {

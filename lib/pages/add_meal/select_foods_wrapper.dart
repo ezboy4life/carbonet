@@ -207,8 +207,8 @@ class _SelectFoodsWrapperState extends State<SelectFoodsWrapper> {
                       content: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text("Total de carboidratos consumidos: ${totalCarbs}g"),
-                          Text("Total de calorias consumidas: ${totalCalories} kcal"),
+                          Text("Total de carboidratos consumidos: ${totalCarbs.round()}g"),
+                          Text("Total de calorias consumidas: ${totalCalories.round()} kcal"),
                           Text("Glicemia inicial: ${currentBloodSugar} mg/dL"),
                           const SizedBox(height: 16,),
                           Text("Dose de insulina recomendada: ${Calculator.calculateInsulinDosage(
@@ -217,15 +217,16 @@ class _SelectFoodsWrapperState extends State<SelectFoodsWrapper> {
                             minGlucose, 
                             maxGlucose, 
                             insulinRatio
-                          )}"),
+                          )} unidades"),
                         ],
                       ),
                       actions: [
                         TextButton.icon(
                           onPressed: () => Navigator.of(context).pop(), 
-                          label: Text("Ok"),
-                          icon: Icon(Icons.check),)
+                          label: const Text("Ok"),
+                          icon: const Icon(Icons.check),)
                       ],
+                      actionsAlignment: MainAxisAlignment.center,
                     );
                   }
                 );
