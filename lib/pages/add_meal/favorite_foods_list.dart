@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:carbonet/data/models/ingested_food.dart';
 import 'package:carbonet/data/models/food_reference.dart';
+import 'package:carbonet/pages/add_meal/custom_types/food_union_type.dart';
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/utils/logger.dart';
 import 'package:carbonet/widgets/dialogs/input_dialog.dart';
@@ -12,7 +13,7 @@ import 'package:flutter/services.dart';
 class FavoriteFoodsList extends StatefulWidget {
   final String mealType;
   final List<FoodReference> foodList;
-  final List<IngestedFood> selectedFoodsList;
+  final List<FoodUnionType> selectedFoodsList;
   // final TextEditingController searchBoxController;
 
   const FavoriteFoodsList({
@@ -83,7 +84,7 @@ class _FavoriteFoodsListState extends State<FavoriteFoodsList> {
     }
 
     for (final alimento in widget.selectedFoodsList) {
-      if (alimento.idFoodReference == selectedFavorite?.id) {
+      if (alimento.id.toString() == selectedFavorite?.id.toString()) {
         alimento.gramsIngested += double.parse(gramsController.text);
         Navigator.pop(context);
         return;
@@ -91,10 +92,12 @@ class _FavoriteFoodsListState extends State<FavoriteFoodsList> {
     }
 
     widget.selectedFoodsList.add(
-      IngestedFood(
-        idFoodReference: selectedFavorite!.id,
-        foodReference: selectedFavorite,
-        gramsIngested: double.parse(gramsController.text),
+      IngestedFoodWrapper(
+        IngestedFood(
+          idFoodReference: selectedFavorite!.id,
+          foodReference: selectedFavorite,
+          gramsIngested: double.parse(gramsController.text),
+        ),
       ),
     );
     gramsController.text = "";

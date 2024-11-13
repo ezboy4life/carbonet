@@ -1,3 +1,4 @@
+import 'package:carbonet/utils/logger.dart';
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -41,18 +42,37 @@ class DatabaseHelper {
   }
 
   Future<void> closeDatabase() async {
+    infoLog("⚠ Fechando banco de dados");
     final db = await database;
     db.close();
+    _database = null;
+    infoLog("⚠ Banco de dados fechado");
   }
 
   // 👀
   Future<void> recreateDatabase() async {
-    await closeDatabase();
+    final db = await database;
+    var batch = db.batch();
+
+    infoLog("⚠ Removendo banco de dados existente");
+    batch.execute("DROP TABLE IF EXISTS users");
+    batch.execute("DROP TABLE IF EXISTS glicemia");
+    batch.execute("DROP TABLE IF EXISTS alimento_referencia");
+    batch.execute("DROP TABLE IF EXISTS refeicao");
+    batch.execute("DROP TABLE IF EXISTS alimento_ingerido");
+
+    await batch.commit(noResult: true);
+    infoLog("⚠ Tabelas removidas");
+
 
     final databasePath = await getDatabasesPath();
     final path = join(databasePath, 'carbonet.db');
     await databaseFactory.deleteDatabase(path);
+    infoLog("⚠ Arquivo removido");
+    
+    await closeDatabase();
 
-    await database;
+    await _initDatabase();
+    infoLog("⚠ Banco de dados recriado");
   }
 }

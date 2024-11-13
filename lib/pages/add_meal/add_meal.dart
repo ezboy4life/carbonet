@@ -1,8 +1,10 @@
 import 'package:carbonet/data/models/ingested_food.dart';
 import 'package:carbonet/data/models/meal.dart';
+import 'package:carbonet/pages/add_meal/custom_types/food_union_type.dart';
 import 'package:carbonet/pages/add_meal/meal_info.dart';
 import 'package:carbonet/pages/add_meal/select_foods_wrapper.dart';
 import 'package:carbonet/utils/app_colors.dart';
+import 'package:carbonet/utils/calculator.dart';
 import 'package:carbonet/widgets/cosmetic/dropdown_menu_entry.dart';
 import 'package:carbonet/widgets/pager.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +21,7 @@ class AddMeal extends StatefulWidget {
 }
 
 class _AddMealState extends State<AddMeal> {
-  final List<IngestedFood> selectedFoods = [];
+  final List<FoodUnionType> selectedFoods = [];
   final TextEditingController allFoodsController = TextEditingController();
   final TextEditingController favoriteFoodsController = TextEditingController();
   final TextEditingController selectedFoodsController = TextEditingController();
@@ -41,7 +43,7 @@ class _AddMealState extends State<AddMeal> {
   double bloodGlucose = 0.0;
   /// Usado na somente na exibição
   double totalCarbohydrates = 0.0;
-  //TODO exibir o total de calorias
+  double totalCalories = 0.0;
 
   final List<DropdownMenuEntry<String>> _mealTypes = [
     CustomDropdownMenuEntry(value: "coffee", label: "Café da manhã"),
@@ -93,9 +95,9 @@ class _AddMealState extends State<AddMeal> {
   @override
   void setState(VoidCallback fn) {
     totalCarbohydrates = 0;
-    for (var ingestedFood in selectedFoods) {
-      totalCarbohydrates += ingestedFood.foodReference.carbsPerPortion * (ingestedFood.gramsIngested / ingestedFood.foodReference.gramsPerPortion);
-    }
+    totalCarbohydrates += Calculator.calulateCarbos(selectedFoods);
+    totalCalories = 0;
+    totalCalories += Calculator.calculateCalories(selectedFoods);
     super.setState(fn);
   }
 

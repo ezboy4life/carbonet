@@ -1,20 +1,39 @@
 import 'package:carbonet/data/models/ingested_food.dart';
+import 'package:carbonet/pages/add_meal/custom_types/food_union_type.dart';
 
 class Calculator {
   /// Quantidade, em mg/dL, de glicose abaixada por uma unidade de insulina.
   static const mgOfGlucoseOneInsulinUnitLowers = 50;
 
-  static double calculateCalories(List<IngestedFood> alimentos) {
-    throw UnimplementedError();
-    // TODO: colocar o cálculo de calorias
+  static double calculateCalories(List<FoodUnionType> alimentos) {
+    double totalCalories = 0;
+    for (var ingestedFood in alimentos) {
+      if (ingestedFood is IngestedFoodWrapper) {
+        totalCalories += 
+          ingestedFood.value.foodReference.caloriesPerPortion * 
+          (ingestedFood.value.gramsIngested / ingestedFood.value.foodReference.gramsPerPortion);
+      } else if (ingestedFood is FoodvisorFoodlistWrapper) {
+        totalCalories +=
+          ingestedFood.value.selected.calories100g * ingestedFood.value.selected.quantity / 100;
+      }
+    }
+    return totalCalories;
   }
 
-  static double calulateCarbos(List<IngestedFood> alimentos) {
-    double total = 0;
-    for (var alimento in alimentos) {
-      total += (alimento.gramsIngested * alimento.foodReference.carbsPerPortion) / alimento.foodReference.gramsPerPortion;
+  static double calulateCarbos(List<FoodUnionType> alimentos) {
+    double totalCarbohydrates = 0;
+    for (var ingestedFood in alimentos) {
+      if (ingestedFood is IngestedFoodWrapper) {
+        totalCarbohydrates += 
+          ingestedFood.value.foodReference.carbsPerPortion * 
+          (ingestedFood.value.gramsIngested / ingestedFood.value.foodReference.gramsPerPortion);
+      } else if (ingestedFood is FoodvisorFoodlistWrapper) {
+        totalCarbohydrates +=
+          ingestedFood.value.selected.carbs100g * ingestedFood.value.selected.quantity / 100;
+      }
     }
-    return total;
+  
+    return totalCarbohydrates;
   }
 
   static int calculateInsulinDosage(double carbs, int currentBloodSugar, int minIdeal, int maxIdeal, int insulinRatio) {

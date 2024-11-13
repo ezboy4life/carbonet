@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:carbonet/data/models/ingested_food.dart';
 import 'package:carbonet/data/models/food_reference.dart';
 import 'package:carbonet/pages/add_meal/camera_functionality.dart';
+import 'package:carbonet/pages/add_meal/custom_types/food_union_type.dart';
+import 'package:carbonet/pages/add_meal/custom_types/foodvisor_foodlist.dart';
+import 'package:carbonet/pages/add_meal/foodvisor_vision.dart';
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/utils/logger.dart';
 import 'package:carbonet/utils/static_image_holder.dart';
@@ -14,7 +17,7 @@ import 'package:flutter/services.dart';
 
 class AllFoodsList extends StatefulWidget {
   final List<FoodReference> foodList;
-  final List<IngestedFood> selectedFoodList;
+  final List<FoodUnionType> selectedFoodList;
 
   const AllFoodsList({
     super.key,
@@ -23,13 +26,30 @@ class AllFoodsList extends StatefulWidget {
   });
 
   dynamic photoFunction(BuildContext context) async {
-    Uint8List? croppedImage = await Navigator.of(context).push(
+    await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => const BaseCameraScreen(),
       ),
     );
-    croppedImage = StaticImageHolder.image; // meio que desnecessário agora, masss... vou deixar aí, só caso algo dê errado se eu tirar.
-    //   if (image != null) {
+    Uint8List? croppedImage = StaticImageHolder.image;
+    if (StaticImageHolder.image != null) {
+      AnalysisResults? results = await FoodvisorVision().analyseImage(StaticImageHolder.image!);
+      if (results != null) {
+        for (AnalysisItem item in results.items) {
+          selectedFoodList.add(
+            FoodvisorFoodlistWrapper(
+              FoodVisorFoodlist(list: item.foods)
+            )
+          );
+        }
+
+        //todo loading e colocar o usuário na tab certa
+      }
+      // exibir loading
+      // enviar e receber a resposta da api
+      // colocar os alimentos na lista de selecionados
+      // colocar o usuário na tab de selecionados
+    }
     // Aqui espera-se receber a imagem cortada, e é aqui que a gente vai contatar a API e registrar os alimentos que ela nos devolver.
     // Com a lista de resultados, a gente coloca o usuário na tab de alimentos selecionados, e sucesso na vida e na morte.
     //TODO: lembrete de deixar editar o alimento tocando nele na lista de alimentos selecionado depois.
@@ -80,7 +100,7 @@ class _AllFoodsListState extends State<AllFoodsList> {
     }
 
     for (final food in widget.selectedFoodList) {
-      if (food.idFoodReference == selectedFoodReference?.id) {
+      if (food.id.toString() == selectedFoodReference?.id.toString()) {
         food.gramsIngested += double.parse(gramsController.text);
         Navigator.pop(context);
         return;
@@ -88,10 +108,12 @@ class _AllFoodsListState extends State<AllFoodsList> {
     }
 
     widget.selectedFoodList.add(
-      IngestedFood(
-        idFoodReference: selectedFoodReference!.id,
-        foodReference: selectedFoodReference,
-        gramsIngested: double.parse(gramsController.text),
+      IngestedFoodWrapper(
+        IngestedFood(
+          idFoodReference: selectedFoodReference!.id,
+          foodReference: selectedFoodReference,
+          gramsIngested: double.parse(gramsController.text),
+        ),
       ),
     );
 

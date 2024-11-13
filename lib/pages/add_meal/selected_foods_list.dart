@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:carbonet/data/models/ingested_food.dart';
+import 'package:carbonet/pages/add_meal/custom_types/food_union_type.dart';
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/utils/logger.dart';
 import 'package:carbonet/widgets/dialogs/confirmation_dialog.dart';
@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class SelectedFoodsList extends StatefulWidget {
-  final List<IngestedFood> selectedFoods;
+  final List<FoodUnionType> selectedFoods;
 
   const SelectedFoodsList({
     super.key,
@@ -24,8 +24,8 @@ class SelectedFoodsList extends StatefulWidget {
 class _SelectedFoodsListState extends State<SelectedFoodsList> {
   final TextEditingController alterController = TextEditingController();
   final TextEditingController searchBoxController = TextEditingController();
-  List<IngestedFood> filteredSelectedFoods = [];
-  IngestedFood? selectedFoodItem;
+  List<FoodUnionType> filteredSelectedFoods = [];
+  FoodUnionType? selectedFoodItem;
   Timer? _debounce;
 
   @override
@@ -35,11 +35,13 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
   }
 
   void updateSelectedFoodItem() {
+
     if (selectedFoodItem == null) {
       errorLog("Erro ao atualizar quantidade ingerida de um alimento. O alimento é nulo.");
       return;
     }
 
+    // comportamento default: popa com gramas ingeridos, ou com nulo
     if (alterController.text.isNotEmpty && int.parse(alterController.text) != 0) {
       selectedFoodItem?.gramsIngested = double.parse(alterController.text);
       Navigator.of(context).pop(selectedFoodItem?.gramsIngested);
@@ -65,7 +67,10 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
       });
     } else {
       setState(() {
-        filteredSelectedFoods = widget.selectedFoods.where((element) => element.foodReference.name.toLowerCase().contains(value.toLowerCase())).toList();
+        filteredSelectedFoods = widget.selectedFoods.where((element) => (element is IngestedFoodWrapper) 
+        ? element.value.foodReference.name.toLowerCase().contains(value.toLowerCase()) 
+        : (element as FoodvisorFoodlistWrapper).value.selected.foodName.toLowerCase().contains(value.toLowerCase())
+        ).toList();
       });
     }
   }
@@ -100,7 +105,7 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
                 return Column(
                   children: [
                     Dismissible(
-                      key: Key(filteredSelectedFoods[index].foodReference.id.toString()),
+                      key: Key(filteredSelectedFoods[index].id.toString()),
                       direction: DismissDirection.endToStart,
                       background: Container(
                         color: Colors.red,
@@ -122,7 +127,7 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
                         );
                       },
                       onDismissed: (direction) {
-                        IngestedFood foodToBeRemoved = filteredSelectedFoods.elementAt(index);
+                        FoodUnionType foodToBeRemoved = filteredSelectedFoods.elementAt(index);
                         setState(() {
                           filteredSelectedFoods.remove(foodToBeRemoved);
                           widget.selectedFoods.remove(foodToBeRemoved);
@@ -130,7 +135,7 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
                       },
                       child: ListTile(
                         title: Text(
-                          filteredSelectedFoods[index].foodReference.name,
+                          filteredSelectedFoods[index].name,
                           style: const TextStyle(color: AppColors.fontBright),
                         ),
                         trailing: Text(
@@ -140,50 +145,22 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
                             fontSize: 15,
                           ),
                         ),
-                        onTap: () async {
-                          infoLog(filteredSelectedFoods[index].foodReference.name);
+                        onTap: () async { // <- aqui muda.
+                        // ! Aviso: como agora nós temos mais de um tipo de dado na lista de alimentos selecionados, a coisa funciona um pouco diferente em todo lugar que interage com ela.
+                        // * -> Caso você clique numa entrada que é "FoodItem" (foodvisor), você tem a opção de trocar quantidade, escolher entre outros itens que a IA achou pertinentes, ou CONVERTER aquela entrada em algo que já exista no NOSSO db.
+                        // * -> Essas entradas "FoodItem" (na real são FoodList mas enfim) SÃO consideradas no total de calorias e carboidratos da refeição (e portanto no cálculo e nos registros), mas os alimentos vindos do foodvisor NÃO são registrados, e aí a refeição fica com "calorias fantasma" se vc olhar com atenção pros mapeamentos de refeição-alimentoIngerido. Mas bem, como nós NÃO vamos mostrar isso, vai ficar assim por enquanto.
+
+                          infoLog(filteredSelectedFoods[index].name);
                           selectedFoodItem = filteredSelectedFoods[index];
-                          final result = await showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return InputDialog(
-                                controller: alterController,
-                                title: "Alterar alimento",
-                                label: "Qtd. em gramas",
-                                buttonLabel: "Alterar",
-                                onPressed: updateSelectedFoodItem,
-                                keyboardType: TextInputType.number,
-                                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                                message: [
-                                  const TextSpan(
-                                    text: "Insira a quantidade de ",
-                                    style: TextStyle(
-                                      color: AppColors.fontBright,
-                                      fontSize: 17,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: filteredSelectedFoods[index].foodReference.name.toLowerCase(),
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  const TextSpan(
-                                    text: " em gramas:",
-                                    style: TextStyle(
-                                      color: AppColors.fontBright,
-                                      fontSize: 17,
-                                    ),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
+                          final result = await selectedFoodItem!.editDialog(context, alterController, updateSelectedFoodItem, filteredSelectedFoods, index);
                           if (result != null) {
-                            setState(() {});
+                            setState(() {
+                              if (result is IngestedFoodWrapper) {
+                                filteredSelectedFoods[index] = result;
+                              }
+                            });
                           }
+
                         },
                       ),
                     ),

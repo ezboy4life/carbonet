@@ -21,7 +21,7 @@ class MealDAO {
 
   Future<List<Meal>> getMealsByUser(int idUser) async {
     final db = await _databaseHelper.database;
-    final List<Map<String, dynamic>> maps = await db.query('refeicao', where: 'idUser = ?', whereArgs: [idUser]);
+    final List<Map<String, dynamic>> maps = await db.query('refeicao', where: 'idUser = ?', whereArgs: [idUser], orderBy: "data DESC");
 
     return List.generate(maps.length, (index) {
       return Meal.fromMap(maps[index]);

@@ -4,6 +4,7 @@ import 'package:carbonet/data/models/food_reference.dart';
 import 'package:carbonet/data/models/meal.dart';
 import 'package:carbonet/pages/add_meal/all_foods_list.dart';
 import 'package:carbonet/pages/add_meal/favorite_foods_list.dart';
+import 'package:carbonet/pages/add_meal/custom_types/food_union_type.dart';
 import 'package:carbonet/pages/add_meal/selected_foods_list.dart';
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/utils/calculator.dart';
@@ -20,7 +21,7 @@ class SelectFoodsWrapper extends StatefulWidget {
   final TextEditingController selectedFoodsSearchBoxController;
   final TextEditingController selectedMealTypeController;
   final TextEditingController glicemiaController;
-  final List<IngestedFood> selectedFoods;
+  final List<FoodUnionType> selectedFoods;
   final DateTime? mealDate;
   final TimeOfDay? mealTime;
   final Function(Meal) addMealToHistory;
@@ -168,16 +169,8 @@ class _SelectFoodsWrapperState extends State<SelectFoodsWrapper> {
             double totalCarbohydrates = 0;
             double totalCalories = 0;
 
-            //TODO isso aqui tá implementado dentro do Calculator, e daria pra usar ele, mas... né.
-            for (var ingestedFood in widget.selectedFoods) {
-              totalCarbohydrates += 
-              ingestedFood.foodReference.carbsPerPortion * 
-              (ingestedFood.gramsIngested / ingestedFood.foodReference.gramsPerPortion);
-
-              totalCalories += 
-              ingestedFood.foodReference.caloriesPerPortion * 
-              (ingestedFood.gramsIngested / ingestedFood.foodReference.gramsPerPortion);
-            }
+            totalCarbohydrates = Calculator.calulateCarbos(widget.selectedFoods);
+            totalCalories = Calculator.calculateCalories(widget.selectedFoods);
 
             Meal refeicao = Meal(
               idUser: LoggedUserAccess().user!.id!,
@@ -188,8 +181,13 @@ class _SelectFoodsWrapperState extends State<SelectFoodsWrapper> {
               calorieTotal: totalCalories.round(),
             );
 
-            print('ué');
-            DaoProcedureCoupler.inserirRefeicaoProcedimento(refeicao, widget.selectedFoods).then(
+            // Eu devo levantar a questão, mas porque raios eu estou armazenando a composição das refeições?
+            // Bom, agora, com o FoodItem do FoodVisor, isso não tem mais garantia nenhuma de estar completo.
+            final List<IngestedFoodWrapper> tempList = widget.selectedFoods.whereType<IngestedFoodWrapper>().toList();
+            final List<IngestedFood> ingestedFoodsPure = tempList.map((ifw) => ifw.value).toList();
+            print("lista impura: ${widget.selectedFoods}");
+            print("lista pura: ${ingestedFoodsPure}");
+            DaoProcedureCoupler.inserirRefeicaoProcedimento(refeicao, ingestedFoodsPure).then(
               (value) async {
                 refeicao.id = value;
                 widget.addMealToHistory(refeicao);

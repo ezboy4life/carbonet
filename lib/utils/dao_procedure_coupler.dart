@@ -1,3 +1,4 @@
+import 'package:carbonet/data/database/database_helper.dart';
 import 'package:carbonet/data/database/ingested_food_dao.dart';
 import 'package:carbonet/data/database/food_reference_dao.dart';
 import 'package:carbonet/data/database/meal_dao.dart';
@@ -36,5 +37,13 @@ class DaoProcedureCoupler {
     await Future.wait(futures);
 
     return listaAlimentoIngerido;
+  }
+
+  static Future<void> removerRefeicaoProcedimento(Meal refeicao) async {
+    var db = await DatabaseHelper().database;
+
+    await db.delete('alimento_ingerido', where: 'idRefeicao = ?', whereArgs: [refeicao.id]);
+
+    await db.delete('refeicao', where: 'id = ?', whereArgs: [refeicao.id]);
   }
 }

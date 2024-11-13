@@ -129,11 +129,14 @@ class RegisterPageState extends State<RegisterPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.disabled_by_default_outlined,
-                color: AppColors.defaultAppColor,
-                size: 130,
-                weight: 800,
+              const Padding(
+                padding: EdgeInsets.fromLTRB(16, 32, 16, 16),
+                child: Image(
+                  image: AssetImage("assets/imgs/logo.png"),
+                  width: 96,
+                  height: 96,
+                  fit: BoxFit.fill,
+                ),
               ),
               const Text(
                 "CarboNet",
@@ -278,7 +281,7 @@ class _EmailAndPassword extends StatelessWidget {
                   );
                 },
               );
-              errorLog("Erro ao checar se e-mail já está cadastrado.\n");
+              errorLog("Erro ao checar se e-mail já está cadastrado.\nErro: $error");
             });
           },
         ),

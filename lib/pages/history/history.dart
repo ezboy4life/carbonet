@@ -88,10 +88,11 @@ class _HistoryState extends State<History> {
                                 },
                                 onDismissed: (direction) {
                                   setState(() {
-                                    widget.mealHistory.removeAt(index);
+                                    var mealToRemove = widget.mealHistory.removeAt(index);
+                                    DaoProcedureCoupler.removerRefeicaoProcedimento(mealToRemove);
                                   });
                                   infoLog("Removido item em $index");
-                                  //TODO: remover do banco tbm (?)
+                                  infoLog("Refeição removida do armazenamento local");
                                 },
                                 child: ExpansionTile(
                                   iconColor: AppColors.fontBright,
@@ -99,7 +100,7 @@ class _HistoryState extends State<History> {
                                   title: Row(
                                     children: [
                                       Text(
-                                        widget.mealHistory[index].mealType,
+                                        "${widget.mealHistory[index].mealType}\n${widget.mealHistory[index].calorieTotal} kcal | ${widget.mealHistory[index].carbTotal}g CHO",
                                         style: const TextStyle(color: Colors.white),
                                       ),
                                       const Spacer(),

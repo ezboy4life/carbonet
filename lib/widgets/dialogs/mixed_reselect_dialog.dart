@@ -5,7 +5,7 @@ import 'package:carbonet/widgets/input/input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class InputDialog extends StatefulWidget {
+class MixedReselectDialog extends StatefulWidget {
   final TextEditingController controller;
   final String title;
   final String label;
@@ -13,12 +13,18 @@ class InputDialog extends StatefulWidget {
   final List<TextSpan>? message;
   final Function onPressed;
 
+  // Dropdown
+  final ValueChanged<dynamic>? dropdownOnChanged;
+  final List<DropdownMenuItem> dropdownItems;
+  final dynamic dropdownInitialValue;
+
+
   final IconData? icon;
   final List<TextInputFormatter>? inputFormatters;
   final TextInputType? keyboardType;
 
   /// Um dialog que tem um TextField, permitindo o usuário digitar um valor nele
-  const InputDialog({
+  const MixedReselectDialog({
     super.key,
     required this.controller,
     required this.title,
@@ -28,14 +34,18 @@ class InputDialog extends StatefulWidget {
     this.message,
     this.icon,
     this.inputFormatters,
-    this.keyboardType,
+    this.keyboardType, 
+    
+    this.dropdownOnChanged, 
+    required this.dropdownItems, 
+    this.dropdownInitialValue,
   });
 
   @override
-  State<InputDialog> createState() => _InputDialogState();
+  State<MixedReselectDialog> createState() => _MixedReselectDialogState();
 }
 
-class _InputDialogState extends State<InputDialog> {
+class _MixedReselectDialogState extends State<MixedReselectDialog> {
   @override
   Widget build(BuildContext context) {
     return Theme(
@@ -80,13 +90,23 @@ class _InputDialogState extends State<InputDialog> {
                   if (widget.message != null) const SizedBox(height: 16),
                   if (widget.message != null) Text.rich(TextSpan(children: widget.message)),
                   const SizedBox(height: 32),
-                  InputField(
-                    maxLength: 4,
-                    controller: widget.controller,
-                    labelText: widget.label,
-                    inputFormatters: widget.inputFormatters,
-                    keyboardType: widget.keyboardType,
-                    autofocus: true,
+                  Row(
+                    children: [
+                        DropdownButton(
+                          items: widget.dropdownItems, 
+                          value: widget.dropdownInitialValue,
+                          onChanged: widget.dropdownOnChanged
+                        ),
+                      const SizedBox(width: 12),
+                      InputField(
+                        maxLength: 4,
+                        controller: widget.controller,
+                        labelText: widget.label,
+                        inputFormatters: widget.inputFormatters,
+                        keyboardType: widget.keyboardType,
+                        autofocus: true,
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 32),
                   Button(

@@ -18,6 +18,7 @@ class _BaseCameraScreenState extends State<BaseCameraScreen> {
   void initState() {
     super.initState();
 
+    StaticImageHolder.image = null;
     WidgetsFlutterBinding.ensureInitialized();
     cameras = availableCameras();
   }
@@ -54,6 +55,14 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
   late CameraController _cameraController;
   bool _isRearCameraSelected = true;
   Uint8List? croppedImage;
+  double? _imageAspectRatio;
+
+  Future<void> _setImageAspectRatio(Uint8List imageBytes) async {
+    final image = await decodeImageFromList(imageBytes);
+    setState(() {
+      _imageAspectRatio = image.width / image.height;
+    });
+  }
 
   Future initCamera(CameraDescription cd) async {
     _cameraController = CameraController(
@@ -90,34 +99,57 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
         // aqui dentro: levantar o "cortar" do pacote crop_your_image.
         CropController _controllerCrop = CropController();
         if (!mounted) return;
+
+        await _setImageAspectRatio(File(picture.path).readAsBytesSync());
+
         await Navigator.of(context).push(MaterialPageRoute(builder: (context) => Scaffold(
+          backgroundColor: Colors.black,
           body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                SizedBox(
-                  height: 550,
-                  child: Crop(
-                    controller: _controllerCrop,
-                    aspectRatio: 1,
-                    image: File(picture.path).readAsBytesSync(),
-                    onCropped: (value) {
-                      croppedImage = value;
-                      StaticImageHolder.image = value;
-                      Navigator.of(context).pop(); // coloquei aqui.
-                    },
-                  ),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: (_imageAspectRatio == null) 
+                    ? const CircularProgressIndicator() 
+                    : LayoutBuilder(
+                      builder: (context, constraints) {
+                        final cropWidth = constraints.maxWidth;
+                        final cropHeight = cropWidth / _imageAspectRatio!;
+                        return SizedBox(
+                          width: cropWidth,
+                          height: cropHeight,
+                          child: Crop(
+                            controller: _controllerCrop,
+                            aspectRatio: 1,
+                            image: File(picture.path).readAsBytesSync(),
+                            onCropped: (value) {
+                              croppedImage = value;
+                              StaticImageHolder.image = value;
+                              Navigator.of(context).pop(); // coloquei aqui.
+                            },
+                          ),
+                        );
+                      },
+                    )
                 ),
                 TextButton.icon(
+                  style: TextButton.styleFrom(
+                    backgroundColor: AppColors.defaultAppColor,
+                  ),
                   onPressed: () {
                     _controllerCrop.crop();
                     //dois fixes: esperar uns dois segundos, ou colocar o pop dentro do OnCropped.
                     
                   }, 
-                  label: const Text("Salvar"),
-                  icon: const Icon(Icons.save ),)
+                  label: const Text(
+                    "Salvar", 
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  icon: const Icon(Icons.save, color: Colors.white),
+                  ),
               ],
             ),
           ),
@@ -151,10 +183,20 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
   Widget build(BuildContext context) {
     // futurebuilder p/ esperar o controller inicializar
     return Scaffold(
-      appBar: AppBar(title: const Text('Tire uma foto'),),
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        title: const Text('Tire uma foto', 
+          style: TextStyle(color: AppColors.fontBright),
+        ),
+        iconTheme: const IconThemeData(color: AppColors.fontBright),
+      ),
       body: SafeArea(
         child: _cameraController.value.isInitialized
-          ? CameraPreview(_cameraController)
+          ? Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CameraPreview(_cameraController),
+          )
           : const Center( child: CircularProgressIndicator(), ),
       ),
       floatingActionButton: Column(
@@ -168,14 +210,22 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
                 initCamera(widget.cameras![_isRearCameraSelected ? 0 : 1]);
               });
             },
-            child: const Icon(Icons.flip_camera_android),
+            backgroundColor: AppColors.defaultBrightAppColor,
+            child: const Icon(
+              Icons.flip_camera_android, 
+              color: Colors.white,
+            ),
           ),
           const SizedBox(height: 12,),
           FloatingActionButton(
             heroTag: "btnShoot",
             onPressed: takePicture,
-            child: const Icon(Icons.camera_alt),
+            backgroundColor: AppColors.defaultBrightAppColor,
+            child: const Icon(
+              Icons.camera_alt, 
+              color: Colors.white,
             ),
+          ),
         ],
       ),
     );
@@ -190,18 +240,30 @@ class DisplayPictureScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("uau imagem")),
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        title: const Text(
+          "Aceitar imagem?", 
+          style: TextStyle(color: AppColors.fontBright),
+        ),
+        iconTheme: const IconThemeData(color: AppColors.fontBright),
+      ),
       body: Column(
         children: [
-          Image.file(File(imagePath)),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image.file(File(imagePath)),
+          ),
+          const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextButton.icon(
-                label: const Text("Refazer", style: TextStyle(color: Colors.black)),
-                icon: const Icon(Icons.replay, color: Colors.black),
+                label: const Text("Refazer", style: TextStyle(color: Colors.white)),
+                icon: const Icon(Icons.replay, color: AppColors.fontBright),
                 style: TextButton.styleFrom(
-                  backgroundColor: AppColors.error
+                  backgroundColor: const Color.fromARGB(255, 255, 37, 52)
                 ),
                 onPressed: () {
                   Navigator.of(context).pop(false);
@@ -209,10 +271,10 @@ class DisplayPictureScreen extends StatelessWidget {
               ),
               const SizedBox(width: 12,),
               TextButton.icon(
-                label: const Text("Ok", style: TextStyle(color: Colors.black)),
-                icon: const Icon(Icons.check, color: Colors.black),
+                label: const Text("Ok", style: TextStyle(color: Colors.white)),
+                icon: const Icon(Icons.check, color: Colors.white),
                 style: TextButton.styleFrom(
-                  backgroundColor: AppColors.brightGreen
+                  backgroundColor: AppColors.defaultAppColor
                 ),
                 onPressed: () {
                   Navigator.of(context).pop(true);
