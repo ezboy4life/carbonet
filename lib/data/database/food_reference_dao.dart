@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:carbonet/data/database/database_helper.dart';
 import 'package:carbonet/data/models/food_reference.dart';
 import 'package:flutter/services.dart';

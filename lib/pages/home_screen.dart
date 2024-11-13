@@ -106,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: IndexedStack(
         index: _selectedIndexNotifier.value,
         children: [
-          const HomePage(),
+          HomePage(),
           const Placeholder(),
           const Placeholder(), // sla :3
           History(
