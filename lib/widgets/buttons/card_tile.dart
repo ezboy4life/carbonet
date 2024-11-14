@@ -4,18 +4,21 @@ class CardTile extends StatelessWidget {
   final String title;
   final IconData icon;
   final Color? iconBackgroundColor;
+  final void Function()? onTap;
 
   const CardTile({
     super.key,
     required this.title,
     required this.icon,
     this.iconBackgroundColor,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       // contentPadding: const EdgeInsets.all(0),
+      onTap: onTap,
       leading: Container(
         width: 35,
         height: 35,

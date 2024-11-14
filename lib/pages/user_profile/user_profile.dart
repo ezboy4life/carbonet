@@ -1,7 +1,7 @@
 import 'package:carbonet/data/models/user.dart';
 import 'package:carbonet/utils/logged_user_access.dart';
-import 'package:carbonet/widgets/buttons/card.dart';
 import 'package:carbonet/widgets/buttons/card_tile.dart';
+import 'package:carbonet/widgets/dialogs/confirmation_dialog.dart';
 import 'package:flutter/material.dart';
 
 class UserProfile extends StatelessWidget {
@@ -10,6 +10,11 @@ class UserProfile extends StatelessWidget {
   UserProfile({
     super.key,
   });
+
+  void handleLogout(BuildContext context) {
+    Navigator.pop(context);
+    LoggedUserAccess().user = null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,9 +64,10 @@ class UserProfile extends StatelessWidget {
                       icon: Icons.person,
                     ),
                     Divider(thickness: .5, color: Colors.grey[700], indent: 65),
-                    const CardTile(
+                    CardTile(
                       title: "Data de nascimento",
                       icon: Icons.calendar_month_rounded,
+                      onTap: () async {},
                     ),
                     Divider(thickness: .5, color: Colors.grey[700], indent: 65),
                     const CardTile(
@@ -105,14 +111,31 @@ class UserProfile extends StatelessWidget {
                   color: Colors.grey[900],
                   borderRadius: const BorderRadius.all(Radius.circular(10)),
                 ),
-                child: const ListTile(
-                  title: Row(
+                child: ListTile(
+                  title: const Row(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text("Sair", style: TextStyle(color: Colors.red)),
                     ],
                   ),
+                  onTap: () async {
+                    bool? logoff = await showDialog<bool>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return const ConfirmationDialog(
+                          title: "Sair",
+                          message: "Você tem certeza que deseja sair de sua conta?",
+                          confirmButtonLabel: "Sair",
+                          confirmButtonColor: Colors.red,
+                        );
+                      },
+                    );
+
+                    if (logoff != null && logoff && context.mounted) {
+                      handleLogout(context);
+                    }
+                  },
                 ),
               )
             ],
