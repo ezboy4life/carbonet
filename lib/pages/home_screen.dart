@@ -3,6 +3,7 @@ import 'package:carbonet/pages/add_meal/add_meal.dart';
 import 'package:carbonet/pages/home/home.dart';
 import 'package:carbonet/pages/history/history.dart';
 import 'package:carbonet/pages/add_favorites/add_favorites.dart';
+import 'package:carbonet/pages/user_profile/user_profile.dart';
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -73,8 +74,6 @@ class _HomeScreenState extends State<HomeScreen> {
       } else if (index == 1) {
         showEditFavoritesModal();
         return;
-      } else if (index == 4) {
-        showCameraTestModal();
       }
       _selectedIndexNotifier.value = index;
     });
@@ -112,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
           History(
             mealHistory: mealHistory,
           ),
-          const Placeholder(),
+          UserProfile(),
         ],
       ),
       bottomNavigationBar: ValueListenableBuilder<int>(

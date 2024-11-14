@@ -24,31 +24,34 @@ class HomePage extends StatelessWidget {
           children: [
             Row(
               children: [
-                DateInputField(
-                  labelText: "Filtro: dia inicial", 
-                  dateController: dateStartController, 
-                  onDateSelected: (p0) {
-                    filterDateStart = p0;
-                  },
+                Expanded(
+                  child: DateInputField(
+                    labelText: "Filtro: dia inicial",
+                    dateController: dateStartController,
+                    onDateSelected: (p0) {
+                      filterDateStart = p0;
+                    },
+                  ),
                 ),
                 const SizedBox(width: 16),
-                DateInputField(
-                  labelText: "Filtro: dia final", 
-                  dateController: dateStartController, 
-                  onDateSelected: (p0) {
-                    filterDateEnd = p0;
-                  },
+                Expanded(
+                  child: DateInputField(
+                    labelText: "Filtro: dia final",
+                    dateController: dateStartController,
+                    onDateSelected: (p0) {
+                      filterDateEnd = p0;
+                    },
+                  ),
                 )
               ],
             ),
-            const SizedBox(height: 16),
-            LineChart(
-              LineChartData(
-                
-              ),
-              duration: const Duration(milliseconds: 150),
-              curve: Curves.bounceInOut,
-            ),
+            /* Comentei pq tá crashando por uma conversao de NaN pra int sla aonde */
+            // const SizedBox(height: 16),
+            // LineChart(
+            //   LineChartData(),
+            //   duration: const Duration(milliseconds: 150),
+            //   curve: Curves.bounceInOut,
+            // ),
           ],
         ),
       ),
