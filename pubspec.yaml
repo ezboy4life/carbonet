@@ -43,7 +43,7 @@ dependencies:
   path_provider: ^2.1.4
   crop_your_image: ^1.1.0
   http: ^1.2.2
-  http_parser: ^4.1.1
+  http_parser: ^4.0.2
   fl_chart: ^0.69.0
 
 dev_dependencies:
