@@ -28,6 +28,10 @@ class UserRepository {
     return _userDAO.updateUser(user);
   }
 
+  Future<int> updateUserEmail(User user) {
+    return _userDAO.updateUserEmail(user);
+  }
+
   Future<int> deleteUser(int id) {
     return _userDAO.deleteUser(id);
   }

@@ -2,7 +2,6 @@ import 'package:carbonet/data/models/user.dart';
 import 'package:carbonet/data/repository/user_repository.dart';
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/utils/logged_user_access.dart';
-import 'package:carbonet/utils/logger.dart';
 import 'package:carbonet/utils/validators.dart';
 import 'package:carbonet/widgets/buttons/card_tile.dart';
 import 'package:carbonet/widgets/dialogs/confirmation_dialog.dart';
@@ -45,6 +44,42 @@ class _UserProfileState extends State<UserProfile> {
       );
       return;
     }
+
+    Validators.checkEmailAlreadyRegistered(emailController.text).then((emailIsRegistered) {
+      if (emailIsRegistered) {
+        // Navigator.pop(context);
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return const WarningDialog(
+              title: "E-mail já registrado!",
+              message: "Esse e-mail já está registrado. Caso seja você, saia da conta atual e faça o login.",
+            );
+          },
+        );
+        return;
+      }
+
+      UserRepository userRepo = UserRepository();
+      setState(() {
+        user?.email = emailController.text;
+      });
+
+      if (user != null) {
+        userRepo.updateUserEmail(user!);
+      }
+      Navigator.pop(context);
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const WarningDialog(
+            title: "E-mail alterado com sucesso",
+            message: "Seu e-mail foi alterado com sucesso!",
+          );
+        },
+      );
+    });
   }
 
   @override
@@ -122,7 +157,6 @@ class _UserProfileState extends State<UserProfile> {
                               keyboardType: TextInputType.emailAddress,
                               onPressed: () {
                                 handleEmailUpdate();
-                                Navigator.pop(context);
                               },
                             );
                           },

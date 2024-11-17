@@ -73,6 +73,17 @@ class UserDAO {
     );
   }
 
+  Future<int> updateUserEmail(User user) async {
+    final db = await _databaseHelper.database;
+
+    return await db.update(
+      'users',
+      {'email': user.email},
+      where: 'id = ?',
+      whereArgs: [user.id],
+    );
+  }
+
   Future<int> deleteUser(int id) async {
     final db = await _databaseHelper.database;
     return await db.delete(
