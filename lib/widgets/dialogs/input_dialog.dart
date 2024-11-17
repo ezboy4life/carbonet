@@ -81,7 +81,6 @@ class _InputDialogState extends State<InputDialog> {
                   if (widget.message != null) Text.rich(TextSpan(children: widget.message)),
                   const SizedBox(height: 32),
                   InputField(
-                    maxLength: 4,
                     controller: widget.controller,
                     labelText: widget.label,
                     inputFormatters: widget.inputFormatters,

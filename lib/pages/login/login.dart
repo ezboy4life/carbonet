@@ -31,6 +31,7 @@ class LoginPageState extends State<LoginPage> {
 
     if (user != null) {
       // TODO pra ser sincero isso aqui é um hack bem meia boca mas é o que tem pra hoje 😇
+      passwordController.text = emailController.text = "";
       LoggedUserAccess().user = user;
       FocusManager.instance.primaryFocus?.unfocus();
       Navigator.of(context).pushNamed("/home");
@@ -122,7 +123,6 @@ class LoginPageState extends State<LoginPage> {
                       emailController.text = emailController.text.trim();
                       passwordController.text = passwordController.text.trim();
                       login(emailController.text, passwordController.text);
-                      infoLog("Botão 'Entrar'");
                     },
                   ),
                   const SizedBox(
@@ -220,37 +220,34 @@ class LoginPageState extends State<LoginPage> {
       // Botãozinho maroto para recriar o banco de dados 🤗
       floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
       floatingActionButton: IconButton(
-          onPressed: () {
-            showDialog(
-              context: context, 
+        onPressed: () {
+          showDialog(
+              context: context,
               builder: (BuildContext context) => AlertDialog(
-                title: const Text('Recriar o banco de dados'),
-                content: const Text('Tem certeza que deseja recriar o banco de dados?'),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: Navigator.of(context).pop,
-                    child: const Text('Cancelar'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      DatabaseHelper().recreateDatabase();
-                      Navigator.of(context).pop();
-                    },
-                    style: TextButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: AppColors.error
-                    ),
-                    child: const Text('Recriar'),
-                  ),
-                ],
-              ));
-          }, 
-          icon: const Icon(Icons.refresh),
-          color: Colors.white,
-          style: IconButton.styleFrom(
-            backgroundColor: AppColors.error,
-          ),
+                    title: const Text('Recriar o banco de dados'),
+                    content: const Text('Tem certeza que deseja recriar o banco de dados?'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: Navigator.of(context).pop,
+                        child: const Text('Cancelar'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          DatabaseHelper().recreateDatabase();
+                          Navigator.of(context).pop();
+                        },
+                        style: TextButton.styleFrom(foregroundColor: Colors.white, backgroundColor: AppColors.error),
+                        child: const Text('Recriar'),
+                      ),
+                    ],
+                  ));
+        },
+        icon: const Icon(Icons.refresh),
+        color: Colors.white,
+        style: IconButton.styleFrom(
+          backgroundColor: AppColors.error,
         ),
+      ),
     );
   }
 }

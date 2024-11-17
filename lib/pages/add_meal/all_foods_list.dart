@@ -36,11 +36,7 @@ class AllFoodsList extends StatefulWidget {
       AnalysisResults? results = await FoodvisorVision().analyseImage(StaticImageHolder.image!);
       if (results != null) {
         for (AnalysisItem item in results.items) {
-          selectedFoodList.add(
-            FoodvisorFoodlistWrapper(
-              FoodVisorFoodlist(list: item.foods)
-            )
-          );
+          selectedFoodList.add(FoodvisorFoodlistWrapper(FoodVisorFoodlist(list: item.foods)));
         }
 
         //todo loading e colocar o usuário na tab certa
@@ -100,7 +96,7 @@ class _AllFoodsListState extends State<AllFoodsList> {
     }
 
     for (final food in widget.selectedFoodList) {
-      if (food.id.toString() == selectedFoodReference?.id.toString()) {
+      if (food.name == selectedFoodReference?.name) {
         food.gramsIngested += double.parse(gramsController.text);
         Navigator.pop(context);
         return;

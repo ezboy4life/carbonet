@@ -4,7 +4,7 @@ import "package:crypto/crypto.dart";
 
 class User {
   final int? id;
-  final String email;
+  String email;
   final String passwordHash;
   final DateTime birthDate;
   final double constanteInsulinica; // proporção carboidratos - dose de insulina

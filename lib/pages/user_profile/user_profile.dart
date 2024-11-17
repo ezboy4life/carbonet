@@ -1,19 +1,50 @@
 import 'package:carbonet/data/models/user.dart';
+import 'package:carbonet/data/repository/user_repository.dart';
+import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/utils/logged_user_access.dart';
+import 'package:carbonet/utils/logger.dart';
+import 'package:carbonet/utils/validators.dart';
 import 'package:carbonet/widgets/buttons/card_tile.dart';
 import 'package:carbonet/widgets/dialogs/confirmation_dialog.dart';
+import 'package:carbonet/widgets/dialogs/input_dialog.dart';
+import 'package:carbonet/widgets/dialogs/warning_dialog.dart';
 import 'package:flutter/material.dart';
 
-class UserProfile extends StatelessWidget {
-  final User? user = LoggedUserAccess().user;
-
-  UserProfile({
+class UserProfile extends StatefulWidget {
+  const UserProfile({
     super.key,
   });
 
-  void handleLogout(BuildContext context) {
-    Navigator.pop(context);
+  @override
+  State<UserProfile> createState() => _UserProfileState();
+}
+
+class _UserProfileState extends State<UserProfile> {
+  final TextEditingController emailController = TextEditingController();
+
+  final User? user = LoggedUserAccess().user;
+
+  void handleLogout() {
     LoggedUserAccess().user = null;
+    Navigator.pop(context);
+  }
+
+  void handleEmailUpdate() {
+    emailController.text.trim();
+
+    if (!Validators.isValidEmail(emailController.text)) {
+      // Navigator.pop(context);
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const WarningDialog(
+            title: "E-mail inválido!",
+            message: "Insira um e-mail válido por gentileza.",
+          );
+        },
+      );
+      return;
+    }
   }
 
   @override
@@ -70,9 +101,33 @@ class UserProfile extends StatelessWidget {
                       onTap: () async {},
                     ),
                     Divider(thickness: .5, color: Colors.grey[700], indent: 65),
-                    const CardTile(
+                    CardTile(
                       title: "Email",
                       icon: Icons.email,
+                      onTap: () async {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return InputDialog(
+                              controller: emailController,
+                              title: "Alterar email",
+                              message: const [
+                                TextSpan(
+                                  text: "Insira o seu novo email:",
+                                  style: TextStyle(color: AppColors.fontBright),
+                                ),
+                              ],
+                              label: "Email",
+                              buttonLabel: "Alterar",
+                              keyboardType: TextInputType.emailAddress,
+                              onPressed: () {
+                                handleEmailUpdate();
+                                Navigator.pop(context);
+                              },
+                            );
+                          },
+                        );
+                      },
                     ),
                     Divider(thickness: .5, color: Colors.grey[700], indent: 65),
                     const CardTile(
@@ -133,7 +188,7 @@ class UserProfile extends StatelessWidget {
                     );
 
                     if (logoff != null && logoff && context.mounted) {
-                      handleLogout(context);
+                      handleLogout();
                     }
                   },
                 ),
