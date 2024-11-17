@@ -7,7 +7,7 @@ class User {
   String email;
   String passwordHash;
   final DateTime birthDate;
-  final double constanteInsulinica; // proporção carboidratos - dose de insulina
+  double constanteInsulinica; // proporção carboidratos - dose de insulina
   final String name;
   final String surname;
   final int minBloodGlucose;

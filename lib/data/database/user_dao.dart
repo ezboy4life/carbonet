@@ -95,6 +95,17 @@ class UserDAO {
     );
   }
 
+  Future<int> updateUserInsulin(User user) async {
+    final db = await _databaseHelper.database;
+
+    return await db.update(
+      'users',
+      {'constInsulinica': user.constanteInsulinica},
+      where: 'id = ?',
+      whereArgs: [user.id],
+    );
+  }
+
   Future<int> deleteUser(int id) async {
     final db = await _databaseHelper.database;
     return await db.delete(

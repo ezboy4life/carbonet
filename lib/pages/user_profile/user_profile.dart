@@ -2,12 +2,15 @@ import 'package:carbonet/data/models/user.dart';
 import 'package:carbonet/data/repository/user_repository.dart';
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/utils/logged_user_access.dart';
+import 'package:carbonet/utils/textformatters.dart';
 import 'package:carbonet/utils/validators.dart';
+import 'package:carbonet/widgets/buttons/button.dart';
 import 'package:carbonet/widgets/buttons/card_tile.dart';
 import 'package:carbonet/widgets/dialogs/confirmation_dialog.dart';
 import 'package:carbonet/widgets/dialogs/input_dialog.dart';
 import 'package:carbonet/widgets/dialogs/warning_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class UserProfile extends StatefulWidget {
   const UserProfile({
@@ -21,6 +24,7 @@ class UserProfile extends StatefulWidget {
 class _UserProfileState extends State<UserProfile> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController insulinController = TextEditingController();
 
   final User? user = LoggedUserAccess().user;
 
@@ -119,6 +123,16 @@ class _UserProfileState extends State<UserProfile> {
     }
   }
 
+  void handleInsulinUpdate() {
+    insulinController.text.trim();
+//  TODO: Implementar validação pra isso aq (?)
+    if (user != null) {
+      user?.constanteInsulinica = double.parse(insulinController.text);
+      UserRepository().updateUserInsulin(user!);
+    }
+    insulinController.text = "";
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -130,10 +144,16 @@ class _UserProfileState extends State<UserProfile> {
           child: ListView(
             // shrinkWrap: true,
             children: [
-              const Icon(
-                Icons.circle,
-                color: Colors.grey,
-                size: 108,
+              /* Foto? De momento n tem campo pra guardar a URL de cada user ent fica assim mesmo fodase*/
+              Container(
+                height: 150,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: NetworkImage('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6C34A9h7J-M78xVt0Nc0EGEbTTvypaWlOMQ&s'),
+                    fit: BoxFit.contain,
+                  ),
+                ),
               ),
               const SizedBox(height: 8),
               /* Nome e sobrenome */
@@ -177,6 +197,9 @@ class _UserProfileState extends State<UserProfile> {
                       title: "Email",
                       icon: Icons.email,
                       onTap: () {
+                        if (user != null) {
+                          emailController.text = user!.email;
+                        }
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
@@ -241,10 +264,37 @@ class _UserProfileState extends State<UserProfile> {
                       iconBackgroundColor: Colors.blue,
                     ),
                     Divider(thickness: .5, color: Colors.grey[700], indent: 65),
-                    const CardTile(
+                    CardTile(
                       title: "Constante insulínica",
                       icon: Icons.calendar_month_rounded,
                       iconBackgroundColor: Colors.blue,
+                      onTap: () {
+                        if (user != null) {
+                          insulinController.text = user!.constanteInsulinica.toStringAsFixed(0);
+                        }
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return InputDialog(
+                              controller: insulinController,
+                              title: "Alterar constante insulínica",
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                              message: const [
+                                TextSpan(
+                                  text: "Insira sua constante insulínica:",
+                                  style: TextStyle(color: AppColors.fontBright),
+                                ),
+                              ],
+                              label: "Constante insulínica",
+                              buttonLabel: "Alterar",
+                              onPressed: handleInsulinUpdate,
+                            );
+                          },
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -260,7 +310,13 @@ class _UserProfileState extends State<UserProfile> {
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Sair", style: TextStyle(color: Colors.red)),
+                      Text(
+                        "Sair",
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                   onTap: () async {
