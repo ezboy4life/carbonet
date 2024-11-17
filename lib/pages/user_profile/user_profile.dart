@@ -20,6 +20,7 @@ class UserProfile extends StatefulWidget {
 
 class _UserProfileState extends State<UserProfile> {
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   final User? user = LoggedUserAccess().user;
 
@@ -79,7 +80,43 @@ class _UserProfileState extends State<UserProfile> {
           );
         },
       );
+      emailController.text = "";
     });
+  }
+
+  void handlePasswordUpdate() {
+    passwordController.text.trim();
+
+    if (!Validators.isValidPassword(passwordController.text)) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const WarningDialog(
+            title: "Senha inválida!",
+            message: "Insira uma senha válida por gentileza.",
+          );
+        },
+      );
+      return;
+    }
+
+    if (user != null) {
+      user?.passwordHash = User.hashPassword(passwordController.text);
+      UserRepository().updateUserPassword(user!);
+      passwordController.text = "";
+
+      Navigator.pop(context);
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const WarningDialog(
+            title: "Senha alterada com sucesso",
+            message: "Sua senha foi alterada com sucesso!",
+          );
+        },
+      );
+    }
   }
 
   @override
@@ -139,7 +176,7 @@ class _UserProfileState extends State<UserProfile> {
                     CardTile(
                       title: "Email",
                       icon: Icons.email,
-                      onTap: () async {
+                      onTap: () {
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
@@ -155,18 +192,36 @@ class _UserProfileState extends State<UserProfile> {
                               label: "Email",
                               buttonLabel: "Alterar",
                               keyboardType: TextInputType.emailAddress,
-                              onPressed: () {
-                                handleEmailUpdate();
-                              },
+                              onPressed: handleEmailUpdate,
                             );
                           },
                         );
                       },
                     ),
                     Divider(thickness: .5, color: Colors.grey[700], indent: 65),
-                    const CardTile(
+                    CardTile(
                       title: "Senha",
                       icon: Icons.key,
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return InputDialog(
+                              controller: passwordController,
+                              title: "Alterar senha",
+                              message: const [
+                                TextSpan(
+                                  text: "Insira sua nova senha:",
+                                  style: TextStyle(color: AppColors.fontBright),
+                                ),
+                              ],
+                              label: "Senha",
+                              buttonLabel: "Alterar",
+                              onPressed: handlePasswordUpdate,
+                            );
+                          },
+                        );
+                      },
                     ),
                   ],
                 ),

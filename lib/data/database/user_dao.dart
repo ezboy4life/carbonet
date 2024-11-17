@@ -84,6 +84,17 @@ class UserDAO {
     );
   }
 
+  Future<int> updateUserPassword(User user) async {
+    final db = await _databaseHelper.database;
+
+    return await db.update(
+      'users',
+      {'senha': user.passwordHash},
+      where: 'id = ?',
+      whereArgs: [user.id],
+    );
+  }
+
   Future<int> deleteUser(int id) async {
     final db = await _databaseHelper.database;
     return await db.delete(
