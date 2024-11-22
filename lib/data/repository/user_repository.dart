@@ -40,6 +40,26 @@ class UserRepository {
     return _userDAO.updateUserInsulin(user);
   }
 
+  Future<int> updateUserName(User user) {
+    return _userDAO.updateUserName(user);
+  }
+
+  Future<int> updateUserSurname(User user) {
+    return _userDAO.updateUserSurname(user);
+  }
+
+  Future<int> updateUserMaxBloodGlucose(User user) {
+    return _userDAO.updateUserMaxBloodGlucose(user);
+  }
+
+  Future<int> updateUserMinBloodGlucose(User user) {
+    return _userDAO.updateUserMinBloodGlucose(user);
+  }
+
+  Future<int> updateUserBirthDate(User user) {
+    return _userDAO.updateUserBirthDate(user);
+  }
+
   Future<int> deleteUser(int id) {
     return _userDAO.deleteUser(id);
   }

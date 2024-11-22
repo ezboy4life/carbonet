@@ -55,6 +55,7 @@ class WarningDialog extends StatelessWidget {
                       color: Colors.white,
                       fontSize: 25,
                     ),
+                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
                   Text(

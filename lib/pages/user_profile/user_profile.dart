@@ -22,15 +22,80 @@ class UserProfile extends StatefulWidget {
 }
 
 class _UserProfileState extends State<UserProfile> {
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController surnameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController minBloodGlucoseController = TextEditingController();
+  final TextEditingController maxBloodGlucoseController = TextEditingController();
   final TextEditingController insulinController = TextEditingController();
 
   final User? user = LoggedUserAccess().user;
 
-  void handleLogout() {
-    LoggedUserAccess().user = null;
-    Navigator.pop(context);
+  void handleNameUpdate() {
+    nameController.text.trim();
+
+    UserRepository userRepo = UserRepository();
+    setState(() {
+      user?.name = nameController.text;
+    });
+
+    if (user != null) {
+      userRepo.updateUserName(user!);
+      Navigator.pop(context);
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const WarningDialog(
+            title: "Nome alterado com sucesso!",
+            message: "Seu nome foi alterado com sucesso.",
+          );
+        },
+      );
+    }
+  }
+
+  void handleSurnameUpdate() {
+    surnameController.text.trim();
+
+    UserRepository userRepo = UserRepository();
+    setState(() {
+      user?.surname = surnameController.text;
+    });
+
+    if (user != null) {
+      userRepo.updateUserSurname(user!);
+      Navigator.pop(context);
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const WarningDialog(
+            title: "Sobrenome alterado com sucesso!",
+            message: "Seu sobrenome foi alterado com sucesso.",
+          );
+        },
+      );
+    }
+  }
+
+  void handleBirthdateUpdate(DateTime? newBirthdate) {
+    if (newBirthdate == null) {
+      return;
+    }
+
+    user!.birthDate = newBirthdate;
+    UserRepository().updateUserBirthDate(user!);
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return const WarningDialog(
+          title: "Data de nascimento alterada com sucesso!",
+          message: "Seu aniversário foi alterado com sucesso.",
+        );
+      },
+    );
   }
 
   void handleEmailUpdate() {
@@ -79,8 +144,8 @@ class _UserProfileState extends State<UserProfile> {
         context: context,
         builder: (BuildContext context) {
           return const WarningDialog(
-            title: "E-mail alterado com sucesso",
-            message: "Seu e-mail foi alterado com sucesso!",
+            title: "E-mail alterado com sucesso!",
+            message: "Seu e-mail foi alterado com sucesso.",
           );
         },
       );
@@ -115,8 +180,8 @@ class _UserProfileState extends State<UserProfile> {
         context: context,
         builder: (BuildContext context) {
           return const WarningDialog(
-            title: "Senha alterada com sucesso",
-            message: "Sua senha foi alterada com sucesso!",
+            title: "Senha alterada com sucesso!",
+            message: "Sua senha foi alterada com sucesso.",
           );
         },
       );
@@ -129,8 +194,96 @@ class _UserProfileState extends State<UserProfile> {
     if (user != null) {
       user?.constanteInsulinica = double.parse(insulinController.text);
       UserRepository().updateUserInsulin(user!);
+
+      Navigator.pop(context);
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const WarningDialog(
+            title: "Constante insulínica alterada com sucesso!",
+            message: "Sua constante insulínica foi alterada com sucesso.",
+          );
+        },
+      );
     }
-    insulinController.text = "";
+  }
+
+  void handleMaxBloodGlucoseUpdate() {
+    if (user == null) {
+      return;
+    }
+
+    maxBloodGlucoseController.text.trim();
+
+    if (!Validators.isValidMaxBloodGlucose(user!.minBloodGlucose, int.parse(maxBloodGlucoseController.text))) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const WarningDialog(
+            title: "Valor inválido!",
+            message: "Por gentileza, insira um valor para a glicemia máxima válida.",
+          );
+        },
+      );
+      return;
+    }
+
+    user?.maxBloodGlucose = int.parse(maxBloodGlucoseController.text);
+    UserRepository().updateUserMaxBloodGlucose(user!);
+
+    Navigator.pop(context);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return const WarningDialog(
+          title: "Glicemia máxima alterada com sucesso!",
+          message: "Sua glicemia máxima foi alterada com sucesso.",
+        );
+      },
+    );
+  }
+
+  void handleMinBloodGlucoseUpdate() {
+    if (user == null) {
+      return;
+    }
+
+    minBloodGlucoseController.text.trim();
+
+    if (!Validators.isValidMinBloodGlucose(int.parse(minBloodGlucoseController.text), user!.maxBloodGlucose)) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const WarningDialog(
+            title: "Valor inválido!",
+            message: "Por gentileza, insira um valor para a glicemia mínima válida.",
+          );
+        },
+      );
+      return;
+    }
+
+    user?.minBloodGlucose = int.parse(minBloodGlucoseController.text);
+    UserRepository().updateUserMinBloodGlucose(user!);
+
+    Navigator.pop(context);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return const WarningDialog(
+          title: "Glicemia mínima alterada com sucesso!",
+          message: "Sua glicemia mínima foi alterada com sucesso.",
+        );
+      },
+    );
+  }
+
+  void handleLogout() {
+    LoggedUserAccess().user = null;
+    Navigator.pop(context);
   }
 
   @override
@@ -182,15 +335,85 @@ class _UserProfileState extends State<UserProfile> {
                 ),
                 child: Column(
                   children: [
-                    const CardTile(
-                      title: "Nome e sobrenome",
+                    CardTile(
+                      title: "Nome",
                       icon: Icons.person,
+                      onTap: () {
+                        if (user != null) {
+                          nameController.text = user!.name;
+                        }
+
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return InputDialog(
+                              controller: nameController,
+                              title: "Alterar nome",
+                              message: const [
+                                TextSpan(
+                                  text: "Insira o seu novo nome:",
+                                  style: TextStyle(color: AppColors.fontBright),
+                                ),
+                              ],
+                              label: "Nome",
+                              buttonLabel: "Alterar",
+                              keyboardType: TextInputType.name,
+                              onPressed: handleNameUpdate,
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    Divider(thickness: .5, color: Colors.grey[700], indent: 65),
+                    CardTile(
+                      title: "Sobrenome",
+                      icon: Icons.person,
+                      onTap: () {
+                        if (user != null) {
+                          surnameController.text = user!.surname;
+                        }
+
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return InputDialog(
+                              controller: surnameController,
+                              title: "Alterar sobrenome",
+                              message: const [
+                                TextSpan(
+                                  text: "Insira o seu novo sobrenome:",
+                                  style: TextStyle(color: AppColors.fontBright),
+                                ),
+                              ],
+                              label: "Sobrenome",
+                              buttonLabel: "Alterar",
+                              keyboardType: TextInputType.name,
+                              onPressed: handleSurnameUpdate,
+                            );
+                          },
+                        );
+                      },
                     ),
                     Divider(thickness: .5, color: Colors.grey[700], indent: 65),
                     CardTile(
                       title: "Data de nascimento",
                       icon: Icons.calendar_month_rounded,
-                      onTap: () async {},
+                      onTap: () async {
+                        if (user == null) {
+                          return;
+                        }
+
+                        DateTime userBirthdate = user!.birthDate;
+
+                        DateTime? newBirthdate = await showDatePicker(
+                          context: context,
+                          initialDate: userBirthdate,
+                          firstDate: DateTime(1900),
+                          lastDate: DateTime.now(),
+                        );
+
+                        handleBirthdateUpdate(newBirthdate);
+                      },
                     ),
                     Divider(thickness: .5, color: Colors.grey[700], indent: 65),
                     CardTile(
@@ -226,12 +449,14 @@ class _UserProfileState extends State<UserProfile> {
                       title: "Senha",
                       icon: Icons.key,
                       onTap: () {
+                        passwordController.text = "";
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
                             return InputDialog(
                               controller: passwordController,
                               title: "Alterar senha",
+                              obscureText: true,
                               message: const [
                                 TextSpan(
                                   text: "Insira sua nova senha:",
@@ -258,10 +483,72 @@ class _UserProfileState extends State<UserProfile> {
                 ),
                 child: Column(
                   children: [
-                    const CardTile(
-                      title: "Glicemia mínima e máxima",
+                    CardTile(
+                      title: "Glicemia máxima",
                       icon: Icons.health_and_safety_rounded,
                       iconBackgroundColor: Colors.blue,
+                      onTap: () {
+                        if (user == null) {
+                          return;
+                        }
+
+                        maxBloodGlucoseController.text = user!.maxBloodGlucose.toString();
+
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return InputDialog(
+                              controller: maxBloodGlucoseController,
+                              title: "Alterar glicemia máxima",
+                              message: const [
+                                TextSpan(
+                                  text: "Insira sua glicemia máxima:",
+                                  style: TextStyle(color: AppColors.fontBright),
+                                ),
+                              ],
+                              label: "Glicemia máxima",
+                              buttonLabel: "Alterar",
+                              onPressed: handleMaxBloodGlucoseUpdate,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    Divider(thickness: .5, color: Colors.grey[700], indent: 65),
+                    CardTile(
+                      title: "Glicemia mínima",
+                      icon: Icons.health_and_safety_rounded,
+                      iconBackgroundColor: Colors.blue,
+                      onTap: () {
+                        if (user == null) {
+                          return;
+                        }
+
+                        minBloodGlucoseController.text = user!.minBloodGlucose.toString();
+
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return InputDialog(
+                              controller: minBloodGlucoseController,
+                              title: "Alterar glicemia mínima",
+                              message: const [
+                                TextSpan(
+                                  text: "Insira sua glicemia mínima:",
+                                  style: TextStyle(color: AppColors.fontBright),
+                                ),
+                              ],
+                              label: "Glicemia máxima",
+                              buttonLabel: "Alterar",
+                              onPressed: handleMinBloodGlucoseUpdate,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            );
+                          },
+                        );
+                      },
                     ),
                     Divider(thickness: .5, color: Colors.grey[700], indent: 65),
                     CardTile(
