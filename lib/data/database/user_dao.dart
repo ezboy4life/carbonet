@@ -73,6 +73,17 @@ class UserDAO {
     );
   }
 
+  Future<int> updateUserBirthDate(User user) async {
+    final db = await _databaseHelper.database;
+
+    return await db.update(
+      'users',
+      {'dataNascimento': user.birthDate.toIso8601String()},
+      where: 'id = ?',
+      whereArgs: [user.id],
+    );
+  }
+
   Future<int> updateUserEmail(User user) async {
     final db = await _databaseHelper.database;
 
@@ -101,6 +112,50 @@ class UserDAO {
     return await db.update(
       'users',
       {'constInsulinica': user.constanteInsulinica},
+      where: 'id = ?',
+      whereArgs: [user.id],
+    );
+  }
+
+  Future<int> updateUserName(User user) async {
+    final db = await _databaseHelper.database;
+
+    return await db.update(
+      'users',
+      {'nome': user.name},
+      where: 'id = ?',
+      whereArgs: [user.id],
+    );
+  }
+
+  Future<int> updateUserSurname(User user) async {
+    final db = await _databaseHelper.database;
+
+    return await db.update(
+      'users',
+      {'sobrenome': user.surname},
+      where: 'id = ?',
+      whereArgs: [user.id],
+    );
+  }
+
+  Future<int> updateUserMaxBloodGlucose(User user) async {
+    final db = await _databaseHelper.database;
+
+    return await db.update(
+      'users',
+      {'glicemiaMaxima': user.maxBloodGlucose},
+      where: 'id = ?',
+      whereArgs: [user.id],
+    );
+  }
+
+  Future<int> updateUserMinBloodGlucose(User user) async {
+    final db = await _databaseHelper.database;
+
+    return await db.update(
+      'users',
+      {'glicemiaMinima': user.maxBloodGlucose},
       where: 'id = ?',
       whereArgs: [user.id],
     );

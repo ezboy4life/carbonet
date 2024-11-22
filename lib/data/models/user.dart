@@ -6,12 +6,12 @@ class User {
   final int? id;
   String email;
   String passwordHash;
-  final DateTime birthDate;
+  DateTime birthDate;
   double constanteInsulinica; // proporção carboidratos - dose de insulina
-  final String name;
-  final String surname;
-  final int minBloodGlucose;
-  final int maxBloodGlucose;
+  String name;
+  String surname;
+  int minBloodGlucose;
+  int maxBloodGlucose;
 
   User({
     this.id,
