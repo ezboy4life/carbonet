@@ -148,93 +148,107 @@ class _FavoriteFoodsListState extends State<FavoriteFoodsList> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      if (favorites.isNotEmpty) ...[
-        const SizedBox(height: 32),
-        InputField(
-          controller: favoritesSearchBoxController,
-          onChanged: updateFilteredListDelay,
-          labelText: "Pesquisar favoritos",
-          iconData: Icons.search_rounded,
-        ),
-        const SizedBox(height: 32),
-        ListView.builder(
-            shrinkWrap: true,
-            itemCount: filteredFavorites.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                title: Text(
-                  filteredFavorites[index].name,
-                  style: const TextStyle(color: AppColors.fontBright),
-                ),
-                onTap: () {
-                  infoLog('"${filteredFavorites[index].name}" selecionado!');
-                  selectedFavorite = filteredFavorites[index];
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return InputDialog(
-                        controller: gramsController,
-                        title: "Adicionar alimento",
-                        message: [
-                          const TextSpan(
-                            text: "Insira a quantidade de ",
-                            style: TextStyle(
-                              color: AppColors.fontBright,
-                              fontSize: 17,
-                            ),
-                          ),
-                          TextSpan(
-                            text: filteredFavorites[index].name.toLowerCase(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 17,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const TextSpan(
-                            text: " em gramas:",
-                            style: TextStyle(
-                              color: AppColors.fontBright,
-                              fontSize: 17,
-                            ),
-                          ),
-                        ],
-                        label: "Qtd em gramas",
-                        buttonLabel: "Adicionar",
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                        onPressed: _adicionarFavorito,
-                      );
-                    },
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(children: [
+        if (favorites.isNotEmpty) ...[
+          const SizedBox(height: 32),
+          InputField(
+            controller: favoritesSearchBoxController,
+            onChanged: updateFilteredListDelay,
+            labelText: "Pesquisar favoritos",
+            iconData: Icons.search_rounded,
+          ),
+          const SizedBox(height: 32),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.grey[900],
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+            ),
+            child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: filteredFavorites.length,
+                itemBuilder: (context, index) {
+                  return Column(
+                    children: [
+                      ListTile(
+                        title: Text(
+                          filteredFavorites[index].name,
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        onTap: () {
+                          infoLog('"${filteredFavorites[index].name}" selecionado!');
+                          selectedFavorite = filteredFavorites[index];
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return InputDialog(
+                                controller: gramsController,
+                                title: "Adicionar alimento",
+                                message: [
+                                  const TextSpan(
+                                    text: "Insira a quantidade de ",
+                                    style: TextStyle(
+                                      color: AppColors.fontBright,
+                                      fontSize: 17,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: filteredFavorites[index].name.toLowerCase(),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const TextSpan(
+                                    text: " em gramas:",
+                                    style: TextStyle(
+                                      color: AppColors.fontBright,
+                                      fontSize: 17,
+                                    ),
+                                  ),
+                                ],
+                                label: "Qtd em gramas",
+                                buttonLabel: "Adicionar",
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                onPressed: _adicionarFavorito,
+                              );
+                            },
+                          );
+                        },
+                      ),
+                      if (index < filteredFavorites.length - 1) const Divider(color: AppColors.fontDimmed),
+                    ],
                   );
-                },
-              );
-            })
-      ] else ...[
-        Expanded(
-          child: Center(
-            child: Text.rich(
-              TextSpan(
-                children: [
-                  const TextSpan(
-                    text: "Nenhum favorito para a categoria ",
-                    style: TextStyle(color: AppColors.fontBright),
-                  ),
-                  TextSpan(
-                    text: getMealName(widget.mealType),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+                }),
+          )
+        ] else ...[
+          Expanded(
+            child: Center(
+              child: Text.rich(
+                TextSpan(
+                  children: [
+                    const TextSpan(
+                      text: "Nenhum favorito para a categoria ",
+                      style: TextStyle(color: AppColors.fontBright),
                     ),
-                  )
-                ],
+                    TextSpan(
+                      text: getMealName(widget.mealType),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  ],
+                ),
+                // style: const TextStyle(color: Colors.white),
               ),
-              // style: const TextStyle(color: Colors.white),
             ),
           ),
-        ),
-      ],
-    ]);
+        ],
+      ]),
+    );
   }
 }
