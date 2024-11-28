@@ -15,11 +15,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      # Configuração do Flutter
+      # Configurar Flutter com suporte ao Dart 3.3.0+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '<flutter_version>' # Substitua pela versão do Flutter, por exemplo: 3.13.0
+          flutter-version: '3.13.0' # Garantir Flutter 3.13.0 ou superior
 
       # Instalar dependências
       - name: Install Dependencies
@@ -29,12 +29,12 @@ jobs:
       - name: Build APK
         run: flutter build apk --release
 
-      # Criação da release no GitHub
+      # Criar release no GitHub
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: ${{ github.sha }} # Usar o SHA do commit como tag
+          tag_name: ${{ github.sha }} # SHA do commit como tag
           release_name: "Build from commit ${{ github.sha }}" # Nome da release
           body: |
             Build gerado automaticamente para o commit:
