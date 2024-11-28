@@ -6,6 +6,7 @@ import 'package:carbonet/utils/dao_procedure_coupler.dart';
 import 'package:carbonet/utils/logged_user_access.dart';
 import 'package:carbonet/utils/logger.dart';
 import 'package:carbonet/widgets/dialogs/confirmation_dialog.dart';
+import 'package:carbonet/widgets/input/date_input_field.dart';
 import 'package:carbonet/widgets/input/input_field.dart';
 import 'package:flutter/material.dart';
 
@@ -22,6 +23,8 @@ class History extends StatefulWidget {
 
 class _HistoryState extends State<History> {
   final TextEditingController searchBoxController = TextEditingController();
+  final TextEditingController dateController = TextEditingController();
+
   final Future<List<Meal>> _getMealsFuture = MealDAO().getMealsByUser(LoggedUserAccess().user!.id!);
   final Map<int, bool> _isExpanded = {};
   bool hasReceivedMealList = false;
@@ -70,6 +73,8 @@ class _HistoryState extends State<History> {
     );
   }
 
+  void onDateSelected(DateTime date) {}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,10 +84,11 @@ class _HistoryState extends State<History> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            InputField(
-              controller: searchBoxController,
-              labelText: "Pesquisar",
-              iconData: Icons.search_rounded,
+            DateInputField(
+              labelText: "Filtrar por dia",
+              dateController: dateController,
+              onDateSelected: onDateSelected,
+              iconData: Icons.calendar_month_rounded,
             ),
             const SizedBox(height: 30),
             FutureBuilder(
@@ -108,6 +114,8 @@ class _HistoryState extends State<History> {
                           shrinkWrap: true,
                           itemCount: widget.mealHistory.length,
                           itemBuilder: (context, index) {
+                            DateTime mealDate = widget.mealHistory[index].date;
+
                             return Theme(
                               data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
                               child: Column(
@@ -164,18 +172,67 @@ class _HistoryState extends State<History> {
                                                       widget.mealHistory[index].mealType,
                                                       style: const TextStyle(color: Colors.white),
                                                     ),
-                                                    Text(
-                                                      "${widget.mealHistory[index].calorieTotal} kcal | ${widget.mealHistory[index].carbTotal}g CHO",
-                                                      style: const TextStyle(color: AppColors.fontBright),
-                                                    ),
+                                                    Row(
+                                                      children: [
+                                                        Container(
+                                                          decoration: BoxDecoration(
+                                                            color: Colors.grey[850],
+                                                            borderRadius: const BorderRadius.all(Radius.circular(8)),
+                                                          ),
+                                                          child: Padding(
+                                                            padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                                                            child: Text(
+                                                              "${widget.mealHistory[index].calorieTotal} kcal",
+                                                              style: const TextStyle(color: AppColors.fontBright),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        const SizedBox(width: 10),
+                                                        Container(
+                                                          decoration: BoxDecoration(
+                                                            color: Colors.grey[850],
+                                                            borderRadius: const BorderRadius.all(Radius.circular(8)),
+                                                          ),
+                                                          child: Padding(
+                                                            padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                                                            child: Text(
+                                                              "${widget.mealHistory[index].carbTotal}g CHO",
+                                                              style: const TextStyle(color: AppColors.fontBright),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    )
                                                   ],
                                                 ),
                                               ],
                                             ),
                                             const Spacer(),
-                                            Text(
-                                              "${widget.mealHistory[index].date.hour.toString().padLeft(2, '0')}:${widget.mealHistory[index].date.minute.toString().padLeft(2, '0')}",
-                                              style: const TextStyle(color: Colors.white),
+                                            Column(
+                                              crossAxisAlignment: CrossAxisAlignment.end,
+                                              children: [
+                                                Text(
+                                                  "${mealDate.day.toString()}/${mealDate.month.toString()}/${(mealDate.year % 100).toString().padLeft(2, '0')}",
+                                                  style: const TextStyle(color: Colors.white),
+                                                ),
+                                                // Container(
+                                                //   decoration: BoxDecoration(
+                                                //     color: Colors.grey[850],
+                                                //     borderRadius: const BorderRadius.all(Radius.circular(8)),
+                                                //   ),
+                                                //   child: Padding(
+                                                //     padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                                                //     child: Text(
+                                                //       "${mealDate.hour.toString().padLeft(2, '0')}:${mealDate.minute.toString().padLeft(2, '0')}",
+                                                //       style: const TextStyle(color: AppColors.fontBright),
+                                                //     ),
+                                                //   ),
+                                                // ),
+                                                Text(
+                                                  "${mealDate.hour.toString().padLeft(2, '0')}:${mealDate.minute.toString().padLeft(2, '0')}",
+                                                  style: const TextStyle(color: AppColors.fontBright),
+                                                ),
+                                              ],
                                             ),
                                           ],
                                         ),
@@ -226,6 +283,20 @@ class _HistoryState extends State<History> {
                                                                     const SizedBox(
                                                                       width: 25,
                                                                     ),
+                                                                    // Container(
+                                                                    //   decoration: BoxDecoration(
+                                                                    //     color: Colors.blueGrey[00],
+                                                                    //     borderRadius: const BorderRadius.all(Radius.circular(8)),
+                                                                    //   ),
+                                                                    //   child: Padding(
+                                                                    //     padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                                                                    //     child: Text(
+                                                                    //       "${alimentosIngeridos[index].gramsIngested} g",
+                                                                    //       style: const TextStyle(color: AppColors.fontBright),
+                                                                    //     ),
+                                                                    //   ),
+                                                                    // ),
+
                                                                     Text(
                                                                       "${alimentosIngeridos[index].gramsIngested} g",
                                                                       style: const TextStyle(
