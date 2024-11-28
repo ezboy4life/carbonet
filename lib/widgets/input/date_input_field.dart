@@ -7,13 +7,19 @@ class DateInputField extends StatelessWidget {
   final IconData? iconData;
   final TextEditingController dateController;
   final Function(DateTime) onDateSelected;
+  final IconData? trailingIcon;
+  final Function(BuildContext)? onTrailingIconPressed;
+  final FocusNode? focusNode;
 
   const DateInputField({
     super.key,
     required this.labelText,
     required this.dateController,
     required this.onDateSelected,
+    this.trailingIcon,
+    this.onTrailingIconPressed,
     this.iconData,
+    this.focusNode,
   });
 
   void _selectDate(BuildContext context) async {
@@ -32,6 +38,7 @@ class DateInputField extends StatelessWidget {
       dateController.text = "$day/$month/$year";
       onDateSelected(selectedDate);
     } else {
+      focusNode?.unfocus();
       infoLog("Seleção de data cancelada.");
     }
   }
@@ -39,6 +46,7 @@ class DateInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextField(
+      focusNode: focusNode,
       readOnly: true,
       controller: dateController,
       style: const TextStyle(
@@ -76,6 +84,12 @@ class DateInputField extends StatelessWidget {
             width: 2,
           ),
         ),
+        suffixIcon: trailingIcon != null
+            ? IconButton(
+                onPressed: onTrailingIconPressed != null ? (() => onTrailingIconPressed!(context)) : null,
+                icon: Icon(trailingIcon, color: AppColors.fontBright),
+              )
+            : null,
       ),
       onTap: () {
         _selectDate(context);
