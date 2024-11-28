@@ -143,14 +143,10 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
                             title: Text(
                               filteredSelectedFoods[index].name,
                               style: const TextStyle(color: Colors.white),
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: false,
+                              maxLines: 1,
                             ),
-                            // trailing: Text(
-                            //   "${filteredSelectedFoods[index].gramsIngested.toStringAsFixed(0)}g",
-                            //   style: const TextStyle(
-                            //     color: AppColors.fontBright,
-                            //     fontSize: 15,
-                            //   ),
-                            // ),
                             trailing: Container(
                               decoration: BoxDecoration(
                                 color: Colors.grey[850],
@@ -203,6 +199,7 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
               ),
             ),
           ],
+          const SizedBox(height: 32),
         ],
       ),
     );

@@ -171,6 +171,9 @@ class _AllFoodsListState extends State<AllFoodsList> {
                         title: Text(
                           filteredFoodList[index].name,
                           style: const TextStyle(color: Colors.white),
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                          maxLines: 1,
                         ),
                         onTap: () {
                           infoLog('"${filteredFoodList[index].name}" selecionado!');
