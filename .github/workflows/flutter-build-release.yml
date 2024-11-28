@@ -11,6 +11,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Configurar o Java 17
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
       # Checkout do código
       - name: Checkout
         uses: actions/checkout@v3
@@ -23,7 +30,7 @@ jobs:
           export PATH="${PWD}/flutter/bin:$PATH"
           flutter --version
 
-      # Executar flutter doctor
+      # Executar Flutter Doctor
       - name: Flutter Doctor
         run: flutter doctor
 
