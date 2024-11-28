@@ -1,4 +1,3 @@
-import 'package:carbonet/data/models/ingested_food.dart';
 import 'package:carbonet/data/models/meal.dart';
 import 'package:carbonet/pages/add_meal/custom_types/food_union_type.dart';
 import 'package:carbonet/pages/add_meal/meal_info.dart';
@@ -38,9 +37,10 @@ class _AddMealState extends State<AddMeal> {
     "Selecione os alimentos",
   ];
   final PageController _pageViewController = PageController();
-  
+
   /// Usado na somente na exibição
   double bloodGlucose = 0.0;
+
   /// Usado na somente na exibição
   double totalCarbohydrates = 0.0;
   double totalCalories = 0.0;

@@ -141,79 +141,90 @@ class _AllFoodsListState extends State<AllFoodsList> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(height: 32),
-        InputField(
-          controller: searchBoxController,
-          onChanged: updateFilteredListDelay,
-          labelText: "Pesquisar",
-          iconData: Icons.search_rounded,
-          trailingIcon: Icons.camera_alt_outlined,
-          onTrailingIconPressed: widget.photoFunction,
-        ),
-        const SizedBox(height: 32),
-        Expanded(
-          child: ListView.builder(
-            itemCount: filteredFoodList.length,
-            itemBuilder: (context, index) {
-              return Column(
-                children: [
-                  ListTile(
-                    title: Text(
-                      filteredFoodList[index].name,
-                      style: const TextStyle(color: AppColors.fontBright),
-                    ),
-                    onTap: () {
-                      infoLog('"${filteredFoodList[index].name}" selecionado!');
-                      selectedFoodReference = filteredFoodList[index];
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return InputDialog(
-                            controller: gramsController,
-                            title: "Adicionar alimento",
-                            message: [
-                              const TextSpan(
-                                text: "Insira a quantidade de ",
-                                style: TextStyle(
-                                  color: AppColors.fontBright,
-                                  fontSize: 17,
-                                ),
-                              ),
-                              TextSpan(
-                                text: selectedFoodReference?.name.toLowerCase() ?? "ERRO!",
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const TextSpan(
-                                text: " em gramas:",
-                                style: TextStyle(
-                                  color: AppColors.fontBright,
-                                  fontSize: 17,
-                                ),
-                              ),
-                            ],
-                            label: "Qtd em gramas",
-                            buttonLabel: "Adicionar",
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                            onPressed: addFoodToList,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          const SizedBox(height: 32),
+          InputField(
+            controller: searchBoxController,
+            onChanged: updateFilteredListDelay,
+            labelText: "Pesquisar",
+            iconData: Icons.search_rounded,
+            trailingIcon: Icons.camera_alt_outlined,
+            onTrailingIconPressed: widget.photoFunction,
+          ),
+          const SizedBox(height: 32),
+          Flexible(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.grey[900],
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
+              ),
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: filteredFoodList.length,
+                itemBuilder: (context, index) {
+                  return Column(
+                    children: [
+                      ListTile(
+                        title: Text(
+                          filteredFoodList[index].name,
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        onTap: () {
+                          infoLog('"${filteredFoodList[index].name}" selecionado!');
+                          selectedFoodReference = filteredFoodList[index];
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return InputDialog(
+                                controller: gramsController,
+                                title: "Adicionar alimento",
+                                message: [
+                                  const TextSpan(
+                                    text: "Insira a quantidade de ",
+                                    style: TextStyle(
+                                      color: AppColors.fontBright,
+                                      fontSize: 17,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: selectedFoodReference?.name.toLowerCase() ?? "ERRO!",
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const TextSpan(
+                                    text: " em gramas:",
+                                    style: TextStyle(
+                                      color: AppColors.fontBright,
+                                      fontSize: 17,
+                                    ),
+                                  ),
+                                ],
+                                label: "Qtd em gramas",
+                                buttonLabel: "Adicionar",
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                onPressed: addFoodToList,
+                              );
+                            },
                           );
                         },
-                      );
-                    },
-                  ),
-                  if (index < filteredFoodList.length - 1) const Divider(color: AppColors.fontDimmed),
-                ],
-              );
-            },
+                      ),
+                      if (index < filteredFoodList.length - 1) const Divider(color: AppColors.fontDimmed),
+                    ],
+                  );
+                },
+              ),
+            ),
           ),
-        ),
-      ],
+          const SizedBox(height: 32),
+        ],
+      ),
     );
   }
 }
