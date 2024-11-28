@@ -45,9 +45,5 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-	<key>NSCameraUsageDescription</key>
-	<string>Camera access is necessary to use the image recognition function.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Microphone access is needed only to initialize camera properly, and to use the voice recognition function.</string>
 </dict>
 </plist>

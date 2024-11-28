@@ -43,12 +43,3 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
-
-# SQLite
-carbonet.db
-
-# Plataformas não suportadas
-macos/
-web/
-linux/
-windows/
