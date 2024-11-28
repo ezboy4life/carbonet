@@ -1,9 +1,9 @@
 name: Build and Release APK
 
 on:
-  push: # Dispara o workflow em qualquer commit
+  push:
     branches:
-      - '**' # Permite buildar em qualquer branch
+      - '**'
 
 jobs:
   build:
@@ -15,11 +15,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      # Configurar Flutter com suporte ao Dart 3.3.0+
+      # Instalar versão mais recente do Flutter (compatível com Dart 3.3.0)
+      - name: Install Flutter
+        run: |
+          git clone https://github.com/flutter/flutter.git --branch stable --depth 1
+          echo "$HOME/flutter/bin" >> $GITHUB_PATH
+          flutter --version
+
+      # Configurar Flutter
       - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.13.0' # Garantir Flutter 3.13.0 ou superior
+        run: flutter doctor
 
       # Instalar dependências
       - name: Install Dependencies
@@ -34,8 +39,8 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: ${{ github.sha }} # SHA do commit como tag
-          release_name: "Build from commit ${{ github.sha }}" # Nome da release
+          tag_name: ${{ github.sha }}
+          release_name: "Build from commit ${{ github.sha }}"
           body: |
             Build gerado automaticamente para o commit:
             - Branch: ${{ github.ref_name }}
