@@ -20,6 +20,8 @@ jobs:
         run: |
           git clone https://github.com/flutter/flutter.git --branch stable --depth 1
           echo "$HOME/flutter/bin" >> $GITHUB_PATH
+          echo "$HOME/flutter/bin/cache/dart-sdk/bin" >> $GITHUB_PATH
+          export PATH="$HOME/flutter/bin:$HOME/flutter/bin/cache/dart-sdk/bin:$PATH"
           flutter --version
 
       # Configurar Flutter
