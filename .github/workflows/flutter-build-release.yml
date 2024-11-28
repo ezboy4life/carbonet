@@ -56,7 +56,7 @@ jobs:
           draft: false
           prerelease: false
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_CARBONET }}
 
       # Fazer upload do APK na release
       - name: Upload APK to Release
