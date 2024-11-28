@@ -140,8 +140,6 @@ class _SelectFoodsWrapperState extends State<SelectFoodsWrapper> {
         bottomNavigationBar: Button(
           label: "Registrar Refeição",
           onPressed: () {
-            print("botão clicado");
-
             if (widget.selectedFoods.isEmpty) {
               showDialog(
                 context: context,
@@ -200,36 +198,32 @@ class _SelectFoodsWrapperState extends State<SelectFoodsWrapper> {
                 int insulinRatio = LoggedUserAccess().user!.constanteInsulinica.toInt();
                 //TODO aqui vai o cálculo da insulina
                 await showDialog(
-                  context: context, 
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text("Cálculo de insulina"),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text("Total de carboidratos consumidos: ${totalCarbs.round()}g"),
-                          Text("Total de calorias consumidas: ${totalCalories.round()} kcal"),
-                          Text("Glicemia inicial: ${currentBloodSugar} mg/dL"),
-                          const SizedBox(height: 16,),
-                          Text("Dose de insulina recomendada: ${Calculator.calculateInsulinDosage(
-                            totalCarbs, 
-                            currentBloodSugar, 
-                            minGlucose, 
-                            maxGlucose, 
-                            insulinRatio
-                          )} unidades"),
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text("Cálculo de insulina"),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text("Total de carboidratos consumidos: ${totalCarbs.round()}g"),
+                            Text("Total de calorias consumidas: ${totalCalories.round()} kcal"),
+                            Text("Glicemia inicial: ${currentBloodSugar} mg/dL"),
+                            const SizedBox(
+                              height: 16,
+                            ),
+                            Text("Dose de insulina recomendada: ${Calculator.calculateInsulinDosage(totalCarbs, currentBloodSugar, minGlucose, maxGlucose, insulinRatio)} unidades"),
+                          ],
+                        ),
+                        actions: [
+                          TextButton.icon(
+                            onPressed: () => Navigator.of(context).pop(),
+                            label: const Text("Ok"),
+                            icon: const Icon(Icons.check),
+                          )
                         ],
-                      ),
-                      actions: [
-                        TextButton.icon(
-                          onPressed: () => Navigator.of(context).pop(), 
-                          label: const Text("Ok"),
-                          icon: const Icon(Icons.check),)
-                      ],
-                      actionsAlignment: MainAxisAlignment.center,
-                    );
-                  }
-                );
+                        actionsAlignment: MainAxisAlignment.center,
+                      );
+                    });
                 print("wah");
                 // seria bom tbm exibir a lógica nesse cálculo
                 // seria bom, também, salvar essa dose (e qual caso é) no cadastro de glicemia, e permitir caçar essa glicemia no histórico

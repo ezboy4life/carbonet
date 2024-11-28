@@ -72,7 +72,9 @@ class _FavoriteTypeDialogState extends State<FavoriteTypeDialog> {
                           width: 35,
                           height: 35,
                           decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(8.0),
+                            ),
                             color: Colors.brown,
                           ),
                           child: const Icon(
@@ -106,7 +108,9 @@ class _FavoriteTypeDialogState extends State<FavoriteTypeDialog> {
                           width: 35,
                           height: 35,
                           decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(8.0),
+                            ),
                             color: Colors.green,
                           ),
                           child: const Icon(
@@ -140,7 +144,9 @@ class _FavoriteTypeDialogState extends State<FavoriteTypeDialog> {
                           width: 35,
                           height: 35,
                           decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(8.0),
+                            ),
                             color: Colors.orange,
                           ),
                           child: const Icon(
@@ -174,7 +180,9 @@ class _FavoriteTypeDialogState extends State<FavoriteTypeDialog> {
                           width: 35,
                           height: 35,
                           decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(8.0),
+                            ),
                             color: AppColors.defaultAppColor,
                           ),
                           child: const Icon(

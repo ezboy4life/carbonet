@@ -26,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void addMealToHistory(Meal meal) {
     setState(() {
       mealHistory.add(meal);
+      mealHistory.sort((a, b) => b.date.compareTo(a.date));
     });
   }
 
