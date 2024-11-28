@@ -15,17 +15,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      # Instalar versão mais recente do Flutter (compatível com Dart 3.3.0)
+      # Instalar Flutter
       - name: Install Flutter
         run: |
           git clone https://github.com/flutter/flutter.git --branch stable --depth 1
-          echo "$HOME/flutter/bin" >> $GITHUB_PATH
-          echo "$HOME/flutter/bin/cache/dart-sdk/bin" >> $GITHUB_PATH
-          export PATH="$HOME/flutter/bin:$HOME/flutter/bin/cache/dart-sdk/bin:$PATH"
+          echo "${PWD}/flutter/bin" >> $GITHUB_PATH
+          export PATH="${PWD}/flutter/bin:$PATH"
           flutter --version
 
-      # Configurar Flutter
-      - name: Setup Flutter
+      # Executar flutter doctor
+      - name: Flutter Doctor
         run: flutter doctor
 
       # Instalar dependências
