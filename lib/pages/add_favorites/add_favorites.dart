@@ -231,83 +231,97 @@ class _AddFavoritesState extends State<AddFavorites> {
                 ),
                 const SizedBox(height: 15),
               ],
-              Expanded(
-                child: ListView.builder(
-                  itemCount: _filteredFoods.length,
-                  itemBuilder: (context, index) {
-                    return Column(
-                      children: [
-                        ListTile(
-                          title: Row(
-                            children: [
-                              Text(
-                                _filteredFoods[index].name,
-                                style: const TextStyle(color: AppColors.fontBright),
+              Flexible(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[900],
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: _filteredFoods.length,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          children: [
+                            ListTile(
+                              title: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      _filteredFoods[index].name,
+                                      style: const TextStyle(color: Colors.white),
+                                      overflow: TextOverflow.ellipsis,
+                                      softWrap: false,
+                                      maxLines: 1,
+                                    ),
+                                  ),
+                                  if (_filteredFoods[index].favoriteCoffee)
+                                    Container(
+                                      width: 15,
+                                      height: 15,
+                                      decoration: const BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.brown,
+                                      ),
+                                    ),
+                                  if (_filteredFoods[index].favoriteLunch)
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
+                                      child: Container(
+                                        width: 15,
+                                        height: 15,
+                                        decoration: const BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.green,
+                                        ),
+                                      ),
+                                    ),
+                                  if (_filteredFoods[index].favoriteDinner)
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
+                                      child: Container(
+                                        width: 15,
+                                        height: 15,
+                                        decoration: const BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.orange,
+                                        ),
+                                      ),
+                                    ),
+                                  if (_filteredFoods[index].favoriteSnack)
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
+                                      child: Container(
+                                        width: 15,
+                                        height: 15,
+                                        decoration: const BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: AppColors.defaultAppColor,
+                                        ),
+                                      ),
+                                    ),
+                                ],
                               ),
-                              const Spacer(),
-                              if (_filteredFoods[index].favoriteCoffee)
-                                Container(
-                                  width: 15,
-                                  height: 15,
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.brown,
-                                  ),
-                                ),
-                              if (_filteredFoods[index].favoriteLunch)
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
-                                  child: Container(
-                                    width: 15,
-                                    height: 15,
-                                    decoration: const BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Colors.green,
-                                    ),
-                                  ),
-                                ),
-                              if (_filteredFoods[index].favoriteDinner)
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
-                                  child: Container(
-                                    width: 15,
-                                    height: 15,
-                                    decoration: const BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Colors.orange,
-                                    ),
-                                  ),
-                                ),
-                              if (_filteredFoods[index].favoriteSnack)
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
-                                  child: Container(
-                                    width: 15,
-                                    height: 15,
-                                    decoration: const BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: AppColors.defaultAppColor,
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                          onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return FavoriteTypeDialog(
-                                  setFavorite: setFavorite,
-                                  selectedFood: _filteredFoods[index],
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return FavoriteTypeDialog(
+                                      setFavorite: setFavorite,
+                                      selectedFood: _filteredFoods[index],
+                                    );
+                                  },
                                 );
                               },
-                            );
-                          },
-                        ),
-                        if (index < _filteredFoods.length - 1) const Divider(color: AppColors.fontDimmed),
-                      ],
-                    );
-                  },
+                            ),
+                            if (index < _filteredFoods.length - 1) const Divider(color: AppColors.fontDimmed),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
                 ),
               ),
             ],

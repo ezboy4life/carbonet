@@ -64,151 +64,163 @@ class _FavoriteTypeDialogState extends State<FavoriteTypeDialog> {
                       ),
                     ),
                   ),
-                  const Divider(color: AppColors.fontDimmed),
-                  CheckboxListTile(
-                    title: Row(
-                      children: [
-                        Container(
-                          width: 35,
-                          height: 35,
-                          decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(8.0),
-                            ),
-                            color: Colors.brown,
-                          ),
-                          child: const Icon(
-                            Icons.coffee_rounded,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(width: 15),
-                        const Text(
-                          "Café",
-                          style: TextStyle(
-                            color: AppColors.fontBright,
-                          ),
-                        ),
-                      ],
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[900],
+                      borderRadius: const BorderRadius.all(Radius.circular(10)),
                     ),
-                    checkColor: Colors.white,
-                    activeColor: AppColors.defaultAppColor,
-                    value: widget.selectedFood.favoriteCoffee,
-                    onChanged: (value) {
-                      setState(() {
-                        widget.setFavorite(widget.selectedFood, MealType.coffee, value ?? false);
-                      });
-                    },
-                  ),
-                  const Divider(color: AppColors.fontDimmed),
-                  CheckboxListTile(
-                    title: Row(
-                      children: [
-                        Container(
-                          width: 35,
-                          height: 35,
-                          decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(8.0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          CheckboxListTile(
+                            title: Row(
+                              children: [
+                                Container(
+                                  width: 35,
+                                  height: 35,
+                                  decoration: const BoxDecoration(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(8.0),
+                                    ),
+                                    color: Colors.brown,
+                                  ),
+                                  child: const Icon(
+                                    Icons.coffee_rounded,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(width: 15),
+                                const Text(
+                                  "Café",
+                                  style: TextStyle(
+                                    color: AppColors.fontBright,
+                                  ),
+                                ),
+                              ],
                             ),
-                            color: Colors.green,
+                            checkColor: Colors.white,
+                            activeColor: AppColors.defaultAppColor,
+                            value: widget.selectedFood.favoriteCoffee,
+                            onChanged: (value) {
+                              setState(() {
+                                widget.setFavorite(widget.selectedFood, MealType.coffee, value ?? false);
+                              });
+                            },
                           ),
-                          child: const Icon(
-                            Icons.local_restaurant_rounded,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(width: 15),
-                        const Text(
-                          "Almoço",
-                          style: TextStyle(
-                            color: AppColors.fontBright,
-                          ),
-                        ),
-                      ],
-                    ),
-                    checkColor: Colors.white,
-                    activeColor: AppColors.defaultAppColor,
-                    value: widget.selectedFood.favoriteLunch,
-                    onChanged: (value) {
-                      setState(() {
-                        widget.setFavorite(widget.selectedFood, MealType.lunch, value ?? false);
-                      });
-                    },
-                  ),
-                  const Divider(color: AppColors.fontDimmed),
-                  CheckboxListTile(
-                    title: Row(
-                      children: [
-                        Container(
-                          width: 35,
-                          height: 35,
-                          decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(8.0),
+                          const Divider(color: AppColors.fontDimmed),
+                          CheckboxListTile(
+                            title: Row(
+                              children: [
+                                Container(
+                                  width: 35,
+                                  height: 35,
+                                  decoration: const BoxDecoration(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(8.0),
+                                    ),
+                                    color: Colors.green,
+                                  ),
+                                  child: const Icon(
+                                    Icons.local_restaurant_rounded,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(width: 15),
+                                const Text(
+                                  "Almoço",
+                                  style: TextStyle(
+                                    color: AppColors.fontBright,
+                                  ),
+                                ),
+                              ],
                             ),
-                            color: Colors.orange,
+                            checkColor: Colors.white,
+                            activeColor: AppColors.defaultAppColor,
+                            value: widget.selectedFood.favoriteLunch,
+                            onChanged: (value) {
+                              setState(() {
+                                widget.setFavorite(widget.selectedFood, MealType.lunch, value ?? false);
+                              });
+                            },
                           ),
-                          child: const Icon(
-                            Icons.dinner_dining_rounded,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(width: 15),
-                        const Text(
-                          "Janta",
-                          style: TextStyle(
-                            color: AppColors.fontBright,
-                          ),
-                        ),
-                      ],
-                    ),
-                    checkColor: Colors.white,
-                    activeColor: AppColors.defaultAppColor,
-                    value: widget.selectedFood.favoriteDinner,
-                    onChanged: (value) {
-                      setState(() {
-                        widget.setFavorite(widget.selectedFood, MealType.dinner, value ?? false);
-                      });
-                    },
-                  ),
-                  const Divider(color: AppColors.fontDimmed),
-                  CheckboxListTile(
-                    title: Row(
-                      children: [
-                        Container(
-                          width: 35,
-                          height: 35,
-                          decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(8.0),
+                          const Divider(color: AppColors.fontDimmed),
+                          CheckboxListTile(
+                            title: Row(
+                              children: [
+                                Container(
+                                  width: 35,
+                                  height: 35,
+                                  decoration: const BoxDecoration(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(8.0),
+                                    ),
+                                    color: Colors.orange,
+                                  ),
+                                  child: const Icon(
+                                    Icons.dinner_dining_rounded,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(width: 15),
+                                const Text(
+                                  "Janta",
+                                  style: TextStyle(
+                                    color: AppColors.fontBright,
+                                  ),
+                                ),
+                              ],
                             ),
-                            color: AppColors.defaultAppColor,
+                            checkColor: Colors.white,
+                            activeColor: AppColors.defaultAppColor,
+                            value: widget.selectedFood.favoriteDinner,
+                            onChanged: (value) {
+                              setState(() {
+                                widget.setFavorite(widget.selectedFood, MealType.dinner, value ?? false);
+                              });
+                            },
                           ),
-                          child: const Icon(
-                            Icons.lunch_dining_rounded,
-                            color: Colors.white,
+                          const Divider(color: AppColors.fontDimmed),
+                          CheckboxListTile(
+                            title: Row(
+                              children: [
+                                Container(
+                                  width: 35,
+                                  height: 35,
+                                  decoration: const BoxDecoration(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(8.0),
+                                    ),
+                                    color: AppColors.defaultAppColor,
+                                  ),
+                                  child: const Icon(
+                                    Icons.lunch_dining_rounded,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(width: 15),
+                                const Text(
+                                  "Lanche",
+                                  style: TextStyle(
+                                    color: AppColors.fontBright,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            checkColor: Colors.white,
+                            activeColor: AppColors.defaultAppColor,
+                            value: widget.selectedFood.favoriteSnack,
+                            onChanged: (value) {
+                              setState(() {
+                                widget.setFavorite(widget.selectedFood, MealType.snack, value ?? false);
+                              });
+                            },
                           ),
-                        ),
-                        const SizedBox(width: 15),
-                        const Text(
-                          "Lanche",
-                          style: TextStyle(
-                            color: AppColors.fontBright,
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                    checkColor: Colors.white,
-                    activeColor: AppColors.defaultAppColor,
-                    value: widget.selectedFood.favoriteSnack,
-                    onChanged: (value) {
-                      setState(() {
-                        widget.setFavorite(widget.selectedFood, MealType.snack, value ?? false);
-                      });
-                    },
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 26),
                   Button(
                     label: "Confirmar",
                     onPressed: () {
