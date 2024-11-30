@@ -1,17 +1,23 @@
 import 'package:carbonet/widgets/input/date_input_field.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-class HomePage extends StatelessWidget {
-  HomePage({
+class HomePage extends StatefulWidget {
+  const HomePage({
     super.key,
     //required this.cards,
   });
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   DateTime filterDateStart = DateTime.now().subtract(const Duration(days: 7));
+
   DateTime filterDateEnd = DateTime.now();
 
   final TextEditingController dateStartController = TextEditingController();
+
   final TextEditingController dateEndController = TextEditingController();
 
   @override
