@@ -11,6 +11,7 @@ import 'package:carbonet/utils/calculator.dart';
 import 'package:carbonet/utils/dao_procedure_coupler.dart';
 import 'package:carbonet/utils/logged_user_access.dart';
 import 'package:carbonet/widgets/buttons/button.dart';
+import 'package:carbonet/widgets/dialogs/blood_glucose_dialog.dart';
 import 'package:carbonet/widgets/dialogs/warning_dialog.dart';
 import 'package:flutter/material.dart';
 
@@ -200,28 +201,34 @@ class _SelectFoodsWrapperState extends State<SelectFoodsWrapper> {
                 await showDialog(
                     context: context,
                     builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text("Cálculo de insulina"),
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text("Total de carboidratos consumidos: ${totalCarbs.round()}g"),
-                            Text("Total de calorias consumidas: ${totalCalories.round()} kcal"),
-                            Text("Glicemia inicial: ${currentBloodSugar} mg/dL"),
-                            const SizedBox(
-                              height: 16,
-                            ),
-                            Text("Dose de insulina recomendada: ${Calculator.calculateInsulinDosage(totalCarbs, currentBloodSugar, minGlucose, maxGlucose, insulinRatio)} unidades"),
-                          ],
-                        ),
-                        actions: [
-                          TextButton.icon(
-                            onPressed: () => Navigator.of(context).pop(),
-                            label: const Text("Ok"),
-                            icon: const Icon(Icons.check),
-                          )
-                        ],
-                        actionsAlignment: MainAxisAlignment.center,
+                      // return AlertDialog(
+                      //   title: const Text("Cálculo de insulina"),
+                      //   content: Column(
+                      //     mainAxisSize: MainAxisSize.min,
+                      //     children: [
+                      //       Text("Total de carboidratos consumidos: ${totalCarbs.round()}g"),
+                      //       Text("Total de calorias consumidas: ${totalCalories.round()} kcal"),
+                      //       Text("Glicemia inicial: ${currentBloodSugar} mg/dL"),
+                      //       const SizedBox(
+                      //         height: 16,
+                      //       ),
+                      //       Text("Dose de insulina recomendada: ${Calculator.calculateInsulinDosage(totalCarbs, currentBloodSugar, minGlucose, maxGlucose, insulinRatio)} unidades"),
+                      //     ],
+                      //   ),
+                      //   actions: [
+                      //     TextButton.icon(
+                      //       onPressed: () => Navigator.of(context).pop(),
+                      //       label: const Text("Ok"),
+                      //       icon: const Icon(Icons.check),
+                      //     )
+                      //   ],
+                      //   actionsAlignment: MainAxisAlignment.center,
+                      // );
+                      return BloodGlucoseDialog(
+                        totalCarbs: totalCarbs.round(),
+                        totalKcal: totalCalories.round(),
+                        initialBloodGlucose: currentBloodSugar,
+                        recommendedInsulinDose: Calculator.calculateInsulinDosage(totalCarbs, currentBloodSugar, minGlucose, maxGlucose, insulinRatio),
                       );
                     });
                 print("wah");
