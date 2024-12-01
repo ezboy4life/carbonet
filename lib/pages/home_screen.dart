@@ -30,6 +30,8 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void setMealHistory() {}
+
   Future<void> showAddMealModal() async {
     await showModalBottomSheet(
       context: context,
@@ -106,13 +108,15 @@ class _HomeScreenState extends State<HomeScreen> {
       body: IndexedStack(
         index: _selectedIndexNotifier.value,
         children: [
-          HomePage(),
+          HomePage(
+            mealList: mealHistory,
+          ),
           const Placeholder(),
           const Placeholder(), // sla :3
           History(
             mealHistory: mealHistory,
           ),
-          UserProfile(),
+          const UserProfile(),
         ],
       ),
       bottomNavigationBar: ValueListenableBuilder<int>(

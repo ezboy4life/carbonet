@@ -32,12 +32,10 @@ class _HistoryState extends State<History> {
     super.initState();
   }
 
-  // 1. Create a FocusNode
   final FocusNode _focusNode = FocusNode();
 
   @override
   void dispose() {
-    // Dispose of the FocusNode when the widget is disposed
     _focusNode.dispose();
     super.dispose();
   }
