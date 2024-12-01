@@ -1,5 +1,6 @@
 import 'package:carbonet/data/models/meal.dart';
 import 'package:carbonet/pages/add_meal/add_meal.dart';
+import 'package:carbonet/pages/add_meal/custom_types/select_food_from_api.dart';
 import 'package:carbonet/pages/home/home.dart';
 import 'package:carbonet/pages/history/history.dart';
 import 'package:carbonet/pages/add_favorites/add_favorites.dart';
@@ -49,7 +50,8 @@ class _HomeScreenState extends State<HomeScreen> {
         useSafeArea: true,
         // barrierColor: Color(Colors.white.value).withOpacity(0.5),
         builder: (BuildContext context) {
-          return const AddFavorites();
+          //return const AddFavorites();  //^SUBSTITUIR
+          return const SelectFoodFromApi();
         });
   }
 
