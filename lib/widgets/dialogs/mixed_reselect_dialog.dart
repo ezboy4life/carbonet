@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:carbonet/pages/add_meal/foodvisor_vision.dart';
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/widgets/buttons/button.dart';
 import 'package:carbonet/widgets/input/input_field.dart';
@@ -18,6 +19,7 @@ class MixedReselectDialog extends StatefulWidget {
   final List<DropdownMenuItem> dropdownItems;
   final dynamic dropdownInitialValue;
 
+  final Function updateQuantityFunc;
 
   final IconData? icon;
   final List<TextInputFormatter>? inputFormatters;
@@ -39,6 +41,8 @@ class MixedReselectDialog extends StatefulWidget {
     this.dropdownOnChanged, 
     required this.dropdownItems, 
     this.dropdownInitialValue,
+
+    required this.updateQuantityFunc,
   });
 
   @override
@@ -46,6 +50,17 @@ class MixedReselectDialog extends StatefulWidget {
 }
 
 class _MixedReselectDialogState extends State<MixedReselectDialog> {
+
+  void updateQuantityOnFoodItem(String? str) {
+    widget.updateQuantityFunc((str == null || str.isEmpty) ? 0.0 : double.parse(str));
+  }
+
+  @override
+  void initState() {
+    widget.controller.text = (widget.dropdownItems[0].value as FoodItem).quantity.toString();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Theme(
@@ -61,6 +76,7 @@ class _MixedReselectDialogState extends State<MixedReselectDialog> {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 2.5, sigmaY: 2.5),
           child: Container(
+            width: MediaQuery.sizeOf(context).width * 0.8,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12.0),
               color: Colors.black,
@@ -73,7 +89,7 @@ class _MixedReselectDialogState extends State<MixedReselectDialog> {
               ],
             ),
             child: Padding(
-              padding: const EdgeInsets.all(32.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -88,27 +104,54 @@ class _MixedReselectDialogState extends State<MixedReselectDialog> {
                     ),
                   ),
                   if (widget.message != null) const SizedBox(height: 16),
-                  if (widget.message != null) Text.rich(TextSpan(children: widget.message)),
+                  if (widget.message != null) Text.rich(TextSpan(children: widget.message), textAlign: TextAlign.center,),
                   const SizedBox(height: 32),
-                  Row(
-                    children: [
-                        DropdownButton(
-                          items: widget.dropdownItems, 
-                          value: widget.dropdownInitialValue,
-                          onChanged: widget.dropdownOnChanged
-                        ),
-                      const SizedBox(width: 12),
-                      InputField(
-                        maxLength: 4,
-                        controller: widget.controller,
-                        labelText: widget.label,
-                        inputFormatters: widget.inputFormatters,
-                        keyboardType: widget.keyboardType,
-                        autofocus: true,
+                  DropdownButtonFormField(
+                    isExpanded: true,
+                    items: widget.dropdownItems, 
+                    value: widget.dropdownInitialValue,
+                    onChanged: widget.dropdownOnChanged,
+                    decoration: const InputDecoration(
+                      label: Text('Alimento selecionado'),
+                      labelStyle: const TextStyle(
+                        color: AppColors.fontBright,
                       ),
-                    ],
+                      contentPadding: const EdgeInsets.all(10),
+                      enabledBorder: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10.0),
+                        ),
+                        borderSide: BorderSide(
+                          color: AppColors.fontDimmed,
+                        ),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10.0),
+                        ),
+                        borderSide: BorderSide(
+                          color: AppColors.fontBright,
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                    dropdownColor: Colors.grey[900],
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(10.0),),
+                    style: const TextStyle(color: Colors.white),
+
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 12),
+                  InputField(
+                    maxLength: 4,
+                    controller: widget.controller,
+                    labelText: widget.label,
+                    inputFormatters: widget.inputFormatters,
+                    keyboardType: widget.keyboardType,
+                    autofocus: true,
+                    onChanged: updateQuantityOnFoodItem,
+                  ),
+                  const SizedBox(height: 12),
                   Button(
                     label: widget.buttonLabel,
                     onPressed: () {

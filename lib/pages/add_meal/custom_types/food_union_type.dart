@@ -1,6 +1,8 @@
 import 'package:carbonet/data/database/food_reference_dao.dart';
 import 'package:carbonet/data/models/ingested_food.dart';
+import 'package:carbonet/pages/add_meal/custom_types/food_search_separate.dart';
 import 'package:carbonet/pages/add_meal/custom_types/foodvisor_foodlist.dart';
+import 'package:carbonet/pages/add_meal/custom_types/select_food_from_api.dart';
 import 'package:carbonet/pages/add_meal/foodvisor_vision.dart';
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/widgets/dialogs/food_search_dialog.dart';
@@ -35,7 +37,7 @@ sealed class FoodUnionType {
   }
 
   set gramsIngested(dynamic value) {
-    assert(value is! double && value is! int, "value must be a number");
+    assert(value is double || value is int, "value must be a number");
     if (this is IngestedFoodWrapper) {
       (this as IngestedFoodWrapper).value.gramsIngested = value;
     } else if (this is FoodvisorFoodlistWrapper) {
@@ -94,33 +96,42 @@ sealed class FoodUnionType {
       var dropdownItems = foodvisorFoodList.value.list
         .map((foodItem) => DropdownMenuItem(
           value: foodItem, 
-          child: const Text("foodItem.foodName")
+          child: Text(foodItem.foodName)
         )).toList();
 
       // DropdownItem diferenciado - causa a troca do tipo de variável na lista de alimentos selecionados
       dropdownItems.add(
-        DropdownMenuItem(
+        const DropdownMenuItem(
           value: null,
-          child: Container(
-            color: Colors.blueAccent,
-            child: const Row(
-              children: [
-                Icon(Icons.search),
-                SizedBox(width: 8),
-                Text("Buscar alimento na base de dados"),
-            ]),
-          ),
+          child: Row(
+                children: [
+                  Icon(Icons.search, color: Colors.white,),
+                  SizedBox(width: 8),
+                  Flexible(child: Text("Buscar alimento na base de dados", softWrap: true,)),
+                ]),
         )
       );
       
-      var initialSelect = dropdownItems[0];
+      var initialSelect = foodvisorFoodList.value.list[0];//dropdownItems[0];
       void dropdownOnChanged(newSelected) async {
         if (newSelected is FoodItem) {
           foodvisorFoodList.value.selected = newSelected;
         } else {
-          // Dialog: buscar alimento na base de dados :D
+          // Tela: buscar alimento na base de dados :D
           var foodList = await FoodReferenceDAO().getAllFoodReference();
-          FoodUnionType? result = await showDialog(
+          FoodUnionType? result = await Navigator.push(context, 
+            MaterialPageRoute(builder: (context) {
+              return FoodSearchPageSeparate(
+                controller: TextEditingController(), //alterController, 
+                title: "Buscar alimento", 
+                label: "Nome do alimento", 
+                buttonLabel: "Cancelar", 
+                foodList: foodList
+              );
+            },)
+          );
+          
+          /* showDialog(
             context: context, 
             builder: (BuildContext context) {
               return FoodSearchDialog(
@@ -140,7 +151,7 @@ sealed class FoodUnionType {
                 foodList: foodList
               );
             },
-          );
+          ); */
 
           if (result != null) { // Se entrar aqui, o usuário escolheu um alimento (jeito não usual de sair desse dialog; o normal seria sair pelo onPressed do botão)
             Navigator.pop(context, result);
@@ -148,6 +159,13 @@ sealed class FoodUnionType {
         }
       }
 
+      // return Navigator.of(context).push(
+      //   MaterialPageRoute(
+      //     builder: (context) => SelectFoodFromApi(
+              
+      //       )
+      //   )
+      // );
       return showDialog(
         context: context, 
         builder: (BuildContext context) {
@@ -159,24 +177,9 @@ sealed class FoodUnionType {
             onPressed: updateSelectedFoodItem, 
             keyboardType: TextInputType.number,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            message: [
-              const TextSpan(
-                text: "Insira a quantidade de ",
-                style: TextStyle(
-                  color: AppColors.fontBright,
-                  fontSize: 17,
-                ),
-              ),
+            message: const [
               TextSpan(
-                text: filteredSelectedFoods[index].name.toLowerCase(),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 17,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const TextSpan(
-                text: " em gramas, ou escolha outro alimento:",
+                text: "Insira a quantidade do alimento em gramas, ou escolha outro alimento:",
                 style: TextStyle(
                   color: AppColors.fontBright,
                   fontSize: 17,
@@ -184,11 +187,13 @@ sealed class FoodUnionType {
               ),
             ],
 
+            updateQuantityFunc: foodvisorFoodList.updateQuantity,
             dropdownItems: dropdownItems,
             dropdownInitialValue: initialSelect,
             dropdownOnChanged: dropdownOnChanged,
             );
-        });
+        }
+      );
     }
   }
 }
@@ -201,4 +206,10 @@ class IngestedFoodWrapper extends FoodUnionType {
 class FoodvisorFoodlistWrapper extends FoodUnionType {
   final FoodVisorFoodlist value;
   FoodvisorFoodlistWrapper(this.value);
+
+  void updateQuantity(double qty) {
+    for (int i = 0; i < value.list.length; i++) {
+      value.list[i] = value.list[i].copyWith(quantity: qty);
+    }
+  }
 }

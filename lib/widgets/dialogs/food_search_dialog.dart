@@ -127,6 +127,7 @@ class _FoodSearchDialogState extends State<FoodSearchDialog> {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 2.5, sigmaY: 2.5),
           child: Container(
+            width: MediaQuery.sizeOf(context).width * 0.8,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12.0),
               color: Colors.black,
@@ -156,14 +157,15 @@ class _FoodSearchDialogState extends State<FoodSearchDialog> {
                   if (widget.message != null) const SizedBox(height: 16),
                   if (widget.message != null) Text.rich(TextSpan(children: widget.message)),
                   const SizedBox(height: 32),
-                  InputField(
-                    maxLength: 4,
-                    controller: widget.controller,
-                    labelText: widget.label,
-                    inputFormatters: widget.inputFormatters,
-                    keyboardType: widget.keyboardType,
-                    autofocus: true,
-                    onChanged: updateFilteredListDelay,
+                  Expanded(
+                    child: InputField(
+                      controller: widget.controller,
+                      labelText: widget.label,
+                      inputFormatters: widget.inputFormatters,
+                      keyboardType: widget.keyboardType,
+                      autofocus: true,
+                      onChanged: updateFilteredListDelay,
+                    ),
                   ),
                   Container(
                     height: 60, 

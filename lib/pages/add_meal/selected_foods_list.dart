@@ -39,7 +39,7 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
     }
 
     // comportamento default: popa com gramas ingeridos, ou com nulo
-    if (alterController.text.isNotEmpty && int.parse(alterController.text) != 0) {
+    if (alterController.text.isNotEmpty && double.parse(alterController.text) > 0) {
       selectedFoodItem?.gramsIngested = double.parse(alterController.text);
       Navigator.of(context).pop(selectedFoodItem?.gramsIngested);
       selectedFoodItem = null;
@@ -172,13 +172,11 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
                               infoLog(filteredSelectedFoods[index].name);
                               selectedFoodItem = filteredSelectedFoods[index];
                               final result = await selectedFoodItem!.editDialog(context, alterController, updateSelectedFoodItem, filteredSelectedFoods, index);
-                              if (result != null) {
-                                setState(() {
-                                  if (result is IngestedFoodWrapper) {
-                                    filteredSelectedFoods[index] = result;
-                                  }
-                                });
-                              }
+                              setState(() {
+                                if (result != null && result is IngestedFoodWrapper) {
+                                  filteredSelectedFoods[index] = result;
+                                }
+                              });
                             },
                           ),
                         ),
