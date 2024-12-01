@@ -95,6 +95,7 @@ class _SelectFoodsWrapperState extends State<SelectFoodsWrapper> {
                 child: Text(
                   "Todos Alimentos",
                   style: TextStyle(color: AppColors.fontBright),
+                  textAlign: TextAlign.center,
                 ),
               ),
               const Tab(

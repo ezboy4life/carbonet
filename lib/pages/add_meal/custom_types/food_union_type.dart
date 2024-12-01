@@ -105,7 +105,7 @@ sealed class FoodUnionType {
           value: null,
           child: Row(
                 children: [
-                  Icon(Icons.search),
+                  Icon(Icons.search, color: Colors.white,),
                   SizedBox(width: 8),
                   Flexible(child: Text("Buscar alimento na base de dados", softWrap: true,)),
                 ]),
@@ -122,7 +122,7 @@ sealed class FoodUnionType {
           FoodUnionType? result = await Navigator.push(context, 
             MaterialPageRoute(builder: (context) {
               return FoodSearchPageSeparate(
-                controller: alterController, 
+                controller: TextEditingController(), //alterController, 
                 title: "Buscar alimento", 
                 label: "Nome do alimento", 
                 buttonLabel: "Cancelar", 

@@ -106,11 +106,40 @@ class _MixedReselectDialogState extends State<MixedReselectDialog> {
                   if (widget.message != null) const SizedBox(height: 16),
                   if (widget.message != null) Text.rich(TextSpan(children: widget.message), textAlign: TextAlign.center,),
                   const SizedBox(height: 32),
-                  DropdownButton(
+                  DropdownButtonFormField(
                     isExpanded: true,
                     items: widget.dropdownItems, 
                     value: widget.dropdownInitialValue,
-                    onChanged: widget.dropdownOnChanged
+                    onChanged: widget.dropdownOnChanged,
+                    decoration: const InputDecoration(
+                      label: Text('Alimento selecionado'),
+                      labelStyle: const TextStyle(
+                        color: AppColors.fontBright,
+                      ),
+                      contentPadding: const EdgeInsets.all(10),
+                      enabledBorder: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10.0),
+                        ),
+                        borderSide: BorderSide(
+                          color: AppColors.fontDimmed,
+                        ),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10.0),
+                        ),
+                        borderSide: BorderSide(
+                          color: AppColors.fontBright,
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                    dropdownColor: Colors.grey[900],
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(10.0),),
+                    style: const TextStyle(color: Colors.white),
+
                   ),
                   const SizedBox(height: 12),
                   InputField(

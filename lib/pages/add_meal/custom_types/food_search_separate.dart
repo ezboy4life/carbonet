@@ -124,6 +124,7 @@ class _FoodSearchPageSeparateState extends State<FoodSearchPageSeparate> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
 
+                  const SizedBox(height: 32,),
                   const Text(
                     "Buscar alimento",
                     style: TextStyle(color: Colors.white, fontSize: 20),
@@ -159,6 +160,7 @@ class _FoodSearchPageSeparateState extends State<FoodSearchPageSeparate> {
                       child: (filteredFoodList.isEmpty) 
                         ? const Center(child: Text("Nenhum alimento encontrado.", style: TextStyle(color: Colors.white),)) 
                         : ListView.builder(
+                        padding: const EdgeInsets.all(0),
                         shrinkWrap: true,
                         itemCount: filteredFoodList.length,
                         itemBuilder: (context, index) {
