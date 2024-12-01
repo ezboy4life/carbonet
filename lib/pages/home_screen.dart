@@ -110,6 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           HomePage(
             mealList: mealHistory,
+            onItemTapped: _onItemTapped,
           ),
           const Placeholder(),
           const Placeholder(), // sla :3

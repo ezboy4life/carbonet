@@ -222,7 +222,7 @@ class _WeeklyCalorieChartState extends State<WeeklyCalorieChart> {
           borderSide: isTouched ? const BorderSide(color: AppColors.defaultBrightAppColor) : const BorderSide(color: Colors.white, width: 0),
           backDrawRodData: BackgroundBarChartRodData(
             show: true,
-            toY: getWeeklyAverages(widget.mealList).values.reduce((a, b) => a > b ? a : b) + 5,
+            toY: getWeeklyTotals(widget.mealList).values.reduce((a, b) => a > b ? a : b) + 5,
             color: Colors.grey[800],
           ),
         ),
@@ -253,29 +253,6 @@ class _WeeklyCalorieChartState extends State<WeeklyCalorieChart> {
             return throw Error();
         }
       });
-
-  Map<int, double> getWeeklyAverages(List<Meal> meals) {
-    final now = DateTime.now();
-    final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
-    final endOfWeek = startOfWeek.add(const Duration(days: 6));
-
-    final thisWeekObjects = meals.where((obj) {
-      return obj.date.isAfter(startOfWeek.subtract(const Duration(days: 1))) && obj.date.isBefore(endOfWeek.add(const Duration(days: 1)));
-    }).toList();
-
-    final Map<int, List<double>> groupedValues = {};
-    for (var obj in thisWeekObjects) {
-      final day = obj.date.weekday;
-      groupedValues.putIfAbsent(day, () => []).add(obj.calorieTotal.toDouble());
-    }
-
-    final Map<int, double> averages = {};
-    groupedValues.forEach((day, values) {
-      averages[day] = values.reduce((a, b) => a + b) / values.length;
-    });
-
-    return averages;
-  }
 
   Map<int, double> getWeeklyTotals(List<Meal> meals) {
     final now = DateTime.now();
