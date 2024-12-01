@@ -1,5 +1,6 @@
 import 'package:carbonet/data/database/food_reference_dao.dart';
 import 'package:carbonet/data/models/ingested_food.dart';
+import 'package:carbonet/pages/add_meal/custom_types/food_search_separate.dart';
 import 'package:carbonet/pages/add_meal/custom_types/foodvisor_foodlist.dart';
 import 'package:carbonet/pages/add_meal/custom_types/select_food_from_api.dart';
 import 'package:carbonet/pages/add_meal/foodvisor_vision.dart';
@@ -116,9 +117,21 @@ sealed class FoodUnionType {
         if (newSelected is FoodItem) {
           foodvisorFoodList.value.selected = newSelected;
         } else {
-          // Dialog: buscar alimento na base de dados :D
+          // Tela: buscar alimento na base de dados :D
           var foodList = await FoodReferenceDAO().getAllFoodReference();
-          FoodUnionType? result = await showDialog(
+          FoodUnionType? result = await Navigator.push(context, 
+            MaterialPageRoute(builder: (context) {
+              return FoodSearchPageSeparate(
+                controller: alterController, 
+                title: "Buscar alimento", 
+                label: "Nome do alimento", 
+                buttonLabel: "Cancelar", 
+                foodList: foodList
+              );
+            },)
+          );
+          
+          /* showDialog(
             context: context, 
             builder: (BuildContext context) {
               return FoodSearchDialog(
@@ -138,7 +151,7 @@ sealed class FoodUnionType {
                 foodList: foodList
               );
             },
-          );
+          ); */
 
           if (result != null) { // Se entrar aqui, o usuário escolheu um alimento (jeito não usual de sair desse dialog; o normal seria sair pelo onPressed do botão)
             Navigator.pop(context, result);

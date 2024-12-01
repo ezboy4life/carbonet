@@ -159,7 +159,6 @@ class _FoodSearchDialogState extends State<FoodSearchDialog> {
                   const SizedBox(height: 32),
                   Expanded(
                     child: InputField(
-                      maxLength: 4,
                       controller: widget.controller,
                       labelText: widget.label,
                       inputFormatters: widget.inputFormatters,
