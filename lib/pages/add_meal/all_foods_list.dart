@@ -182,6 +182,7 @@ class _AllFoodsListState extends State<AllFoodsList> {
                             context: context,
                             builder: (BuildContext context) {
                               return InputDialog(
+                                maxLength: 4,
                                 controller: gramsController,
                                 title: "Adicionar alimento",
                                 message: [

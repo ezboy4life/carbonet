@@ -56,6 +56,7 @@ sealed class FoodUnionType {
         context: context,
         builder: (BuildContext context) {
           return InputDialog(
+            maxLength: 4,
             controller: alterController,
             title: "Alterar alimento",
             label: "Qtd. em gramas",

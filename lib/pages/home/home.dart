@@ -78,6 +78,7 @@ class _HomePageState extends State<HomePage> {
               ),
               child: Column(
                 children: [
+                  const SizedBox(height: 16),
                   CardTile(
                     title: "Registrar Refeição",
                     icon: Icons.dinner_dining_rounded,
@@ -121,6 +122,7 @@ class _HomePageState extends State<HomePage> {
                       });
                     },
                   ),
+                  const SizedBox(height: 16),
                 ],
               ),
             )
