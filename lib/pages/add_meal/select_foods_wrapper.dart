@@ -26,6 +26,7 @@ class SelectFoodsWrapper extends StatefulWidget {
   final DateTime? mealDate;
   final TimeOfDay? mealTime;
   final Function(Meal) addMealToHistory;
+  final Function(Function?) toggleLoadingState;
 
   const SelectFoodsWrapper({
     super.key,
@@ -39,6 +40,7 @@ class SelectFoodsWrapper extends StatefulWidget {
     required this.setState,
     required this.mealDate,
     required this.mealTime,
+    required this.toggleLoadingState,
   });
 
   @override
@@ -127,6 +129,7 @@ class _SelectFoodsWrapperState extends State<SelectFoodsWrapper> {
               AllFoodsList(
                 foodList: foodList,
                 selectedFoodList: widget.selectedFoods,
+                toggleLoadingState: widget.toggleLoadingState,
               ),
               FavoriteFoodsList(
                 mealType: widget.selectedMealTypeController.value.text,

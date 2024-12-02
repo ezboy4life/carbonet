@@ -18,12 +18,32 @@ import 'package:flutter/services.dart';
 class AllFoodsList extends StatefulWidget {
   final List<FoodReference> foodList;
   final List<FoodUnionType> selectedFoodList;
+  final Function(Function?) toggleLoadingState;
 
   const AllFoodsList({
     super.key,
     required this.foodList,
     required this.selectedFoodList,
+    required this.toggleLoadingState,
   });
+
+  _redirectToSelectedFoodsList(BuildContext context) {
+    DefaultTabController.of(context).animateTo(2);
+  }
+
+  _showErrorSnackBar(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final snackBar = SnackBar(
+        content: const Text("Ocorreu um erro com a solicitação! Você está offline?", style: TextStyle(color: Colors.white),),
+        duration: const Duration(seconds: 8),
+        backgroundColor: AppColors.error,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        padding: const EdgeInsets.all(16),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    });
+  }
 
   dynamic photoFunction(BuildContext context) async {
     await Navigator.of(context).push(
@@ -33,18 +53,19 @@ class AllFoodsList extends StatefulWidget {
     );
     Uint8List? croppedImage = StaticImageHolder.image;
     if (StaticImageHolder.image != null) {
+
+      toggleLoadingState(null);
       AnalysisResults? results = await FoodvisorVision().analyseImage(StaticImageHolder.image!);
-      if (results != null) {
+      if (results != null && context.mounted) {
         for (AnalysisItem item in results.items) {
           selectedFoodList.add(FoodvisorFoodlistWrapper(FoodVisorFoodlist(list: item.foods)));
         }
 
-        //todo loading e colocar o usuário na tab certa
+        toggleLoadingState(_redirectToSelectedFoodsList(context));
+      } else {
+        toggleLoadingState(null);
+        if (context.mounted) _showErrorSnackBar(context);
       }
-      // exibir loading
-      // enviar e receber a resposta da api
-      // colocar os alimentos na lista de selecionados
-      // colocar o usuário na tab de selecionados
     }
     // Aqui espera-se receber a imagem cortada, e é aqui que a gente vai contatar a API e registrar os alimentos que ela nos devolver.
     // Com a lista de resultados, a gente coloca o usuário na tab de alimentos selecionados, e sucesso na vida e na morte.

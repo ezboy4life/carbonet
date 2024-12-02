@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:carbonet/utils/logger.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 const String apiKey = "Mc7R5SUh.VNGX4zZvcG9H68TArkoBzt4MHJ1eUHi2";
@@ -24,18 +25,24 @@ class FoodvisorVision {
     );
 
     request.headers.addAll(headers);
+    try {
+      http.StreamedResponse response = await request.send();
 
-    http.StreamedResponse response = await request.send();
-
-    if (response.statusCode == 200) {
-      final str = await response.stream.bytesToString();
-      print(str);
-      return AnalysisResults.fromJson(str);
-    }
-    else {
-      print(response.reasonPhrase);
+      if (response.statusCode == 200) {
+        final str = await response.stream.bytesToString();
+        print(str);
+        return AnalysisResults.fromJson(str);
+      }
+      else {
+        print(response.reasonPhrase);
+        return null;
+      }
+    } catch (error) {
+      errorLog(error.toString());
+      print(error);
       return null;
     }
+    
   }
 }
 
