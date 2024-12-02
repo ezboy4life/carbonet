@@ -174,7 +174,7 @@ class BloodGlucoseDialog extends StatelessWidget {
                                   child: Padding(
                                     padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                                     child: Text(
-                                      "$recommendedInsulinDose unidades",
+                                      "$recommendedInsulinDose ${recommendedInsulinDose == 1 ? 'unidade' : 'unidades'}",
                                       style: const TextStyle(color: Colors.white),
                                     ),
                                   ),

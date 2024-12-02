@@ -13,6 +13,7 @@ class InputDialog extends StatefulWidget {
   final List<TextSpan>? message;
   final Function onPressed;
   final bool obscureText;
+  final int? maxLength;
 
   final IconData? icon;
   final List<TextInputFormatter>? inputFormatters;
@@ -31,6 +32,7 @@ class InputDialog extends StatefulWidget {
     this.inputFormatters,
     this.keyboardType,
     this.obscureText = false,
+    this.maxLength,
   });
 
   @override
@@ -83,6 +85,7 @@ class _InputDialogState extends State<InputDialog> {
                   if (widget.message != null) Text.rich(TextSpan(children: widget.message)),
                   const SizedBox(height: 32),
                   InputField(
+                    maxLength: widget.maxLength,
                     obscureText: widget.obscureText,
                     controller: widget.controller,
                     labelText: widget.label,

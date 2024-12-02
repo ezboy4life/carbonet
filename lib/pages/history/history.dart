@@ -216,36 +216,32 @@ class _HistoryState extends State<History> {
                                                         _filteredMealList[index].mealType,
                                                         style: const TextStyle(color: Colors.white),
                                                       ),
-                                                      Row(
-                                                        children: [
-                                                          Container(
-                                                            decoration: BoxDecoration(
-                                                              color: Colors.grey[850],
-                                                              borderRadius: const BorderRadius.all(Radius.circular(8)),
-                                                            ),
-                                                            child: Padding(
-                                                              padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                                                              child: Text(
-                                                                "${_filteredMealList[index].calorieTotal} kcal",
-                                                                style: const TextStyle(color: AppColors.fontBright),
-                                                              ),
-                                                            ),
+                                                      Container(
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.grey[850],
+                                                          borderRadius: const BorderRadius.all(Radius.circular(8)),
+                                                        ),
+                                                        child: Padding(
+                                                          padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                                                          child: Text(
+                                                            "${_filteredMealList[index].calorieTotal} kcal",
+                                                            style: const TextStyle(color: AppColors.fontBright),
                                                           ),
-                                                          const SizedBox(width: 10),
-                                                          Container(
-                                                            decoration: BoxDecoration(
-                                                              color: Colors.grey[850],
-                                                              borderRadius: const BorderRadius.all(Radius.circular(8)),
-                                                            ),
-                                                            child: Padding(
-                                                              padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                                                              child: Text(
-                                                                "${_filteredMealList[index].carbTotal}g CHO",
-                                                                style: const TextStyle(color: AppColors.fontBright),
-                                                              ),
-                                                            ),
+                                                        ),
+                                                      ),
+                                                      const SizedBox(height: 2),
+                                                      Container(
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.grey[850],
+                                                          borderRadius: const BorderRadius.all(Radius.circular(8)),
+                                                        ),
+                                                        child: Padding(
+                                                          padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                                                          child: Text(
+                                                            "${_filteredMealList[index].carbTotal}g CHO",
+                                                            style: const TextStyle(color: AppColors.fontBright),
                                                           ),
-                                                        ],
+                                                        ),
                                                       )
                                                     ],
                                                   ),
@@ -256,7 +252,7 @@ class _HistoryState extends State<History> {
                                                 crossAxisAlignment: CrossAxisAlignment.end,
                                                 children: [
                                                   Text(
-                                                    "${mealDate.day.toString()}/${mealDate.month.toString()}/${(mealDate.year % 100).toString().padLeft(2, '0')}",
+                                                    "${mealDate.day.toString().padLeft(2, '0')}/${mealDate.month.toString()}/${(mealDate.year % 100).toString().padLeft(2, '0')}",
                                                     style: const TextStyle(color: Colors.white),
                                                   ),
                                                   Text(

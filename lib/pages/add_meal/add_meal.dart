@@ -45,6 +45,9 @@ class _AddMealState extends State<AddMeal> {
   double totalCarbohydrates = 0.0;
   double totalCalories = 0.0;
 
+  // Usado p/ exibir feedback visual quando houver chamadas à API do Foodvisor
+  bool isLoading = false;
+
   final List<DropdownMenuEntry<String>> _mealTypes = [
     CustomDropdownMenuEntry(value: "coffee", label: "Café da manhã"),
     CustomDropdownMenuEntry(value: "lunch", label: "Almoço"),
@@ -83,6 +86,13 @@ class _AddMealState extends State<AddMeal> {
 
   TimeOfDay? _getSelectedTime() {
     return selectedMealTime;
+  }
+
+  void toggleLoadingState(Function? callback) {
+    setState(() {
+      isLoading = !isLoading;
+    });
+    callback?.call();
   }
 
   @override
@@ -127,41 +137,54 @@ class _AddMealState extends State<AddMeal> {
           )
         ],
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Pager(
-            pageViewController: _pageViewController,
-            hintTexts: _hintTexts,
-            heightFactor: 0.75,
-            pages: [
-              MealInfo(
-                nextPage: _nextPage,
-                onDateSelected: _handleDateSelected,
-                onTimeSelected: _handleTimeSelected,
-                getSelectedDate: _getSelectedDate,
-                getSelectedTime: _getSelectedTime,
-                glicemiaController: bloodGlucoseController,
-                dateController: dateController,
-                timeController: timeController,
-                selectedMealTypeController: selectedMealTypeController,
-                tiposDeRefeicao: _mealTypes,
+      body: Stack(
+        children: [
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Pager(
+                pageViewController: _pageViewController,
+                hintTexts: _hintTexts,
+                heightFactor: 0.75,
+                pages: [
+                  MealInfo(
+                    nextPage: _nextPage,
+                    onDateSelected: _handleDateSelected,
+                    onTimeSelected: _handleTimeSelected,
+                    getSelectedDate: _getSelectedDate,
+                    getSelectedTime: _getSelectedTime,
+                    glicemiaController: bloodGlucoseController,
+                    dateController: dateController,
+                    timeController: timeController,
+                    selectedMealTypeController: selectedMealTypeController,
+                    tiposDeRefeicao: _mealTypes,
+                  ),
+                  SelectFoodsWrapper(
+                    searchBoxController: allFoodsController,
+                    favoritesSearchBoxController: favoriteFoodsController,
+                    selectedFoodsSearchBoxController: selectedFoodsController,
+                    selectedMealTypeController: selectedMealTypeController,
+                    glicemiaController: bloodGlucoseController,
+                    selectedFoods: selectedFoods,
+                    addMealToHistory: widget.addMealToHistory,
+                    setState: setState,
+                    mealDate: selectedMealDate,
+                    mealTime: selectedMealTime,
+                    toggleLoadingState: toggleLoadingState,
+                  )
+                ],
               ),
-              SelectFoodsWrapper(
-                searchBoxController: allFoodsController,
-                favoritesSearchBoxController: favoriteFoodsController,
-                selectedFoodsSearchBoxController: selectedFoodsController,
-                selectedMealTypeController: selectedMealTypeController,
-                glicemiaController: bloodGlucoseController,
-                selectedFoods: selectedFoods,
-                addMealToHistory: widget.addMealToHistory,
-                setState: setState,
-                mealDate: selectedMealDate,
-                mealTime: selectedMealTime,
-              )
-            ],
+            ),
           ),
-        ),
+
+          if (isLoading)
+            Container(
+              color: Colors.black.withOpacity(0.5),
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            )
+        ]
       ),
     );
   }
