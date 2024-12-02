@@ -48,21 +48,12 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 16),
-            if (widget.mealList.isEmpty) ...[
-              if (hasFinishedDelay) ...[
-                const Center(
-                  child: Text(
-                    "Nenhum dado encontrado para gerar os gráficos.",
-                    style: TextStyle(color: Colors.white),
-                  ),
+            if (!hasFinishedDelay) ...[
+              const Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.defaultAppColor,
                 ),
-              ] else ...[
-                const Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.defaultAppColor,
-                  ),
-                ),
-              ]
+              ),
             ] else ...[
               WeeklyCalorieChart(mealList: widget.mealList)
             ],
