@@ -222,7 +222,7 @@ class _WeeklyCalorieChartState extends State<WeeklyCalorieChart> {
           borderSide: isTouched ? const BorderSide(color: AppColors.defaultBrightAppColor) : const BorderSide(color: Colors.white, width: 0),
           backDrawRodData: BackgroundBarChartRodData(
             show: true,
-            toY: getWeeklyTotals(widget.mealList).values.reduce((a, b) => a > b ? a : b) + 5,
+            toY: getWeeklyTotals(widget.mealList).isEmpty ? 5 : getWeeklyTotals(widget.mealList).values.reduce((a, b) => a > b ? a : b) + 5,
             color: Colors.grey[800],
           ),
         ),

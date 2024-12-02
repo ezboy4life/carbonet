@@ -50,20 +50,16 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 16),
             if (widget.mealList.isEmpty) ...[
               if (hasFinishedDelay) ...[
-                const Expanded(
-                  child: Center(
-                    child: Text(
-                      "Nenhum dado encontrado para gerar os gráficos.",
-                      style: TextStyle(color: Colors.white),
-                    ),
+                const Center(
+                  child: Text(
+                    "Nenhum dado encontrado para gerar os gráficos.",
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
               ] else ...[
-                const Expanded(
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      color: AppColors.defaultAppColor,
-                    ),
+                const Center(
+                  child: CircularProgressIndicator(
+                    color: AppColors.defaultAppColor,
                   ),
                 ),
               ]
