@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:carbonet/pages/add_meal/custom_types/food_union_type.dart';
 import 'package:carbonet/pages/add_meal/foodvisor_vision.dart';
 import 'package:carbonet/utils/app_colors.dart';
 import 'package:carbonet/widgets/buttons/button.dart';
@@ -25,6 +26,8 @@ class MixedReselectDialog extends StatefulWidget {
   final List<TextInputFormatter>? inputFormatters;
   final TextInputType? keyboardType;
 
+  final FoodvisorFoodlistWrapper foodvisorFoodList;
+
   /// Um dialog que tem um TextField, permitindo o usuário digitar um valor nele
   const MixedReselectDialog({
     super.key,
@@ -43,6 +46,7 @@ class MixedReselectDialog extends StatefulWidget {
     this.dropdownInitialValue,
 
     required this.updateQuantityFunc,
+    required this.foodvisorFoodList,
   });
 
   @override
@@ -57,7 +61,7 @@ class _MixedReselectDialogState extends State<MixedReselectDialog> {
 
   @override
   void initState() {
-    widget.controller.text = (widget.dropdownItems[0].value as FoodItem).quantity.toString();
+    widget.controller.text = widget.foodvisorFoodList.value.selected!.quantity.toString();//(widget.dropdownItems[0].value as FoodItem).quantity.toString(); // <- eis o causador do erro 4. Preciso do selected, não dessas loucuras.
     super.initState();
   }
 

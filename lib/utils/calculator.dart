@@ -13,7 +13,7 @@ class Calculator {
           (ingestedFood.value.gramsIngested / ingestedFood.value.foodReference.gramsPerPortion);
       } else if (ingestedFood is FoodvisorFoodlistWrapper) {
         totalCalories +=
-          ingestedFood.value.selected.calories100g * ingestedFood.value.selected.quantity / 100;
+          ingestedFood.value.selected!.calories100g * ingestedFood.value.selected!.quantity / 100;
       }
     }
     return totalCalories;
@@ -28,7 +28,7 @@ class Calculator {
           (ingestedFood.value.gramsIngested / ingestedFood.value.foodReference.gramsPerPortion);
       } else if (ingestedFood is FoodvisorFoodlistWrapper) {
         totalCarbohydrates +=
-          ingestedFood.value.selected.carbs100g * ingestedFood.value.selected.quantity / 100;
+          ingestedFood.value.selected!.carbs100g * ingestedFood.value.selected!.quantity / 100;
       }
     }
   
