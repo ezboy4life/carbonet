@@ -2,7 +2,7 @@ import 'package:carbonet/pages/add_meal/foodvisor_vision.dart';
 
 class FoodVisorFoodlist {
   final List<FoodItem> list;
-  late FoodItem selected;
+  FoodItem? selected;
 
   FoodVisorFoodlist({required this.list}) {
     assert(list.isNotEmpty, "Provide a non-empty list");

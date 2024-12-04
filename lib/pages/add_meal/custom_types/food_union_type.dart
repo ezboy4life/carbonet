@@ -5,6 +5,7 @@ import 'package:carbonet/pages/add_meal/custom_types/foodvisor_foodlist.dart';
 import 'package:carbonet/pages/add_meal/custom_types/select_food_from_api.dart';
 import 'package:carbonet/pages/add_meal/foodvisor_vision.dart';
 import 'package:carbonet/utils/app_colors.dart';
+import 'package:carbonet/utils/logger.dart';
 import 'package:carbonet/widgets/dialogs/food_search_dialog.dart';
 import 'package:carbonet/widgets/dialogs/input_dialog.dart';
 import 'package:carbonet/widgets/dialogs/mixed_reselect_dialog.dart';
@@ -16,7 +17,7 @@ sealed class FoodUnionType {
     if (this is IngestedFoodWrapper) {
       return (this as IngestedFoodWrapper).value.foodReference.name;
     } else if (this is FoodvisorFoodlistWrapper) {
-      return (this as FoodvisorFoodlistWrapper).value.selected.foodName;
+      return (this as FoodvisorFoodlistWrapper).value.selected!.foodName;
     }
   }
 
@@ -24,7 +25,7 @@ sealed class FoodUnionType {
     if (this is IngestedFoodWrapper) {
       return (this as IngestedFoodWrapper).value.id;
     } else if (this is FoodvisorFoodlistWrapper) {
-      return (this as FoodvisorFoodlistWrapper).value.selected.foodId;
+      return (this as FoodvisorFoodlistWrapper).value.selected!.foodId;
     }
   }
 
@@ -32,7 +33,7 @@ sealed class FoodUnionType {
     if (this is IngestedFoodWrapper) {
       return (this as IngestedFoodWrapper).value.gramsIngested;
     } else if (this is FoodvisorFoodlistWrapper) {
-      return (this as FoodvisorFoodlistWrapper).value.selected.quantity;
+      return (this as FoodvisorFoodlistWrapper).value.selected!.quantity;
     }
   }
 
@@ -42,8 +43,13 @@ sealed class FoodUnionType {
       (this as IngestedFoodWrapper).value.gramsIngested = value;
     } else if (this is FoodvisorFoodlistWrapper) {
       var foodvisorFoodList = (this as FoodvisorFoodlistWrapper).value;
-      var updatedSelected = foodvisorFoodList.selected.copyWith(quantity: value);
-      foodvisorFoodList.list.remove(foodvisorFoodList.selected);
+      var updatedSelected = foodvisorFoodList.selected!.copyWith(quantity: value);
+      final result = foodvisorFoodList.list.remove(foodvisorFoodList.list.firstWhere((el) => el.foodId == foodvisorFoodList.selected!.foodId)); // Isso não tá funcionando, aparentemente.
+      //foodvisorFoodList.list.
+      infoLog("Conseguiu remover o alimento da lista? -> $result");
+      print(foodvisorFoodList.list);
+      print(foodvisorFoodList.selected);
+      print(updatedSelected);
 
       foodvisorFoodList.list.add(updatedSelected);
       foodvisorFoodList.selected = updatedSelected;
@@ -93,6 +99,12 @@ sealed class FoodUnionType {
       );
     } else if (this is FoodvisorFoodlistWrapper) {
 
+      //TODO
+
+      // Erro 1: ao clicar em alterar, ele coloca outra entrada do mesmo alimento na lista, com uma quantidade diferente.
+      // Erro 2: cada entrada de alimento tem uma quantidade única, parece. Então, qdo vc muda ele no modal de alterar, ele não tá trocando no input tbm.
+      // Erro 3: tem vezes que vc altera o alimento mas ele n altera o nome displayed na lista...??????? explanado: ele atualiza na lista, mas qdo vc clica ele puxa o originalmente selecionado (?)
+      // Erro 4: se vc troca na dropdownbutton, mas n altera a qtd em gramas, ele troca fora, mas não no input qdo vc reabre o input.
       var foodvisorFoodList = (this as FoodvisorFoodlistWrapper);
       var dropdownItems = foodvisorFoodList.value.list
         .map((foodItem) => DropdownMenuItem(
@@ -113,10 +125,11 @@ sealed class FoodUnionType {
         )
       );
       
-      var initialSelect = foodvisorFoodList.value.list[0];//dropdownItems[0];
+      var initialSelect = foodvisorFoodList.value.selected;//list[0];//dropdownItems[0];
       void dropdownOnChanged(newSelected) async {
         if (newSelected is FoodItem) {
-          foodvisorFoodList.value.selected = newSelected;
+          foodvisorFoodList.value.selected = newSelected; // 👈 esse campo (selected) era final; troquei pra não ser, e vejamos se resolve o erro 3.
+          alterController.text = newSelected.quantity.toString(); // 👈 deve corrigir o erro 2...
         } else {
           // Tela: buscar alimento na base de dados :D
           var foodList = await FoodReferenceDAO().getAllFoodReference();
@@ -131,42 +144,12 @@ sealed class FoodUnionType {
               );
             },)
           );
-          
-          /* showDialog(
-            context: context, 
-            builder: (BuildContext context) {
-              return FoodSearchDialog(
-                controller: alterController, 
-                title: "Buscar alimento", 
-                label: "Nome do alimento", 
-                buttonLabel: "Selecionar", 
-                message: const [
-                  TextSpan(
-                    text: "Insira o nome do alimento que deseja buscar:",
-                    style: TextStyle(
-                      color: AppColors.fontBright,
-                      fontSize: 17,
-                    ),
-                  ),
-                ],
-                foodList: foodList
-              );
-            },
-          ); */
 
           if (result != null) { // Se entrar aqui, o usuário escolheu um alimento (jeito não usual de sair desse dialog; o normal seria sair pelo onPressed do botão)
             Navigator.pop(context, result);
           }
         }
       }
-
-      // return Navigator.of(context).push(
-      //   MaterialPageRoute(
-      //     builder: (context) => SelectFoodFromApi(
-              
-      //       )
-      //   )
-      // );
       return showDialog(
         context: context, 
         builder: (BuildContext context) {
@@ -188,6 +171,7 @@ sealed class FoodUnionType {
               ),
             ],
 
+            foodvisorFoodList: foodvisorFoodList,
             updateQuantityFunc: foodvisorFoodList.updateQuantity,
             dropdownItems: dropdownItems,
             dropdownInitialValue: initialSelect,
@@ -209,8 +193,8 @@ class FoodvisorFoodlistWrapper extends FoodUnionType {
   FoodvisorFoodlistWrapper(this.value);
 
   void updateQuantity(double qty) {
-    for (int i = 0; i < value.list.length; i++) {
-      value.list[i] = value.list[i].copyWith(quantity: qty);
-    }
+    // for (int i = 0; i < value.list.length; i++) {
+    //   value.list[i] = value.list[i].copyWith(quantity: qty);
+    // }
   }
 }

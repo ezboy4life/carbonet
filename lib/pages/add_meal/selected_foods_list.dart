@@ -67,7 +67,7 @@ class _SelectedFoodsListState extends State<SelectedFoodsList> {
         filteredSelectedFoods = widget.selectedFoods
             .where((element) => (element is IngestedFoodWrapper)
                 ? element.value.foodReference.name.toLowerCase().contains(value.toLowerCase())
-                : (element as FoodvisorFoodlistWrapper).value.selected.foodName.toLowerCase().contains(value.toLowerCase()))
+                : (element as FoodvisorFoodlistWrapper).value.selected!.foodName.toLowerCase().contains(value.toLowerCase()))
             .toList();
       });
     }
