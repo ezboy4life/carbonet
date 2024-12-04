@@ -45,7 +45,7 @@ class Calculator {
 
     if (expectedBloodSugar < minIdeal) {
       print("expectedBloodSugar < minIdeal");
-      return 0; // açúcar no sangue ainda abaixo do ideal
+      return -1; // açúcar no sangue ainda abaixo do ideal
     } else if (expectedBloodSugar > maxIdeal) {
       print("expectedBloodSugar > maxIdeal");
       double correction = (expectedBloodSugar - maxIdeal) / mgOfGlucoseOneInsulinUnitLowers;
@@ -76,7 +76,7 @@ class Calculator {
 
       print("expectedGlucoseDeviationInMg: $expectedGlucoseDeviationInMg");
 
-      int bloodSugarWithDeviation = currentBloodSugar + expectedGlucoseDeviationInMg;
+      int bloodSugarWithDeviation = expectedBloodSugar + expectedGlucoseDeviationInMg;
 
       print("bloodSugarWithDeviation: $bloodSugarWithDeviation");
 

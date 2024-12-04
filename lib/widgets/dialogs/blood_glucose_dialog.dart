@@ -156,7 +156,21 @@ class BloodGlucoseDialog extends StatelessWidget {
                           const Divider(color: AppColors.fontDimmed),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Row(
+                            child: (recommendedInsulinDose < 0) 
+                              ? Container( // <- aviso: glicemia abaixo do intervalo ideal mesmo após a refeição
+                                  decoration: BoxDecoration(
+                                    color: Colors.red[400],
+                                    borderRadius: const BorderRadius.all(Radius.circular(8)),
+                                  ),
+                                  child: const Padding(
+                                    padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
+                                    child: Text(
+                                      "Atenção: mesmo após a refeição, sua glicemia estimada está abaixo da margem mínima do intervalo ideal. Considere comer mais algo.",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                )
+                              : Row(
                               children: [
                                 const Expanded(
                                   child: Text(
@@ -166,7 +180,7 @@ class BloodGlucoseDialog extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                Container(
+                                Container( // <- informe normal
                                   decoration: BoxDecoration(
                                     color: Colors.blue[800],
                                     borderRadius: const BorderRadius.all(Radius.circular(8)),

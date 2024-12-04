@@ -46,7 +46,7 @@ class User {
       id: map["id"],
       email: map["email"],
       senha: map["senha"],
-      birthDate: DateTime.parse(map["dataNascimento"]),
+      birthDate: map["dataNascimento"] != null ? DateTime.parse(map["dataNascimento"]) : DateTime(2000) ,
       constanteInsulinica: map["constInsulinica"],
       name: map["nome"],
       surname: map["sobrenome"],
